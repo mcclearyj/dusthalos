@@ -151,6 +151,19 @@ def get_bg_catalog(phot_file,rmz_file,zmin=0.1,ortho=False):
     catalog.zz = zcat['ZREDMAGIC']
     return catalog
 
+def get_fg_randoms(nrand = 1e6):
+    # Make randoms on the sphere.
+    ran1, ran2 = np.random.random(2*nrand).reshape(2, -1)
+    ra = 2*np.pi * (ran1 - 0.5)
+    dec= np.arcsin(2.*(ran2-0.5))
+
+    # Now apply cuts to limit to SSC/DES overlap footprint.
+    keep = (ra >= 95.0) & (ra <= 300.0) & (dec >= -60.0) & (dec <= -40.0)
+    
+
+    
+    pass
+
 def get_bg_randoms(bg_file,Cat,zmin=0.2):
     ran_cat = fitsio.read(bg_file)
     ran_cat = ran_cat[ran_cat['Z']>zmin]
