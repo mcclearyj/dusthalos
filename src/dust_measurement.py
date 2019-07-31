@@ -137,7 +137,7 @@ def get_bg_catalog(phot_file,rmz_file,zmin=0.1,ortho=False):
     
     #zbins=[i*0.15 for i in range(6)];zbins=[zbins[i] + .15 for i in range(len(zbins))]
 
-    for i in xrange(nbins):
+    for i in range(nbins):
         these = (zcat['ZREDMAGIC'] > zbins[i]) & (zcat['ZREDMAGIC'] <= zbins[i+1])
         this_est,this_wt = est_reddening(cat[these],ortho=ortho)
         #this_est,this_wt = dumb_reddening(cat[these],ortho=ortho)
