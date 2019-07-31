@@ -250,7 +250,7 @@ def main(argv):
     ax2.legend()
 
 
-    fig.savefig('dust_correl_dumbredshift.png')
+    fig.savefig('dust_correl_newestimator.png')
 
     
 if __name__ == "__main__":
