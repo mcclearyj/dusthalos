@@ -154,7 +154,7 @@ def get_bg_catalog(phot_file,rmz_file,zmin=0.1,ortho=False):
 def get_bg_randoms(bg_file,Cat,zmin=0.2):
     ran_cat = fitsio.read(bg_file)
     ran_cat = ran_cat[ran_cat['Z']>zmin]
-    # Do thereddening estimate in redshift slices.
+    # Do the reddening estimate in redshift slices.
     nbins = 10
     est = np.zeros(ran_cat.size)
     est_weight = np.zeros(ran_cat.size)
@@ -167,9 +167,9 @@ def get_bg_randoms(bg_file,Cat,zmin=0.2):
         these = (ran_cat['Z'] > zbins[i]) & (ran_cat['Z'] <= zbins[i+1])
         these_est = (Cat.zz > zbins[i]) & (Cat.zz <=zbins[i+1])
         ind = np.random.choice(np.arange(np.sum(these_est)),np.sum(these))
-        est[these] = Cat.k[these_est[ind]]
-        est_weight[these] = Cat.w[these_est[ind]]
-
+        est[these] = Cat.k[these_est][ind]
+        est_weight[these] = Cat.w[these_est][ind]
+        
     catalog = treecorr.Catalog(ra=ran_cat['RA'],dec=ran_cat['DEC'],k=est,w=est_weight,\
                                    ra_units='deg',dec_units='deg')
     return catalog
