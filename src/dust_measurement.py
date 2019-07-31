@@ -40,9 +40,9 @@ def est_reddening(catalog,zeropoint = 30.0, ortho=False,ortho_index = 0):
         # Cardelli, Clayton & Mathis '89
         vdust = np.array([1.12224688, 0.82747095, 0.62680647, 0.47880753])
         dmdp = get_ortho(vdust, index = ortho_index)
-        print "Dust vector is:",vdust
-        print "ortho dust vector is:",dmdp
-        print "overlap:",np.dot(vdust,dmdp)
+        print( "Dust vector is:",vdust)
+        print ("ortho dust vector is:",dmdp)
+        print ("overlap:",np.dot(vdust,dmdp))
     else:
         #dmdp = np.array([ 4.60, 3.10, 2.18, 1.6 ])
         # Fitzpatrick99
@@ -90,7 +90,7 @@ def dumb_reddening(catalog,zeropoint = 30.0, ortho=False,ortho_index = 0):
 def get_fg_catalog(fg_file):
     data = pd.read_csv(fg_file)
     keep = data['bCalCorr'] > 15.0
-    print "Length of catalog after cuts = %i" % len(keep)
+    print ("Length of catalog after cuts = %i" % len(keep))
     catalog = treecorr.Catalog(ra=data['ra'][keep],dec=data['dec'][keep],ra_units='deg',dec_units='deg')
     return catalog
 
@@ -99,7 +99,7 @@ def get_fg_catalog2(fg_file):
     data = Table.read(fg_file)
     #keep,=np.where((data['nuv_artifact'] != 2) & (data['fuv']>= 14.5)& (data['fuv']<= 22.0))
     keep,=np.where(data['z'] <0.2)
-    print "Length of catalog after cuts = %i" % len(keep)
+    print( "Length of catalog after cuts = %i" % len(keep))
     #catalog = treecorr.Catalog(ra=data['ra'][keep],dec=data['dec'][keep],ra_units='deg',dec_units='deg')
     catalog = treecorr.Catalog(ra=data['_RAJ2000'][keep],dec=data['_DEJ2000'][keep],ra_units='deg',dec_units='deg')
     return catalog
@@ -206,14 +206,14 @@ def main(argv):
 
     # build a background catalog.
     zmin = 0.15
-    print "Getting bg science catalog..."
+    print( "Getting bg science catalog...")
     bgCat = get_bg_catalog(rmp_file,rmz_file,zmin=zmin,ortho=False)
-    print "Done. Getting bg randoms... "
+    print ("Done. Getting bg randoms... ")
     bgRan = get_bg_randoms(ra_file, bgCat,zmin=zmin)
-    print "Done. Getting fg catalog... "
+    print( "Done. Getting fg catalog... ")
     # Build a foreground catalog.
     fgCat = get_fg_catalog(fg_file)
-    print "Done. Now cross-correlating..."
+    print ("Done. Now cross-correlating...")
     
     # Now make the correlation objects.
     DK = treecorr.NKCorrelation(min_sep=2,max_sep=200.0,bin_size=.5,sep_units='arcmin')
