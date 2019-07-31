@@ -196,8 +196,8 @@ def main(argv):
         dd_outfile = 'dust_correlation_unsubtracted_faint_ortho-'+str(index)+'.fits'
         dr_outfile = 'dust_correlation_randoms_faint_ortho-'+str(index)+'.fits'
     else:
-        dd_outfile = 'dust_correlation_unsubtracted_dumbredshift.fits'
-        dr_outfile = 'dust_correlation_randoms_dumbredshift.fits'
+        dd_outfile = 'dust_correlation_unsubtracted_newEstimator.fits'
+        dr_outfile = 'dust_correlation_randoms_newEstimator.fits'
 
 
     # build a background catalog.
