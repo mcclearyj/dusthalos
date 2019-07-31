@@ -55,8 +55,8 @@ def est_reddening(catalog,zeropoint = 30.0, ortho=False,ortho_index = 0):
     delta = (np.zeros_like(data).T + dmdp)
     Cinv = np.linalg.inv(covar)
     colors = (data.T - np.average(data,axis=1)).T
-    est = np.sum(delta.T*np.dot(Cinv,colors),axis=0)/np.sqrt(np.dot(dmdp,np.dot(Cinv,dmdp)))
-    wt = 1./np.sqrt(np.dot(dmdp,np.dot(Cinv,dmdp)))
+    est = np.sum(delta.T*np.dot(Cinv,colors),axis=0)/(np.dot(dmdp,np.dot(Cinv,dmdp)))
+    wt = 1./(np.dot(dmdp,np.dot(Cinv,dmdp)))
     return est,wt
 
 
