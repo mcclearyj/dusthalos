@@ -226,7 +226,7 @@ def main(argv):
 
     ### in log space
     ax=fig.add_subplot(121)
-    ax.errorbar(dk['meanR'],dk['kappa']-(dr['kappa']-np.mean(dr['kappa'])),yerr=dk['sigma'],label='10 redshift bins')
+    ax.errorbar(dk['meanr'],dk['kappa']-(dr['kappa']-np.mean(dr['kappa'])),yerr=dk['sigma'],label='10 redshift bins')
     ax.set_xscale('log')
     ax.set_yscale('log')
     ax.set_ylim(1e-6,.2)
@@ -242,7 +242,7 @@ def main(argv):
 
     ### in linear space
     ax2=fig.add_subplot(122)
-    ax2.errorbar(dk['meanR'],dk['kappa']-(dr['kappa']-np.mean(dr['kappa'])),yerr=dk['sigma'],label='10 redshift bins')
+    ax2.errorbar(dk['meanr'],dk['kappa']-(dr['kappa']-np.mean(dr['kappa'])),yerr=dk['sigma'],label='10 redshift bins')
     ax2.plot(r,av,label='Menard (2010)')
        
     ax2.axhline(0,color='black',linestyle='--',alpha=0.5)
