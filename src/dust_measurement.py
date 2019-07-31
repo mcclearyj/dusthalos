@@ -124,7 +124,7 @@ def get_bg_catalog(phot_file,rmz_file,zmin=0.1,ortho=False):
     cat = cat[keep]
     zcat = bg_rmz[keep]
     
-    """
+   
     # Do the reddening estimate in redshift slices.
     nbins = 10
     est = np.zeros(cat.size)
@@ -147,11 +147,7 @@ def get_bg_catalog(phot_file,rmz_file,zmin=0.1,ortho=False):
     catalog = treecorr.Catalog(ra=cat['ra'],dec=cat['dec'],k=est,\
                                   ra_units='deg',dec_units='deg',w=est_weight)
     
-    """
-    est,est_weight = est_reddening(cat,ortho=ortho)
-    wt=np.zeros_like(est)+est_weight
-    catalog = treecorr.Catalog(ra=cat['ra'],dec=cat['dec'],k=est,ra_units='deg',dec_units='deg',w=wt)
- 
+
     catalog.zz = zcat['ZREDMAGIC']
     return catalog
 
