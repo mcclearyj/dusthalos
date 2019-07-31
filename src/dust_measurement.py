@@ -170,8 +170,9 @@ def get_bg_randoms(bg_file,Cat,zmin=0.2):
     for i in xrange(nbins):
         these = (ran_cat['Z'] > zbins[i]) & (ran_cat['Z'] <= zbins[i+1])
         these_est = (Cat.zz > zbins[i]) & (Cat.zz <=zbins[i+1])
-        est[these] = np.random.choice(Cat.k[these_est],np.sum(these))
-        est_weight[these] = np.random.choice(Cat.w[these_est],np.sum(these))
+        ind = np.random.choice(np.arange(np.sum(these_est)),np.sum(these))
+        est[these] = Cat.k[these_est[ind]]
+        est_weight[these] = Cat.w[these_est[ind]]
 
     catalog = treecorr.Catalog(ra=ran_cat['RA'],dec=ran_cat['DEC'],k=est,w=est_weight,\
                                    ra_units='deg',dec_units='deg')
