@@ -167,7 +167,7 @@ def get_bg_randoms(bg_file,Cat,zmin=0.2):
     zbins[-1] = zbins[-1] + 1.
     #zbins=[i*0.15 for i in range(6)];zbins=[zbins[i] + .15 for i in range(len(zbins))]
 
-    for i in xrange(nbins):
+    for i in range(nbins):
         these = (ran_cat['Z'] > zbins[i]) & (ran_cat['Z'] <= zbins[i+1])
         these_est = (Cat.zz > zbins[i]) & (Cat.zz <=zbins[i+1])
         ind = np.random.choice(np.arange(np.sum(these_est)),np.sum(these))
