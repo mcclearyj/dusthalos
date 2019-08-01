@@ -26,7 +26,10 @@ def get_fg_catalog(fg_file):
     catalog = treecorr.Catalog(ra=filtered['ra'],dec=filtered['dec'],ra_units='deg',dec_units='deg')
     print( "Length of catalog after cuts = %i" % len(cut_galz))
     # For testing...
-    filtered.write('Sscom_exactArea_galzCut.fits',format='fits')
+    try:
+        filtered.write('Sscom_exactArea_galzCut.fits',format='fits',over)
+    except:
+        pass
     return catalog
 
 
@@ -182,18 +185,17 @@ def plotres(dd_out,dr_out,fr_out=None):
     # Now make a plot.
     dk = fitsio.read(dd_out)
     dr = fitsio.read(dr_out)
-    try:
-        fr = fitsio.read(fr_out)
-    except:
-        pass
+    fr = fitsio.read(fr_out)
+    
     fig = plt.figure(figsize=(14,7))
-
     ### in log space
     ax=fig.add_subplot(121)
     try: 
-        ax.errorbar(dk['meanr'],dk['kappa']-(dr['kappa']-np.mean(dr['kappa'])),yerr=dk['sigma'],label='10 redshift bins')
+        ax.errorbar(dk['meanr'],dk['kappa']-(dr['kappa']-np.mean(dr['kappa']))-(fr['kappa']-np.mean(fr['kappa'])),yerr=dk['sigma'],label='Sscom')
+        ax.errorbar(dk['meanr'],dk['kappa']-(dr['kappa']-np.mean(dr['kappa'])),yerr=dk['sigma'],label='Sscom no FR sub')
     except:
-        ax.errorbar(dk['meanR'],dk['kappa']-(dr['kappa']-np.mean(dr['kappa'])),yerr=dk['sigma'],label='10 redshift bins')
+        ax.errorbar(dk['meanR'],dk['kappa']-(dr['kappa']-np.mean(dr['kappa']))-(fr['kappa']-np.mean(fr['kappa'])),yerr=dk['sigma'],label='Sscom')
+        ax.errorbar(dk['meanR'],dk['kappa']-(dr['kappa']-np.mean(dr['kappa'])),yerr=dk['sigma'],label='Sscom no FR sub')
     ax.set_xscale('log')
     ax.set_yscale('log')
     ax.set_ylim(1e-6,.2)
@@ -210,9 +212,11 @@ def plotres(dd_out,dr_out,fr_out=None):
     ### in linear space
     ax2=fig.add_subplot(122)
     try: 
-        ax2.errorbar(dk['meanr'],dk['kappa']-(dr['kappa']-np.mean(dr['kappa'])),yerr=dk['sigma'],label='10 redshift bins')
+        ax.errorbar(dk['meanr'],dk['kappa']-(dr['kappa']-np.mean(dr['kappa']))-(fr['kappa']-np.mean(fr['kappa'])),yerr=dk['sigma'],label='Sscom')
+        ax.errorbar(dk['meanr'],dk['kappa']-(dr['kappa']-np.mean(dr['kappa'])),yerr=dk['sigma'],label='Sscom no FR sub')
     except:
-        ax2.errorbar(dk['meanR'],dk['kappa']-(dr['kappa']-np.mean(dr['kappa'])),yerr=dk['sigma'],label='10 redshift bins')
+        ax.errorbar(dk['meanR'],dk['kappa']-(dr['kappa']-np.mean(dr['kappa']))-(fr['kappa']-np.mean(fr['kappa'])),yerr=dk['sigma'],label='Sscom')
+        ax.errorbar(dk['meanR'],dk['kappa']-(dr['kappa']-np.mean(dr['kappa'])),yerr=dk['sigma'],label='Sscom no FR sub')
 
     ax2.plot(r,av,label='Menard (2010)')
     ax2.axhline(0,color='black',linestyle='--',alpha=0.5)
