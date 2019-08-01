@@ -266,8 +266,10 @@ def main(argv):
     ax2.set_xlabel('target separation (arcmin)')
     ax2.legend()
 
-
-    fig.savefig('dust_correl_newestimator.png')
+    if not ortho:
+        fig.savefig('dust_correl_newestimator.png')
+    else:
+        fig.savefig('dust_correl_ortho.png')
 
     
 if __name__ == "__main__":
