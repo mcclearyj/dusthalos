@@ -5,6 +5,7 @@ import treecorr
 import os
 from astropy.table import Table
 import pandas as pd
+import healpy as hp
 
 def get_ortho(vec,index = 0):
     # Get an orthogonal vector with the same norm as that supplied.
@@ -152,19 +153,39 @@ def get_bg_catalog(phot_file,rmz_file,zmin=0.1,ortho=False):
     catalog.zz = zcat['ZREDMAGIC']
     return catalog
 
-def get_fg_randoms(nrand = 1e6):
+def hpRaDecToHEALPixel(ra, dec, nside=  4096, nest= False):
+    phi = ra * np.pi / 180.0
+    theta = (90.0 - dec) * np.pi / 180.0
+    hpInd = hp.ang2pix(nside, theta, phi, nest= nest)
+    return hpInd
+
+def get_fg_randoms(nrand = 1e6,maskfile = None,nside=4096,nest=False):
     # Make randoms on the sphere.
-    ran1, ran2 = np.random.random(2*nrand).reshape(2, -1)
+    hmap = hp.read_map(maskfile,nest=False)
+    # But how many? Try to get approximately nrand, if possible.
+    fcover = np.sum(hmap > 0)*1./hmap.size
+    ndraw = np.ceil(nrand/fcover*1.2)
+    
+    
+    ran1, ran2 = np.random.random(2*ndraw).reshape(2, -1)
     ra = 2*np.pi * (ran1 - 0.5)
     dec= np.arcsin(2.*(ran2-0.5))
 
-    # Now apply cuts to limit to SSC/DES overlap footprint.
-    keep = (ra >= 95.0) & (ra <= 300.0) & (dec >= -60.0) & (dec <= -40.0)
-
     
-
+    hpInd = hpRaDecToHEALPixel(ra,dec,nside=nside,nest=nest)
+    keep = hmap != hp.UNSEEN
     
-    pass
+    use = np.random.rand(ra.size) < hmap[hpInd]
+
+    ra = ra[use]
+    dec= dec[use]
+
+    ra = ra[:np.int(nrand)]
+    dec = dec[:np.int(nrand)]
+    
+    rancat = treecorr.Catalog(ra=ra,dec=dec,ra_units='deg',dec_units='deg')
+    return rancat
+
 
 def get_bg_randoms(bg_file,Cat,zmin=0.2):
     ran_cat = fitsio.read(bg_file)
@@ -204,6 +225,7 @@ def main(argv):
     fg_name = 'wiseScosSvm_RMexact.fits'
     rmp_file = os.path.join(datapath,rmp_name)
     rmz_file = os.path.join(datapath,rmz_name)
+    rmm_file = os.path.join(datapaht,rm_mask)
     ra_file = os.path.join(datapath,ra_name)
     fg_file = os.path.join(datapath,fg_name)
 
@@ -226,6 +248,9 @@ def main(argv):
     print( "Done. Getting fg catalog... ")
     # Build a foreground catalog.
     fgCat = get_fg_catalog(fg_file)
+    # Make fg randoms.
+    fgRan = get_fg_randoms(maskfile = rmm_file)
+    
     print ("Done. Now cross-correlating...")
     
     # Now make the correlation objects.
