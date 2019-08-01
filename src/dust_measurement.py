@@ -242,6 +242,7 @@ def main(argv):
     ra_file = os.path.join(datapath,ra_name)
     fg_file = os.path.join(datapath,fg_name)
     plot = True
+    global ortho
     ortho = False
 
     if ortho:
