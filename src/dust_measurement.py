@@ -164,12 +164,12 @@ def get_fg_randoms(nrand = 1e6,maskfile = None,nside=4096,nest=False):
     hmap = hp.read_map(maskfile,nest=False)
     # But how many? Try to get approximately nrand, if possible.
     fcover = np.sum(hmap > 0)*1./hmap.size
-    ndraw = np.ceil(nrand/fcover*1.2)
+    ndraw = np.ceil(nrand/fcover*1.2).astype(int)
     
     
     ran1, ran2 = np.random.random(2*ndraw).reshape(2, -1)
-    ra = 2*np.pi * (ran1 - 0.5)
-    dec= np.arcsin(2.*(ran2-0.5))
+    ra = 2*np.pi * (ran1 - 0.5) * 180/np.pi
+    dec= np.arcsin(2.*(ran2-0.5)) * 180/np.pi
 
     
     hpInd = hpRaDecToHEALPixel(ra,dec,nside=nside,nest=nest)
