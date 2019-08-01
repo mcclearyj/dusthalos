@@ -207,7 +207,7 @@ def main(argv):
     ra_file = os.path.join(datapath,ra_name)
     fg_file = os.path.join(datapath,fg_name)
 
-    ortho = True
+    ortho = False
     if ortho:
         index = 0
         dd_outfile = 'dust_correlation_unsubtracted_faint_ortho-'+str(index)+'.fits'
