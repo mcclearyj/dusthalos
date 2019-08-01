@@ -182,9 +182,11 @@ def get_fg_randoms(nrand = 1e6,maskfile = None,nside=4096,nest=False):
 
     ra = ra[:np.int(nrand)]
     dec = dec[:np.int(nrand)]
-    
+
+    # covert ra from [-180,180 )  to [0,360)
+    ra = (ra + 360) % 360
     rancat = treecorr.Catalog(ra=ra,dec=dec,ra_units='deg',dec_units='deg')
-    pdb.set_trace()
+    
     return rancat
 
 
