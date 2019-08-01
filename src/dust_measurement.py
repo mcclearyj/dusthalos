@@ -88,7 +88,8 @@ def dumb_reddening(catalog,zeropoint = 30.0, ortho=False,ortho_index = 0):
     return est,wt
 
 def get_fg_catalog(fg_file):
-    data = pd.read_csv(fg_file)
+    #data = pd.read_csv(fg_file)
+    data = fitsio.read(fg_file)
     keep = data['bCalCorr'] > 15.0
     print ("Length of catalog after cuts = %i" % len(keep))
     catalog = treecorr.Catalog(ra=data['ra'][keep],dec=data['dec'][keep],ra_units='deg',dec_units='deg')
