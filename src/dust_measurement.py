@@ -5,6 +5,72 @@ import treecorr
 import os
 from astropy.table import Table
 import pandas as pd
+import healpy as hp
+
+
+def filter_fgPhotcat(photcatn,raname,decname):
+    
+    ra=photcat[raname]; dec=photcat[decname]
+    try:
+        probgal=photcat['probGal']
+        zphot=photcat['zPhoto_Corr']
+    except:
+        print "\nmatching of all-sky cat failed, check variables\n"
+        print h
+        
+    wg_ra1 = (ra>310).nonzero()[0] 
+    wg_ra2 = (ra<=90).nonzero()[0]
+    wg_dec1=(dec<=-40).nonzero()[0]
+    wg_dec=(dec>=-60.5).nonzero()[0]
+
+    racut=np.intersect1d(wg_ra1,wg_ra2,assume_unique=True)
+    deccut=np.intersect1d(wg_dec1,wg_dec2,assume_unique=True)
+    coord_cut=np.intersect1d(racut,deccut,assume_unique=True)
+    
+    wg_gal = (probgal >= .70).nonzero()[0]
+    wg_z = (zphot <= 0.12).nonzero()[0]
+        
+    cut_galz=np.intersect1d(wg_gal,wg_z,assume_unique=True)
+    cut_final=np.intersect1d(cut_galz,coord_cut,assume_unique=True)
+    filtered_allskycat=photcat[cut_final]
+    keep = filtered_allskycat['bCalCorr'] > 15.0
+    filtered_allskycat=filtered_allskycat[keep]
+    
+    ### if desired, write to file   
+    filtered_allskycat.write('filtered_sscom_CORRECTCOORDS.fits',format='fits')
+
+    return filtered_allskycat[raname],filtered_allskycat[decname]
+
+def hpRaDecToHEALPixel(ra, dec, nside=  4096, nest= True):
+    """ Utility function to convert RA/DEC pairs to a HEALPix pixel """
+    phi = ra * np.pi / 180.0
+    theta = (90.0 - dec) * np.pi / 180.0
+    hpInd = hp.ang2pix(nside, theta, phi, nest= nest)
+    return hpInd
+
+def get_fg_catalog(fg_file): 
+    try:
+        data = Table.read(fg_file,format='fits')
+        ra_cat=data['ra']
+        dec_cat=data['dec']
+    except:
+        data = Table.read(fg_file,format='csv')
+        ra_cat,dec_cat=filter_fgPhotcat(fgfile,raname='ra',decname='dec')
+    
+        ### Now need to make sure that the background and foreground galaxies are drawn from the same area...
+    probgal=data['probGal']
+    zphot=data['zPhoto_Corr']
+    wg_gal = (probgal >= .70).nonzero()[0]
+    wg_z = (zphot <= 0.12).nonzero()[0]
+    cut_galz=np.intersect1d(wg_gal,wg_z,assume_unique=True)
+    filtered=data[cut_galz]
+    #keep = filtered['bCalCorr'] > 15.0           
+    catalog = treecorr.Catalog(ra=filtered['ra'],dec=filtered['dec'],ra_units='deg',dec_units='deg')
+    print( "Length of catalog after cuts = %i" % len(cut_galz))
+    # For testing...
+    filtered.write('Sscom_exactArea_galzCut.fits',format='fits')
+    return catalog
+
 
 def get_ortho(vec,index = 0):
     # Get an orthogonal vector with the same norm as that supplied.
@@ -21,13 +87,6 @@ def est_reddening(catalog,zeropoint = 30.0, ortho=False,ortho_index = 0):
     imag = zeropoint - 2.5*np.log10(catalog['mof_flux_i'])
     zmag = zeropoint - 2.5*np.log10(catalog['mof_flux_z'])
     
-
-    wg,=np.where((~np.isnan(gmag)) & (~np.isnan(rmag)) & (~np.isnan(imag)) & (~np.isnan(zmag)))
-
-    #gmag=gmag[wg]
-    #rmag=imag[wg]
-    #imag=imag[wg]
-    #zmag=zmag[wg]
 
     data = np.vstack([gmag,rmag,imag,zmag])
     covar = np.cov(data)
@@ -60,51 +119,6 @@ def est_reddening(catalog,zeropoint = 30.0, ortho=False,ortho_index = 0):
     return est,wt
 
 
-def dumb_reddening(catalog,zeropoint = 30.0, ortho=False,ortho_index = 0):
-    # Make the colors.
-    
-    gmag = zeropoint - 2.5*np.log10(catalog['mof_flux_g'])
-    rmag = zeropoint - 2.5*np.log10(catalog['mof_flux_r'])
-    imag = zeropoint - 2.5*np.log10(catalog['mof_flux_i'])
-    zmag = zeropoint - 2.5*np.log10(catalog['mof_flux_z'])
-
-    wg,=np.where( (~np.isnan(gmag)) & (~np.isnan(imag)))
-    color=(gmag[wg] - imag[wg])
-    mean_color=np.mean(color)
-    est=color-mean_color
-
-    gmagErr = zeropoint - 2.5*np.log10(catalog['mof_fluxerr_g']+catalog['mof_flux_g']) 
-    rmagErr = zeropoint - 2.5*np.log10(catalog['mof_fluxerr_r']+catalog['mof_flux_r']) 
-    imagErr = zeropoint - 2.5*np.log10(catalog['mof_fluxerr_i']+catalog['mof_flux_i']) 
-    zmagErr = zeropoint - 2.5*np.log10(catalog['mof_fluxerr_z']+catalog['mof_flux_z']) 
-    
-    gmagErr2=gmagErr[wg]-gmag
-    rmagErr2=rmagErr[wg]-rmag
-    imagErr2=imagErr[wg]-imag
-    zmagErr2=zmagErr[wg]-zmag
-    
-    errColor = gmagErr+imagErr
-    wt = 1./np.sqrt(errColor)
-    return est,wt
-
-def get_fg_catalog(fg_file):
-    data = pd.read_csv(fg_file)
-    keep = data['bCalCorr'] > 15.0
-    print ("Length of catalog after cuts = %i" % len(keep))
-    catalog = treecorr.Catalog(ra=data['ra'][keep],dec=data['dec'][keep],ra_units='deg',dec_units='deg')
-    return catalog
-
-def get_fg_catalog2(fg_file):
-    """ For the GALEX AIS catalog or IIFSC"""
-    data = Table.read(fg_file)
-    #keep,=np.where((data['nuv_artifact'] != 2) & (data['fuv']>= 14.5)& (data['fuv']<= 22.0))
-    keep,=np.where(data['z'] <0.2)
-    print( "Length of catalog after cuts = %i" % len(keep))
-    #catalog = treecorr.Catalog(ra=data['ra'][keep],dec=data['dec'][keep],ra_units='deg',dec_units='deg')
-    catalog = treecorr.Catalog(ra=data['_RAJ2000'][keep],dec=data['_DEJ2000'][keep],ra_units='deg',dec_units='deg')
-    return catalog
-
-
 def get_bg_catalog(phot_file,rmz_file,zmin=0.1,ortho=False):
     bg_phot = fitsio.read(phot_file)
     bg_rmz = fitsio.read(rmz_file)
@@ -123,8 +137,7 @@ def get_bg_catalog(phot_file,rmz_file,zmin=0.1,ortho=False):
            (bg_rmz['ZREDMAGIC']>zmin)
     cat = cat[keep]
     zcat = bg_rmz[keep]
-    
-   
+       
     # Do the reddening estimate in redshift slices.
     nbins = 10
     est = np.zeros(cat.size)
@@ -133,36 +146,33 @@ def get_bg_catalog(phot_file,rmz_file,zmin=0.1,ortho=False):
     zbins = np.percentile(zcat['ZREDMAGIC'],np.linspace(0,100,nbins+1))
     zbins[0] = 0.
     zbins[-1] = zbins[-1] + 1.
-    zbins
-    
-    #zbins=[i*0.15 for i in range(6)];zbins=[zbins[i] + .15 for i in range(len(zbins))]
 
     for i in range(nbins):
         these = (zcat['ZREDMAGIC'] > zbins[i]) & (zcat['ZREDMAGIC'] <= zbins[i+1])
         this_est,this_wt = est_reddening(cat[these],ortho=ortho)
-        #this_est,this_wt = dumb_reddening(cat[these],ortho=ortho)
         est[these] = this_est
         est_weight[these] = this_wt
 
     catalog = treecorr.Catalog(ra=cat['ra'],dec=cat['dec'],k=est,\
                                   ra_units='deg',dec_units='deg',w=est_weight)
     
-
     catalog.zz = zcat['ZREDMAGIC']
+    
     return catalog
 
 def get_fg_randoms(nrand = 1e6):
+    """ XXX THIS NEEDS TO ONLY SELECT FROM APPROPRIATE PIXELS"""
     # Make randoms on the sphere.
-    ran1, ran2 = np.random.random(2*nrand).reshape(2, -1)
-    ra = 2*np.pi * (ran1 - 0.5)
-    dec= np.arcsin(2.*(ran2-0.5))
-
-    # Now apply cuts to limit to SSC/DES overlap footprint.
-    keep = (ra >= 95.0) & (ra <= 300.0) & (dec >= -60.0) & (dec <= -40.0)
-    
-
-    
-    pass
+    nrand=int(nrand)
+    # First initialize an ra catalog
+    a = 95.; b = 300.
+    randRA = (b - a) * np.random.random_sample(size=np.int(nrand)) + a   
+    # Initialize a dec catalog
+    a = -60.; b = -40. 
+    randDEC =  (b - a) * np.random.random_sample(size=np.int(nrand)) + a
+    # Create a treecorr.Catalog instance
+    catalog = treecorr.Catalog(ra=randRA,dec=randDEC,ra_units='deg',dec_units='deg')
+    return catalog
 
 def get_bg_randoms(bg_file,Cat,zmin=0.2):
     ran_cat = fitsio.read(bg_file)
@@ -187,65 +197,28 @@ def get_bg_randoms(bg_file,Cat,zmin=0.2):
                                    ra_units='deg',dec_units='deg')
     return catalog
     
-
-
-def main(argv):
-    datapath = '/home/jemcclea/data2/des_dust'
-    rmz_name = 'DES_Y1A1_3x2pt_redMaGiC_zerr_CATALOG.fits'
-    rmp_name = 'y1a1-gold-mof-badregion.fits'
-    ra_name = 'DES_Y1A1_3x2pt_redMaGiC_RANDOMS.fits'
-    #fg_name = 'galex_AIS/galex_superpure.csv'
-    #fg_name = 'galex_AIS/galexAIS_allObj_jacquelinemcc.csv'
-    #fg_name = 'iifsc_des_overlap.fits'
-    fg_name = 'filtered_allsky.csv.gz'
-    rmp_file = os.path.join(datapath,rmp_name)
-    rmz_file = os.path.join(datapath,rmz_name)
-    ra_file = os.path.join(datapath,ra_name)
-    fg_file = os.path.join(datapath,fg_name)
-
-    ortho = False
-    if ortho:
-        index = 0
-        dd_outfile = 'dust_correlation_unsubtracted_faint_ortho-'+str(index)+'.fits'
-        dr_outfile = 'dust_correlation_randoms_faint_ortho-'+str(index)+'.fits'
-    else:
-        dd_outfile = 'dust_correlation_unsubtracted_newEstimator.fits'
-        dr_outfile = 'dust_correlation_randoms_newEstimator.fits'
-
-
-    # build a background catalog.
-    zmin = 0.15
-    print( "Getting bg science catalog...")
-    bgCat = get_bg_catalog(rmp_file,rmz_file,zmin=zmin,ortho=False)
-    print ("Done. Getting bg randoms... ")
-    bgRan = get_bg_randoms(ra_file, bgCat,zmin=zmin)
-    print( "Done. Getting fg catalog... ")
-    # Build a foreground catalog.
-    fgCat = get_fg_catalog(fg_file)
-    print ("Done. Now cross-correlating...")
-    
-    # Now make the correlation objects.
-    DK = treecorr.NKCorrelation(min_sep=2,max_sep=200.0,bin_size=.5,sep_units='arcmin')
-    DK.process(fgCat,bgCat)
-    DK.write(dd_outfile)
-    RK = treecorr.NKCorrelation(min_sep=2,max_sep=200.0,bin_size=.5,sep_units='arcmin')
-    RK.process(fgCat,bgRan)
-    RK.write(dr_outfile)
-
+def plotres(dd_out,dr_out,fr_out=None):
     # Now make a plot.
-    dk = fitsio.read(dd_outfile)
-    dr = fitsio.read(dr_outfile)
+    dk = fitsio.read(dd_out)
+    dr = fitsio.read(dr_out)
+    try:
+        fr = fitsio.read(fr_out)
+    except:
+        pass
     fig = plt.figure(figsize=(14,7))
 
     ### in log space
     ax=fig.add_subplot(121)
-    ax.errorbar(dk['meanr'],dk['kappa']-(dr['kappa']-np.mean(dr['kappa'])),yerr=dk['sigma'],label='10 redshift bins')
+    try: 
+        ax.errorbar(dk['meanr'],dk['kappa']-(dr['kappa']-np.mean(dr['kappa'])),yerr=dk['sigma'],label='10 redshift bins')
+    except:
+        ax.errorbar(dk['meanR'],dk['kappa']-(dr['kappa']-np.mean(dr['kappa'])),yerr=dk['sigma'],label='10 redshift bins')
     ax.set_xscale('log')
     ax.set_yscale('log')
     ax.set_ylim(1e-6,.2)
-    ax.set_xlim(.1,100)
+    ax.set_xlim(.3,200)
     r = np.logspace(-1,2,10)
-    av = 2.5e-3 * (r/2.)**(-0.86)
+    av = 2.5e-3 * (r/1.)**(-0.84)
     ax.plot(r,av,label='Menard (2010)')
    
     ax.axhline(0,color='black',linestyle='--',alpha=0.5)
@@ -255,15 +228,74 @@ def main(argv):
 
     ### in linear space
     ax2=fig.add_subplot(122)
-    ax2.errorbar(dk['meanr'],dk['kappa']-(dr['kappa']-np.mean(dr['kappa'])),yerr=dk['sigma'],label='10 redshift bins')
+    try: 
+        ax2.errorbar(dk['meanr'],dk['kappa']-(dr['kappa']-np.mean(dr['kappa'])),yerr=dk['sigma'],label='10 redshift bins')
+    except:
+        ax2.errorbar(dk['meanR'],dk['kappa']-(dr['kappa']-np.mean(dr['kappa'])),yerr=dk['sigma'],label='10 redshift bins')
+
     ax2.plot(r,av,label='Menard (2010)')
-       
     ax2.axhline(0,color='black',linestyle='--',alpha=0.5)
     ax2.set_xlabel('target separation (arcmin)')
     ax2.legend()
 
-
     fig.savefig('dust_correl_newestimator.png')
+
+    return 0 
+
+def main(argv):
+    datapath = '/home/jemcclea/data2/des_dust'
+    rmz_name = 'DES_Y1A1_3x2pt_redMaGiC_zerr_CATALOG.fits'
+    rmp_name = 'y1a1-gold-mof-badregion.fits'
+    ra_name = 'DES_Y1A1_3x2pt_redMaGiC_RANDOMS.fits'
+    #fg_name = 'filtered_allsky.csv.gz'
+    fg_name = 'wiseScosSvm_RMexact.fits'
+    rmp_file = os.path.join(datapath,rmp_name)
+    rmz_file = os.path.join(datapath,rmz_name)
+    ra_file = os.path.join(datapath,ra_name)
+    fg_file = os.path.join(datapath,fg_name)
+    plot = True
+    ortho = False
+
+    if ortho:
+        index = 0
+        dd_outfile = 'dust_correlation_unsubtracted_faint_ortho-'+str(index)+'.fits'
+        dr_outfile = 'dust_correlation_randoms_faint_ortho-'+str(index)+'.fits'
+    else:
+        dd_outfile = 'dust_correlation_unsubtracted_newEstimator.fits'
+        dr_outfile = 'dust_correlation_randoms_newEstimator.fits'
+        fr_outfile = 'dust_correlation_FgBkgRandoms_newEstimator.fits'
+        
+
+    # build a background catalog.
+    zmin = 0.15
+    print( "Getting bg science catalog...")
+    bgCat = get_bg_catalog(rmp_file,rmz_file,zmin=zmin,ortho=False)
+    print ("Done. Getting bg randoms... ")
+    bgRan = get_bg_randoms(ra_file, bgCat,zmin=zmin)
+    print( "Done. Getting fg catalog... ")
+    # Build a foreground catalog, making sure to only keep what overlaps the DES coverage
+    fgCat = get_fg_catalog(fg_file)
+    #print ("Done. Now getting fg randoms...")
+    #fgRan = get_fg_randoms()
+    print ("Done. Now cross-correlating...")
+    
+    # Now make the correlation objects.
+    
+    DK = treecorr.NKCorrelation(min_sep=0.5,max_sep=200.0,bin_size=.5,sep_units='arcmin')
+    DK.process(fgCat,bgCat)
+    DK.write(dd_outfile)
+    RK = treecorr.NKCorrelation(min_sep=0.5,max_sep=200.0,bin_size=.5,sep_units='arcmin')
+    RK.process(fgCat,bgRan)
+    RK.write(dr_outfile)
+
+    """
+    FK = treecorr.NKCorrelation(min_sep=2,max_sep=200.0,bin_size=.5,sep_units='arcmin')
+    FK.process(fgRan,bgRan)
+    FK.write(fr_outfile)
+    """
+
+    if plot:
+        plotres(dd_outfile,dr_outfile)
 
     
 if __name__ == "__main__":
