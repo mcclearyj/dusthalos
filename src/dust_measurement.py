@@ -181,7 +181,7 @@ def get_bg_randoms(bg_file,Cat,zmin=0.2):
                                    ra_units='deg',dec_units='deg')
     return catalog
     
-def plotres(dd_out,dr_out,fr_out=None):
+def plotres(dd_out,dr_out,fr_out=None, ortho = False):
     # Now make a plot.
     dk = fitsio.read(dd_out)
     dr = fitsio.read(dr_out)
@@ -284,7 +284,7 @@ def main(argv):
     
 
     if plot:
-        plotres(dd_outfile,dr_outfile,fr_out = fr_outfile)
+        plotres(dd_outfile,dr_outfile,fr_out = fr_outfile,ortho = ortho)
 
     
 if __name__ == "__main__":
