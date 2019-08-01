@@ -159,6 +159,7 @@ def get_fg_randoms(nrand = 1e6):
 
     # Now apply cuts to limit to SSC/DES overlap footprint.
     keep = (ra >= 95.0) & (ra <= 300.0) & (dec >= -60.0) & (dec <= -40.0)
+
     
 
     
@@ -193,11 +194,13 @@ def main(argv):
     datapath = '/home/jemcclea/data2/des_dust'
     rmz_name = 'DES_Y1A1_3x2pt_redMaGiC_zerr_CATALOG.fits'
     rmp_name = 'y1a1-gold-mof-badregion.fits'
+    rm_mask = 'DES_Y1A1_3x2pt_redMaGiC_MASK_HPIX4096RING.fits'
     ra_name = 'DES_Y1A1_3x2pt_redMaGiC_RANDOMS.fits'
     #fg_name = 'galex_AIS/galex_superpure.csv'
     #fg_name = 'galex_AIS/galexAIS_allObj_jacquelinemcc.csv'
     #fg_name = 'iifsc_des_overlap.fits'
-    fg_name = 'filtered_allsky.csv.gz'
+    #fg_name = 'filtered_allsky.csv.gz'
+    fg_name = 'wiseScosSvm_RMexact.fits'
     rmp_file = os.path.join(datapath,rmp_name)
     rmz_file = os.path.join(datapath,rmz_name)
     ra_file = os.path.join(datapath,ra_name)
