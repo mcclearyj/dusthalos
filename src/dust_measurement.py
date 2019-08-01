@@ -7,47 +7,6 @@ from astropy.table import Table
 import pandas as pd
 import healpy as hp
 
-
-def filter_fgPhotcat(photcatn,raname,decname):
-    
-    ra=photcat[raname]; dec=photcat[decname]
-    try:
-        probgal=photcat['probGal']
-        zphot=photcat['zPhoto_Corr']
-    except:
-        print "\nmatching of all-sky cat failed, check variables\n"
-        print h
-        
-    wg_ra1 = (ra>310).nonzero()[0] 
-    wg_ra2 = (ra<=90).nonzero()[0]
-    wg_dec1=(dec<=-40).nonzero()[0]
-    wg_dec=(dec>=-60.5).nonzero()[0]
-
-    racut=np.intersect1d(wg_ra1,wg_ra2,assume_unique=True)
-    deccut=np.intersect1d(wg_dec1,wg_dec2,assume_unique=True)
-    coord_cut=np.intersect1d(racut,deccut,assume_unique=True)
-    
-    wg_gal = (probgal >= .70).nonzero()[0]
-    wg_z = (zphot <= 0.12).nonzero()[0]
-        
-    cut_galz=np.intersect1d(wg_gal,wg_z,assume_unique=True)
-    cut_final=np.intersect1d(cut_galz,coord_cut,assume_unique=True)
-    filtered_allskycat=photcat[cut_final]
-    keep = filtered_allskycat['bCalCorr'] > 15.0
-    filtered_allskycat=filtered_allskycat[keep]
-    
-    ### if desired, write to file   
-    filtered_allskycat.write('filtered_sscom_CORRECTCOORDS.fits',format='fits')
-
-    return filtered_allskycat[raname],filtered_allskycat[decname]
-
-def hpRaDecToHEALPixel(ra, dec, nside=  4096, nest= True):
-    """ Utility function to convert RA/DEC pairs to a HEALPix pixel """
-    phi = ra * np.pi / 180.0
-    theta = (90.0 - dec) * np.pi / 180.0
-    hpInd = hp.ang2pix(nside, theta, phi, nest= nest)
-    return hpInd
-
 def get_fg_catalog(fg_file): 
     try:
         data = Table.read(fg_file,format='fits')
@@ -57,7 +16,6 @@ def get_fg_catalog(fg_file):
         data = Table.read(fg_file,format='csv')
         ra_cat,dec_cat=filter_fgPhotcat(fgfile,raname='ra',decname='dec')
     
-        ### Now need to make sure that the background and foreground galaxies are drawn from the same area...
     probgal=data['probGal']
     zphot=data['zPhoto_Corr']
     wg_gal = (probgal >= .70).nonzero()[0]
@@ -160,19 +118,41 @@ def get_bg_catalog(phot_file,rmz_file,zmin=0.1,ortho=False):
     
     return catalog
 
-def get_fg_randoms(nrand = 1e6):
-    """ XXX THIS NEEDS TO ONLY SELECT FROM APPROPRIATE PIXELS"""
+def hpRaDecToHEALPixel(ra, dec, nside=  4096, nest= False):
+    phi = ra * np.pi / 180.0
+    theta = (90.0 - dec) * np.pi / 180.0
+    hpInd = hp.ang2pix(nside, theta, phi, nest= nest)
+    return hpInd
+
+def get_fg_randoms(nrand = 1e6,maskfile = None,nside=4096,nest=False):
     # Make randoms on the sphere.
-    nrand=int(nrand)
-    # First initialize an ra catalog
-    a = 95.; b = 300.
-    randRA = (b - a) * np.random.random_sample(size=np.int(nrand)) + a   
-    # Initialize a dec catalog
-    a = -60.; b = -40. 
-    randDEC =  (b - a) * np.random.random_sample(size=np.int(nrand)) + a
-    # Create a treecorr.Catalog instance
-    catalog = treecorr.Catalog(ra=randRA,dec=randDEC,ra_units='deg',dec_units='deg')
-    return catalog
+    hmap = hp.read_map(maskfile,nest=False)
+    # But how many? Try to get approximately nrand, if possible.
+    fcover = np.sum(hmap > 0)*1./hmap.size
+    ndraw = np.ceil(nrand/fcover*1.2).astype(int)
+    
+    
+    ran1, ran2 = np.random.random(2*ndraw).reshape(2, -1)
+    ra = 2*np.pi * (ran1 - 0.5) * 180/np.pi
+    dec= np.arcsin(2.*(ran2-0.5)) * 180/np.pi
+
+    
+    hpInd = hpRaDecToHEALPixel(ra,dec,nside=nside,nest=nest)
+    keep = hmap != hp.UNSEEN
+    
+    use = np.random.rand(ra.size) < hmap[hpInd]
+
+    ra = ra[use]
+    dec= dec[use]
+
+    ra = ra[:np.int(nrand)]
+    dec = dec[:np.int(nrand)]
+    
+    rancat = treecorr.Catalog(ra=ra,dec=dec,ra_units='deg',dec_units='deg')
+    pdb.set_trace()
+    return rancat
+
+>>>>>>> 2950fa4525eb20656396ed27079965aeb4d2426b
 
 def get_bg_randoms(bg_file,Cat,zmin=0.2):
     ran_cat = fitsio.read(bg_file)
@@ -246,11 +226,19 @@ def main(argv):
     datapath = '/home/jemcclea/data2/des_dust'
     rmz_name = 'DES_Y1A1_3x2pt_redMaGiC_zerr_CATALOG.fits'
     rmp_name = 'y1a1-gold-mof-badregion.fits'
+    rm_mask = 'DES_Y1A1_3x2pt_redMaGiC_MASK_HPIX4096RING.fits'
     ra_name = 'DES_Y1A1_3x2pt_redMaGiC_RANDOMS.fits'
+<<<<<<< HEAD
+=======
+    #fg_name = 'galex_AIS/galex_superpure.csv'
+    #fg_name = 'galex_AIS/galexAIS_allObj_jacquelinemcc.csv'
+    #fg_name = 'iifsc_des_overlap.fits'
+>>>>>>> 2950fa4525eb20656396ed27079965aeb4d2426b
     #fg_name = 'filtered_allsky.csv.gz'
     fg_name = 'wiseScosSvm_RMexact.fits'
     rmp_file = os.path.join(datapath,rmp_name)
     rmz_file = os.path.join(datapath,rmz_name)
+    rmm_file = os.path.join(datapath,rm_mask)
     ra_file = os.path.join(datapath,ra_name)
     fg_file = os.path.join(datapath,fg_name)
     plot = True
@@ -275,8 +263,14 @@ def main(argv):
     print( "Done. Getting fg catalog... ")
     # Build a foreground catalog, making sure to only keep what overlaps the DES coverage
     fgCat = get_fg_catalog(fg_file)
+<<<<<<< HEAD
     #print ("Done. Now getting fg randoms...")
     #fgRan = get_fg_randoms()
+=======
+    # Make fg randoms.
+    fgRan = get_fg_randoms(maskfile = rmm_file)
+    
+>>>>>>> 2950fa4525eb20656396ed27079965aeb4d2426b
     print ("Done. Now cross-correlating...")
     
     # Now make the correlation objects.
@@ -288,6 +282,7 @@ def main(argv):
     RK.process(fgCat,bgRan)
     RK.write(dr_outfile)
 
+<<<<<<< HEAD
     """
     FK = treecorr.NKCorrelation(min_sep=2,max_sep=200.0,bin_size=.5,sep_units='arcmin')
     FK.process(fgRan,bgRan)
@@ -296,6 +291,42 @@ def main(argv):
 
     if plot:
         plotres(dd_outfile,dr_outfile)
+=======
+    # Now make a plot.
+    dk = fitsio.read(dd_outfile)
+    dr = fitsio.read(dr_outfile)
+    fig = plt.figure(figsize=(14,7))
+
+    ### in log space
+    ax=fig.add_subplot(121)
+    ax.errorbar(dk['meanr'],dk['kappa']-(dr['kappa']-np.mean(dr['kappa'])),yerr=dk['sigma'],label='10 redshift bins')
+    ax.set_xscale('log')
+    ax.set_yscale('log')
+    ax.set_ylim(1e-6,.2)
+    ax.set_xlim(.1,100)
+    r = np.logspace(-1,2,10)
+    av = 2.5e-3 * (r/2.)**(-0.86)
+    ax.plot(r,av,label='Menard (2010)')
+   
+    ax.axhline(0,color='black',linestyle='--',alpha=0.5)
+    ax.set_xlabel('target separation (arcmin)')
+    ax.set_ylabel('A_v (mag)')
+    ax.legend()
+
+    ### in linear space
+    ax2=fig.add_subplot(122)
+    ax2.errorbar(dk['meanr'],dk['kappa']-(dr['kappa']-np.mean(dr['kappa'])),yerr=dk['sigma'],label='10 redshift bins')
+    ax2.plot(r,av,label='Menard (2010)')
+       
+    ax2.axhline(0,color='black',linestyle='--',alpha=0.5)
+    ax2.set_xlabel('target separation (arcmin)')
+    ax2.legend()
+
+    if not ortho:
+        fig.savefig('dust_correl_newestimator.png')
+    else:
+        fig.savefig('dust_correl_ortho.png')
+>>>>>>> 2950fa4525eb20656396ed27079965aeb4d2426b
 
     
 if __name__ == "__main__":
