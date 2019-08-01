@@ -184,6 +184,7 @@ def get_fg_randoms(nrand = 1e6,maskfile = None,nside=4096,nest=False):
     dec = dec[:np.int(nrand)]
     
     rancat = treecorr.Catalog(ra=ra,dec=dec,ra_units='deg',dec_units='deg')
+    pdb.set_trace()
     return rancat
 
 
