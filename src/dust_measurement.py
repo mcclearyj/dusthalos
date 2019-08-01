@@ -154,7 +154,6 @@ def get_fg_randoms(nrand = 1e6,maskfile = None,nside=4096,nest=False):
     
     return rancat
 
->>>>>>> 2950fa4525eb20656396ed27079965aeb4d2426b
 
 def get_bg_randoms(bg_file,Cat,zmin=0.2):
     ran_cat = fitsio.read(bg_file)
@@ -219,8 +218,10 @@ def plotres(dd_out,dr_out,fr_out=None):
     ax2.axhline(0,color='black',linestyle='--',alpha=0.5)
     ax2.set_xlabel('target separation (arcmin)')
     ax2.legend()
-
-    fig.savefig('dust_correl_newestimator.png')
+    if not ortho:
+        fig.savefig('dust_correl_newestimator.png')
+    else:
+        fig.savefig('dust_correl_ortho.png')
 
     return 0 
 
@@ -230,13 +231,6 @@ def main(argv):
     rmp_name = 'y1a1-gold-mof-badregion.fits'
     rm_mask = 'DES_Y1A1_3x2pt_redMaGiC_MASK_HPIX4096RING.fits'
     ra_name = 'DES_Y1A1_3x2pt_redMaGiC_RANDOMS.fits'
-<<<<<<< HEAD
-=======
-    #fg_name = 'galex_AIS/galex_superpure.csv'
-    #fg_name = 'galex_AIS/galexAIS_allObj_jacquelinemcc.csv'
-    #fg_name = 'iifsc_des_overlap.fits'
->>>>>>> 2950fa4525eb20656396ed27079965aeb4d2426b
-    #fg_name = 'filtered_allsky.csv.gz'
     fg_name = 'wiseScosSvm_RMexact.fits'
     rmp_file = os.path.join(datapath,rmp_name)
     rmz_file = os.path.join(datapath,rmz_name)
@@ -265,14 +259,10 @@ def main(argv):
     print( "Done. Getting fg catalog... ")
     # Build a foreground catalog, making sure to only keep what overlaps the DES coverage
     fgCat = get_fg_catalog(fg_file)
-<<<<<<< HEAD
-    #print ("Done. Now getting fg randoms...")
-    #fgRan = get_fg_randoms()
-=======
+
     # Make fg randoms.
     fgRan = get_fg_randoms(maskfile = rmm_file)
     
->>>>>>> 2950fa4525eb20656396ed27079965aeb4d2426b
     print ("Done. Now cross-correlating...")
     
     # Now make the correlation objects.
@@ -284,51 +274,9 @@ def main(argv):
     RK.process(fgCat,bgRan)
     RK.write(dr_outfile)
 
-<<<<<<< HEAD
-    """
-    FK = treecorr.NKCorrelation(min_sep=2,max_sep=200.0,bin_size=.5,sep_units='arcmin')
-    FK.process(fgRan,bgRan)
-    FK.write(fr_outfile)
-    """
 
     if plot:
         plotres(dd_outfile,dr_outfile)
-=======
-    # Now make a plot.
-    dk = fitsio.read(dd_outfile)
-    dr = fitsio.read(dr_outfile)
-    fig = plt.figure(figsize=(14,7))
-
-    ### in log space
-    ax=fig.add_subplot(121)
-    ax.errorbar(dk['meanr'],dk['kappa']-(dr['kappa']-np.mean(dr['kappa'])),yerr=dk['sigma'],label='10 redshift bins')
-    ax.set_xscale('log')
-    ax.set_yscale('log')
-    ax.set_ylim(1e-6,.2)
-    ax.set_xlim(.1,100)
-    r = np.logspace(-1,2,10)
-    av = 2.5e-3 * (r/2.)**(-0.86)
-    ax.plot(r,av,label='Menard (2010)')
-   
-    ax.axhline(0,color='black',linestyle='--',alpha=0.5)
-    ax.set_xlabel('target separation (arcmin)')
-    ax.set_ylabel('A_v (mag)')
-    ax.legend()
-
-    ### in linear space
-    ax2=fig.add_subplot(122)
-    ax2.errorbar(dk['meanr'],dk['kappa']-(dr['kappa']-np.mean(dr['kappa'])),yerr=dk['sigma'],label='10 redshift bins')
-    ax2.plot(r,av,label='Menard (2010)')
-       
-    ax2.axhline(0,color='black',linestyle='--',alpha=0.5)
-    ax2.set_xlabel('target separation (arcmin)')
-    ax2.legend()
-
-    if not ortho:
-        fig.savefig('dust_correl_newestimator.png')
-    else:
-        fig.savefig('dust_correl_ortho.png')
->>>>>>> 2950fa4525eb20656396ed27079965aeb4d2426b
 
     
 if __name__ == "__main__":
