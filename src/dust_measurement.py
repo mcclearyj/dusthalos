@@ -236,10 +236,12 @@ def main(argv):
     if ortho:
         index = 0
         dd_outfile = 'dust_correlation_unsubtracted_faint_ortho-'+str(index)+'.fits'
-        dr_outfile = 'dust_correlation_randoms_faint_ortho-'+str(index)+'.fits'
+        dr_outfile = 'dust_correlation_randoms_ortho-'+str(index)+'.fits'
+        rk_outfile = 'dust_correlation_at_random_pts_ortho-'+str(index)+'.fits'
     else:
         dd_outfile = 'dust_correlation_unsubtracted_newEstimator.fits'
         dr_outfile = 'dust_correlation_randoms_newEstimator.fits'
+        rk_outfile = 'dust_correlation_at_random_pts-'+str(index)+'.fits'        
 
 
     # build a background catalog.
@@ -264,14 +266,19 @@ def main(argv):
     RK.process(fgCat,bgRan)
     RK.write(dr_outfile)
 
+    RD.process(fgRan,bgCat)
+    RD.write(rk_outfile)
+
     # Now make a plot.
     dk = fitsio.read(dd_outfile)
     dr = fitsio.read(dr_outfile)
+    rk = fitsio.read(rk_outfile)
     fig = plt.figure(figsize=(14,7))
 
     ### in log space
     ax=fig.add_subplot(121)
-    ax.errorbar(dk['meanr'],dk['kappa']-(dr['kappa']-np.mean(dr['kappa'])),yerr=dk['sigma'],label='10 redshift bins')
+    #ax.errorbar(dk['meanr'],dk['kappa']-(dr['kappa']-np.mean(dr['kappa'])),yerr=dk['sigma'],label='10 redshift bins')
+    ax.errorbar(dk['meanr'],dk['kappa'] - rk['kappa'],label='random point subtracted')
     ax.set_xscale('log')
     ax.set_yscale('log')
     ax.set_ylim(1e-6,.2)
@@ -287,7 +294,8 @@ def main(argv):
 
     ### in linear space
     ax2=fig.add_subplot(122)
-    ax2.errorbar(dk['meanr'],dk['kappa']-(dr['kappa']-np.mean(dr['kappa'])),yerr=dk['sigma'],label='10 redshift bins')
+    #ax2.errorbar(dk['meanr'],dk['kappa']-(dr['kappa']-np.mean(dr['kappa'])),yerr=dk['sigma'],label='10 redshift bins')
+    ax.errorbar(dk['meanr'],dk['kappa'] - rk['kappa'],label='random point subtracted')    
     ax2.plot(r,av,label='Menard (2010)')
        
     ax2.axhline(0,color='black',linestyle='--',alpha=0.5)
