@@ -226,7 +226,7 @@ def main(argv):
     fg_name = 'wiseScosSvm_RMexact.fits'
     rmp_file = os.path.join(datapath,rmp_name)
     rmz_file = os.path.join(datapath,rmz_name)
-    rmm_file = os.path.join(datapaht,rm_mask)
+    rmm_file = os.path.join(datapath,rm_mask)
     ra_file = os.path.join(datapath,ra_name)
     fg_file = os.path.join(datapath,fg_name)
 
