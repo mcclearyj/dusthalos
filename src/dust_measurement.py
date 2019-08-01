@@ -27,7 +27,7 @@ def get_fg_catalog(fg_file):
     print( "Length of catalog after cuts = %i" % len(cut_galz))
     # For testing...
     try:
-        filtered.write('Sscom_exactArea_galzCut.fits',format='fits',over)
+        filtered.write('Sscom_exactArea_galzCut.fits',format='fits',overwrite=True)
     except:
         pass
     return catalog
