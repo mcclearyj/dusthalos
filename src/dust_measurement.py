@@ -273,10 +273,13 @@ def main(argv):
     RK = treecorr.NKCorrelation(min_sep=0.5,max_sep=200.0,bin_size=.5,sep_units='arcmin')
     RK.process(fgCat,bgRan)
     RK.write(dr_outfile)
-
+    FR = treecorr.NKCorrelation(min_sep=0.5,max_sep=200.0,bin_size=.5,sep_units='arcmin')
+    FR.process(fgRan,bgCat)
+    FR.write(fr_outfile)
+    
 
     if plot:
-        plotres(dd_outfile,dr_outfile)
+        plotres(dd_outfile,dr_outfile,fr_out = fr_outfile)
 
     
 if __name__ == "__main__":
