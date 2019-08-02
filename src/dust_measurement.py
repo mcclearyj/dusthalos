@@ -118,7 +118,7 @@ def get_bg_catalog(phot_file,rmz_file,zmin=0.1,ortho=False):
                                   ra_units='deg',dec_units='deg',w=est_weight)
     
     catalog.zz = zcat['ZREDMAGIC']
-    
+
     return catalog
 
 def hpRaDecToHEALPixel(ra, dec, nside=  4096, nest= False):
@@ -212,15 +212,17 @@ def plotres(dd_out,dr_out,fr_out=None):
     ### in linear space
     ax2=fig.add_subplot(122)
     try: 
-        ax.errorbar(dk['meanr'],dk['kappa']-(dr['kappa']-np.mean(dr['kappa']))-(fr['kappa']-np.mean(fr['kappa'])),yerr=dk['sigma'],label='Sscom')
-        ax.errorbar(dk['meanr'],dk['kappa']-(dr['kappa']-np.mean(dr['kappa'])),yerr=dk['sigma'],label='Sscom no FR sub')
+        ax2.errorbar(dk['meanr'],dk['kappa']-(dr['kappa']-np.mean(dr['kappa']))-(fr['kappa']-np.mean(fr['kappa'])),yerr=dk['sigma'],label='Sscom')
+        ax2.errorbar(dk['meanr'],dk['kappa'],yerr=dk['sigma'],label='Sscom no subs')
     except:
-        ax.errorbar(dk['meanR'],dk['kappa']-(dr['kappa']-np.mean(dr['kappa']))-(fr['kappa']-np.mean(fr['kappa'])),yerr=dk['sigma'],label='Sscom')
-        ax.errorbar(dk['meanR'],dk['kappa']-(dr['kappa']-np.mean(dr['kappa'])),yerr=dk['sigma'],label='Sscom no FR sub')
+        ax2.errorbar(dk['meanR'],dk['kappa']-(dr['kappa']-np.mean(dr['kappa']))-(fr['kappa']-np.mean(fr['kappa'])),yerr=dk['sigma'],label='Sscom')
+        ax2.errorbar(dk['meanR'],dk['kappa'],yerr=dk['sigma'],label='Sscom no subs')
 
     ax2.plot(r,av,label='Menard (2010)')
     ax2.axhline(0,color='black',linestyle='--',alpha=0.5)
     ax2.set_xlabel('target separation (arcmin)')
+    ax2.set_ylim(-1E-3,5E-3)
+    ax2.set_xscale('log')
     ax2.legend()
     if not ortho:
         fig.savefig('dust_correl_newestimator.png')
@@ -272,13 +274,13 @@ def main(argv):
     
     # Now make the correlation objects.
     
-    DK = treecorr.NKCorrelation(min_sep=0.5,max_sep=200.0,bin_size=.5,sep_units='arcmin')
+    DK = treecorr.NKCorrelation(min_sep=0.1,max_sep=200.0,bin_size=.6,sep_units='arcmin')
     DK.process(fgCat,bgCat)
     DK.write(dd_outfile)
-    RK = treecorr.NKCorrelation(min_sep=0.5,max_sep=200.0,bin_size=.5,sep_units='arcmin')
+    RK = treecorr.NKCorrelation(min_sep=0.1,max_sep=200.0,bin_size=.6,sep_units='arcmin')
     RK.process(fgCat,bgRan)
     RK.write(dr_outfile)
-    FR = treecorr.NKCorrelation(min_sep=0.5,max_sep=200.0,bin_size=.5,sep_units='arcmin')
+    FR = treecorr.NKCorrelation(min_sep=0.1,max_sep=200.0,bin_size=.6,sep_units='arcmin')
     FR.process(fgRan,bgCat)
     FR.write(fr_outfile)
     
