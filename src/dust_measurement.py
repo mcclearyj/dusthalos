@@ -256,7 +256,7 @@ def main(argv):
     # build a background catalog.
     zmin = 0.15
     print( "Getting bg science catalog...")
-    bgCat = get_bg_catalog(rmp_file,rmz_file,zmin=zmin,ortho=False)
+    bgCat = get_bg_catalog(rmp_file,rmz_file,zmin=zmin,ortho=ortho)
     print ("Done. Getting bg randoms... ")
     bgRan = get_bg_randoms(ra_file, bgCat,zmin=zmin)
     print( "Done. Getting fg catalog... ")
