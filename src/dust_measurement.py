@@ -80,7 +80,7 @@ def est_reddening(catalog,zeropoint = 30.0, ortho=False,ortho_index = 0):
     return est,wt
 
 
-def get_bg_catalog(phot_file,rmz_file,zmin=0.1,ortho=False):
+def get_bg_catalog(phot_file,rmz_file,zmin=0.1,ortho=False,ortho_index=-1):
     bg_phot = fitsio.read(phot_file)
     bg_rmz = fitsio.read(rmz_file)
 
@@ -110,7 +110,7 @@ def get_bg_catalog(phot_file,rmz_file,zmin=0.1,ortho=False):
 
     for i in range(nbins):
         these = (zcat['ZREDMAGIC'] > zbins[i]) & (zcat['ZREDMAGIC'] <= zbins[i+1])
-        this_est,this_wt = est_reddening(cat[these],ortho=ortho)
+        this_est,this_wt = est_reddening(cat[these],ortho=ortho,ortho_index = ortho_index)
         est[these] = this_est
         est_weight[these] = this_wt
 
@@ -256,7 +256,7 @@ def main(argv):
     # build a background catalog.
     zmin = 0.15
     print( "Getting bg science catalog...")
-    bgCat = get_bg_catalog(rmp_file,rmz_file,zmin=zmin,ortho=ortho)
+    bgCat = get_bg_catalog(rmp_file,rmz_file,zmin=zmin,ortho=ortho,ortho_index = index)
     print ("Done. Getting bg randoms... ")
     bgRan = get_bg_randoms(ra_file, bgCat,zmin=zmin)
     print( "Done. Getting fg catalog... ")
