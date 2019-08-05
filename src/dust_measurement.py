@@ -241,7 +241,7 @@ def main(argv):
     fg_file = os.path.join(datapath,fg_name)
     plot = True
     global ortho
-    ortho = True
+    ortho = False
 
     if ortho:
         index = 0
