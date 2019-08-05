@@ -210,11 +210,12 @@ def plotres(dd_out,dr_out,fr_out=None, ortho = False):
     ### in linear space
     ax2=fig.add_subplot(122)
     try: 
-        ax2.errorbar(dk['meanr'],dk['kappa']-fr['kappa'],yerr=dk['sigma'],label='foreground random subtraction')
-        ax2.errorbar(dk['meanr'],dk['kappa']
+        ax2.errorbar(dk['meanr'],dk['kappa']-fr['kappa'],yerr=dk['sigma'],label='fg random subtraction')
+        ax2.errorbar(dk['meanr'],dk['kappa'] - dr['kappa'],yerr=dk['sigma'],label='bg random subtraction')
     except:
-        ax2.errorbar(dk['meanR'],dk['kappa']-fr['kappa'],yerr=dr['sigma'])
-
+        ax2.errorbar(dk['meanR'],dk['kappa']-fr['kappa'],yerr=dr['sigma'],label='fg random subtraction')
+        ax2.errorbar(dk['meanR'],dk['kappa'] - dr['kappa'],yerr=dk['sigma'],label='bg random subtraction')
+        
     ax2.plot(r,av,label='Menard (2010)')
     ax2.axhline(0,color='black',linestyle='--',alpha=0.5)
     ax2.set_xlabel('target separation (arcmin)')
