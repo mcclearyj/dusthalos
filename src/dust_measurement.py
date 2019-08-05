@@ -245,13 +245,13 @@ def main(argv):
 
     if ortho:
         index = 0
-        dd_outfile = 'dust_correlation_unsubtracted_faint_ortho-'+str(index)+'.fits'
-        dr_outfile = 'dust_correlation_randoms_ortho-'+str(index)+'.fits'
-        rk_outfile = 'dust_correlation_at_random_pts_ortho-'+str(index)+'.fits'
+        dd_outfile = 'dust_correlation_dd_ortho-'+str(index)+'.fits'
+        dr_outfile = 'dust_correlation_dr_ortho-'+str(index)+'.fits'
+        fr_outfile = 'dust_correlation_fr_ortho-'+str(index)+'.fits'
     else:
-        dd_outfile = 'dust_correlation_unsubtracted_newEstimator.fits'
-        dr_outfile = 'dust_correlation_randoms_newEstimator.fits'
-        fr_outfile = 'dust_correlation_FgBkgRandoms_newEstimator.fits'
+        dd_outfile = 'dust_correlation_dd.fits'
+        dr_outfile = 'dust_correlation_dr.fits'
+        fr_outfile = 'dust_correlation_fr.fits'
         
     # build a background catalog.
     zmin = 0.15
