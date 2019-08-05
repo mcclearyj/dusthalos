@@ -210,7 +210,8 @@ def plotres(dd_out,dr_out,fr_out=None, ortho = False):
     ### in linear space
     ax2=fig.add_subplot(122)
     try: 
-        ax2.errorbar(dk['meanr'],dk['kappa']-fr['kappa'],yerr=dk['sigma'])
+        ax2.errorbar(dk['meanr'],dk['kappa']-fr['kappa'],yerr=dk['sigma'],label='foreground random subtraction')
+        ax2.errorbar(dk['meanr'],dk['kappa']
     except:
         ax2.errorbar(dk['meanR'],dk['kappa']-fr['kappa'],yerr=dr['sigma'])
 
@@ -242,9 +243,10 @@ def main(argv):
     plot = True
     global ortho
     ortho = False
-
+    index = 0
+    
     if ortho:
-        index = 0
+
         dd_outfile = 'dust_correlation_dd_ortho-'+str(index)+'.fits'
         dr_outfile = 'dust_correlation_dr_ortho-'+str(index)+'.fits'
         fr_outfile = 'dust_correlation_fr_ortho-'+str(index)+'.fits'
@@ -279,6 +281,7 @@ def main(argv):
     FR = treecorr.NKCorrelation(min_sep=0.1,max_sep=200.0,bin_size=.6,sep_units='arcmin')
     FR.process(fgRan,bgCat)
     FR.write(fr_outfile)
+    pdb.set_trace()
     
 
     if plot:
