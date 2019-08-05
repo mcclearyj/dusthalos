@@ -192,9 +192,11 @@ def plotres(dd_out,dr_out,fr_out=None,rr_out = None, ortho = False,ortho_index =
     ### in log space
     ax=fig.add_subplot(121)
     try: 
-        ax.errorbar(dk['meanr'],dk['kappa']-fr['kappa'],yerr=dk['sigma'])
+        ax.errorbar(dk['meanr'],dk['kappa']-fr['kappa'],yerr=dk['sigma'],label='fg random subtraction')
+        ax.errorbar(dk['meanr'],dk['kappa'] -fr['kappa'] - dr['kappa'] + rr['kappa'],yerr=dk['sigma'],label='LZ++')
     except:
-        ax.errorbar(dk['meanR'],dk['kappa']-fr['kappa'],yerr=dk['sigma'])
+        ax.errorbar(dk['meanR'],dk['kappa']-fr['kappa'],yerr=dk['sigma'],label='fg random subtraction')
+        ax.errorbar(dk['meanR'],dk['kappa'] -fr['kappa'] - dr['kappa'] + rr['kappa'],yerr=dk['sigma'],label='LZ++')
     ax.set_xscale('log')
     ax.set_yscale('log')
     ax.set_ylim(1e-6,.2)
