@@ -181,7 +181,7 @@ def get_bg_randoms(bg_file,Cat,zmin=0.2):
                                    ra_units='deg',dec_units='deg')
     return catalog
     
-def plotres(dd_out,dr_out,fr_out=None, ortho = False):
+def plotres(dd_out,dr_out,fr_out=None, ortho = False,ortho_index = 0):
     # Now make a plot.
     dk = fitsio.read(dd_out)
     dr = fitsio.read(dr_out)
@@ -213,7 +213,7 @@ def plotres(dd_out,dr_out,fr_out=None, ortho = False):
         ax2.errorbar(dk['meanr'],dk['kappa']-fr['kappa'],yerr=dk['sigma'],label='fg random subtraction')
         ax2.errorbar(dk['meanr'],dk['kappa'] - dr['kappa'],yerr=dk['sigma'],label='bg random subtraction')
     except:
-        ax2.errorbar(dk['meanR'],dk['kappa']-fr['kappa'],yerr=dr['sigma'],label='fg random subtraction')
+        ax2.errorbar(dk['meanR'],dk['kappa']- fr['kappa'],yerr=dk['sigma'],label='fg random subtraction')
         ax2.errorbar(dk['meanR'],dk['kappa'] - dr['kappa'],yerr=dk['sigma'],label='bg random subtraction')
         
     ax2.plot(r,av,label='Menard (2010)')
@@ -225,9 +225,7 @@ def plotres(dd_out,dr_out,fr_out=None, ortho = False):
     if not ortho:
         fig.savefig('dust_corr.png')
     else:
-        fig.savefig('dust_corr_ortho.png')
-
-    return 0 
+        fig.savefig('dust_corr_ortho-'+str(ortho_index)+'.png')
 
 def main(argv):
     datapath = '/home/jemcclea/data2/des_dust'
@@ -290,7 +288,7 @@ def main(argv):
     
 
     if plot:
-        plotres(dd_outfile,dr_outfile,fr_out = fr_outfile,rr_out=rr_outfile,ortho = ortho)
+        plotres(dd_outfile,dr_outfile,fr_out = fr_outfile,rr_out=rr_outfile,ortho = ortho,ortho_index=ortho_index)
 
     
 if __name__ == "__main__":
