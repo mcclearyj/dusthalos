@@ -212,10 +212,10 @@ def plotres(dd_out,dr_out,fr_out=None,rr_out = None, ortho = False,ortho_index =
     ax2=fig.add_subplot(122)
     try: 
         ax2.errorbar(dk['meanr'],dk['kappa']-fr['kappa'],yerr=dk['sigma'],label='fg random subtraction')
-        ax2.errorbar(dk['meanr'],dk['kappa'] - dr['kappa'],yerr=dk['sigma'],label='bg random subtraction')
+        ax2.errorbar(dk['meanr'],dk['kappa'] -fr['kappa'] - dr['kappa'] + rr['kappa'],yerr=dk['sigma'],label='LZ++')
     except:
         ax2.errorbar(dk['meanR'],dk['kappa']- fr['kappa'],yerr=dk['sigma'],label='fg random subtraction')
-        ax2.errorbar(dk['meanR'],dk['kappa'] - dr['kappa'],yerr=dk['sigma'],label='bg random subtraction')
+        ax2.errorbar(dk['meanR'],dk['kappa'] -fr['kappa'] - dr['kappa'] + rr['kappa'],yerr=dk['sigma'],label='LZ++')
         
     ax2.plot(r,av,label='Menard (2010)')
     ax2.axhline(0,color='black',linestyle='--',alpha=0.5)
@@ -289,7 +289,7 @@ def main(argv):
     
 
     if plot:
-        plotres(dd_outfile,dr_outfile,fr_out = fr_outfile,rr_out=rr_outfile,ortho = ortho,ortho_index=ortho_index)
+        plotres(dd_outfile,dr_outfile,fr_out = fr_outfile,rr_out=rr_outfile,ortho = ortho,ortho_index=index)
 
     
 if __name__ == "__main__":
