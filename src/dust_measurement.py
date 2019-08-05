@@ -181,11 +181,12 @@ def get_bg_randoms(bg_file,Cat,zmin=0.2):
                                    ra_units='deg',dec_units='deg')
     return catalog
     
-def plotres(dd_out,dr_out,fr_out=None, ortho = False,ortho_index = 0):
+def plotres(dd_out,dr_out,fr_out=None,rr_out = None, ortho = False,ortho_index = 0):
     # Now make a plot.
     dk = fitsio.read(dd_out)
     dr = fitsio.read(dr_out)
     fr = fitsio.read(fr_out)
+    rr = fitsio.read(rr_out)
     
     fig = plt.figure(figsize=(14,7))
     ### in log space
