@@ -191,11 +191,9 @@ def plotres(dd_out,dr_out,fr_out=None, ortho = False):
     ### in log space
     ax=fig.add_subplot(121)
     try: 
-        ax.errorbar(dk['meanr'],dk['kappa']-(dr['kappa']-np.mean(dr['kappa']))-(fr['kappa']-np.mean(fr['kappa'])),yerr=dk['sigma'],label='Sscom')
-        ax.errorbar(dk['meanr'],dk['kappa']-(dr['kappa']-np.mean(dr['kappa'])),yerr=dk['sigma'],label='Sscom no FR sub')
+        ax.errorbar(dk['meanr'],dk['kappa']-fr['kappa']),yerr=dk['sigma'],label='Sscom no FR sub')
     except:
-        ax.errorbar(dk['meanR'],dk['kappa']-(dr['kappa']-np.mean(dr['kappa']))-(fr['kappa']-np.mean(fr['kappa'])),yerr=dk['sigma'],label='Sscom')
-        ax.errorbar(dk['meanR'],dk['kappa']-(dr['kappa']-np.mean(dr['kappa'])),yerr=dk['sigma'],label='Sscom no FR sub')
+        ax.errorbar(dk['meanR'],dk['kappa']-fr['kappa'],yerr=dk['sigma'],label='Sscom no FR sub')
     ax.set_xscale('log')
     ax.set_yscale('log')
     ax.set_ylim(1e-6,.2)
