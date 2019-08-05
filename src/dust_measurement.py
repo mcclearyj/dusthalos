@@ -244,17 +244,19 @@ def main(argv):
     plot = True
     global ortho
     ortho = False
-    index = 0
+    index = 3
     
     if ortho:
 
         dd_outfile = 'dust_correlation_dd_ortho-'+str(index)+'.fits'
         dr_outfile = 'dust_correlation_dr_ortho-'+str(index)+'.fits'
         fr_outfile = 'dust_correlation_fr_ortho-'+str(index)+'.fits'
+        rr_outfile = 'dust_correlation_rr_ortho-'+str(index)+'.fits'
     else:
         dd_outfile = 'dust_correlation_dd.fits'
         dr_outfile = 'dust_correlation_dr.fits'
         fr_outfile = 'dust_correlation_fr.fits'
+        rr_outfile = 'dust_correlation_rr.fits'        
         
     # build a background catalog.
     zmin = 0.15
@@ -282,11 +284,13 @@ def main(argv):
     FR = treecorr.NKCorrelation(min_sep=0.1,max_sep=200.0,bin_size=.6,sep_units='arcmin')
     FR.process(fgRan,bgCat)
     FR.write(fr_outfile)
-    pdb.set_trace()
+    RR = treecorr.NKCorrelation(min_sep=0.1,max_sep=200.0,bin_size=0.6,sep_units='arcmin')
+    RR.process(fgRan,bgRan)
+    RR.write(rr_outfile)
     
 
     if plot:
-        plotres(dd_outfile,dr_outfile,fr_out = fr_outfile,ortho = ortho)
+        plotres(dd_outfile,dr_outfile,fr_out = fr_outfile,rr_out=rr_outfile,ortho = ortho)
 
     
 if __name__ == "__main__":
