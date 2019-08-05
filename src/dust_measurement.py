@@ -191,9 +191,9 @@ def plotres(dd_out,dr_out,fr_out=None, ortho = False):
     ### in log space
     ax=fig.add_subplot(121)
     try: 
-        ax.errorbar(dk['meanr'],dk['kappa']-fr['kappa']),yerr=dk['sigma'],label='Sscom no FR sub')
+        ax.errorbar(dk['meanr'],dk['kappa']-fr['kappa'],yerr=dk['sigma'])
     except:
-        ax.errorbar(dk['meanR'],dk['kappa']-fr['kappa'],yerr=dk['sigma'],label='Sscom no FR sub')
+        ax.errorbar(dk['meanR'],dk['kappa']-fr['kappa'],yerr=dk['sigma'])
     ax.set_xscale('log')
     ax.set_yscale('log')
     ax.set_ylim(1e-6,.2)
@@ -210,11 +210,9 @@ def plotres(dd_out,dr_out,fr_out=None, ortho = False):
     ### in linear space
     ax2=fig.add_subplot(122)
     try: 
-        ax2.errorbar(dk['meanr'],dk['kappa']-(dr['kappa']-np.mean(dr['kappa']))-(fr['kappa']-np.mean(fr['kappa'])),yerr=dk['sigma'],label='Sscom')
-        ax2.errorbar(dk['meanr'],dk['kappa'],yerr=dk['sigma'],label='Sscom no subs')
+        ax2.errorbar(dk['meanr'],dk['kappa']-fr['kappa'],yerr=dk['sigma'])
     except:
-        ax2.errorbar(dk['meanR'],dk['kappa']-(dr['kappa']-np.mean(dr['kappa']))-(fr['kappa']-np.mean(fr['kappa'])),yerr=dk['sigma'],label='Sscom')
-        ax2.errorbar(dk['meanR'],dk['kappa'],yerr=dk['sigma'],label='Sscom no subs')
+        ax2.errorbar(dk['meanR'],dk['kappa']-fr['kappa'],yerr=dr['sigma'])
 
     ax2.plot(r,av,label='Menard (2010)')
     ax2.axhline(0,color='black',linestyle='--',alpha=0.5)
