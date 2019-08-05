@@ -221,9 +221,9 @@ def plotres(dd_out,dr_out,fr_out=None, ortho = False):
     ax2.set_xscale('log')
     ax2.legend()
     if not ortho:
-        fig.savefig('dust_correl_newestimator.png')
+        fig.savefig('dust_corr.png')
     else:
-        fig.savefig('dust_correl_ortho.png')
+        fig.savefig('dust_corr_ortho.png')
 
     return 0 
 
@@ -241,7 +241,7 @@ def main(argv):
     fg_file = os.path.join(datapath,fg_name)
     plot = True
     global ortho
-    ortho = False
+    ortho = True
 
     if ortho:
         index = 0
