@@ -192,7 +192,7 @@ def plotres(dd_out,dr_out,fr_out=None,rr_out = None, ortho = False,ortho_index =
     ### in log space
     ax=fig.add_subplot(121)
     try:
-        ax.errorbar(dk['meanr'],dk['kappa']-fr['kappa'],yerr=dk['sigma'],label='raw')        
+        ax.errorbar(dk['meanr'],dk['kappa'],yerr=dk['sigma'],label='raw')        
         ax.errorbar(dk['meanr'],dk['kappa']-fr['kappa'],yerr=dk['sigma'],label='fg random subtraction')
         ax.errorbar(dk['meanr'],dk['kappa'] -fr['kappa'] - dr['kappa'] + rr['kappa'],yerr=dk['sigma'],label='LZ++')
     except:
@@ -215,11 +215,11 @@ def plotres(dd_out,dr_out,fr_out=None,rr_out = None, ortho = False,ortho_index =
     ### in linear space
     ax2=fig.add_subplot(122)
     try:
-        ax2.errorbar(dk['meanr'],dk['kappa']-fr['kappa'],yerr=dk['sigma'],label='raw')
+        ax2.errorbar(dk['meanr'],dk['kappa'],yerr=dk['sigma'],label='raw')
         ax2.errorbar(dk['meanr'],dk['kappa']-fr['kappa'],yerr=dk['sigma'],label='fg random subtraction')
         ax2.errorbar(dk['meanr'],dk['kappa'] -fr['kappa'] - dr['kappa'] + rr['kappa'],yerr=dk['sigma'],label='LZ++')
     except:
-        ax2.errorbar(dk['meanR'],dk['kappa']-fr['kappa'],yerr=dk['sigma'],label='raw')        
+        ax2.errorbar(dk['meanR'],dk['kappa'],yerr=dk['sigma'],label='raw')        
         ax2.errorbar(dk['meanR'],dk['kappa']- fr['kappa'],yerr=dk['sigma'],label='fg random subtraction')
         ax2.errorbar(dk['meanR'],dk['kappa'] -fr['kappa'] - dr['kappa'] + rr['kappa'],yerr=dk['sigma'],label='LZ++')
         
