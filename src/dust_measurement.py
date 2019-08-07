@@ -230,7 +230,7 @@ def plotres(dd_out,dr_out,fr_out=None,rr_out = None, ortho = False,ortho_index =
     ax2.set_xscale('log')
     ax2.legend()
     if not ortho:
-        fig.savefig('dust_corr.png')
+        fig.savefig('outputs/dust_corr.png')
     else:
         fig.savefig('dust_corr_ortho-'+str(ortho_index)+'.png')
 
