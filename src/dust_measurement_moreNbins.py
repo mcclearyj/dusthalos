@@ -106,7 +106,7 @@ def get_bg_catalog(phot_file,rmz_file,zmin=0.1,ortho=False,ortho_index=-1):
     zcat = bg_rmz[keep]
        
     # Do the reddening estimate in redshift slices.
-    nbins = 10
+    nbins = 2
     est = np.zeros(cat.size)
     est_weight = np.zeros(cat.size)
     
@@ -168,7 +168,7 @@ def get_bg_randoms(bg_file,Cat,zmin=0.2):
     ran_cat = fitsio.read(bg_file)
     ran_cat = ran_cat[ran_cat['Z']>zmin]
     # Do the reddening estimate in redshift slices.
-    nbins = 10
+    nbins = 2
     est = np.zeros(ran_cat.size)
     est_weight = np.zeros(ran_cat.size)
     zbins = np.percentile(ran_cat['Z'],np.linspace(0,100,nbins+1))
@@ -265,10 +265,10 @@ def main(argv):
         fr_outfile = 'dust_correlation_fr_ortho-'+str(index)+'.fits'
         rr_outfile = 'dust_correlation_rr_ortho-'+str(index)+'.fits'
     else:
-        dd_outfile = '../outputs/dust_correlation_dd10.fits'
-        dr_outfile = '../outputs/dust_correlation_dr10.fits'
-        fr_outfile = '../outputs/dust_correlation_fr10.fits'
-        rr_outfile = '../outputs/dust_correlation_rr10.fits'        
+        dd_outfile = '../outputs/dust_correlation_dd2.fits'
+        dr_outfile = '../outputs/dust_correlation_dr2.fits'
+        fr_outfile = '../outputs/dust_correlation_fr2.fits'
+        rr_outfile = '../outputs/dust_correlation_rr2.fits'        
         
     # build a background catalog.
     zmin = 0.15

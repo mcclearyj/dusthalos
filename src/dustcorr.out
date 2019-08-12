@@ -1,0 +1,16 @@
+/home/jemcclea/data2/des_dust/dusthalos/src
+Traceback (most recent call last):
+  File "dustEstimator_testplots.py", line 178, in <module>
+    main(sys.argv)
+  File "dustEstimator_testplots.py", line 170, in main
+    bgCat = get_bg_catalog(rmp_file,rmz_file,zmin=zmin)
+  File "dustEstimator_testplots.py", line 84, in get_bg_catalog
+    print ("in slice %d, shape of Av estimator is %d and variance is %f" % (i,np.len(this_est),this_wt))
+AttributeError: 'module' object has no attribute 'len'
+Getting bg science catalog...
+found a joint catalog
+background redMaGiC catalog acquired
+making redMaGic color vs. redshift plots
+> /halo_nobackup/fiat.lux/jemcclea/des_dust/dusthalos/src/dustEstimator_testplots.py(84)get_bg_catalog()
+-> print ("in slice %d, shape of Av estimator is %d and variance is %f" % (i,np.len(this_est),this_wt))
+(Pdb) 
