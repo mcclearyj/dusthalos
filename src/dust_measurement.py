@@ -333,7 +333,7 @@ def main(argv):
     #bgCat = get_bg_catalog(rmp_file,rmz_file,zmin=zmin,ortho=ortho,ortho_index = index)
     bgCat = get_bg_catalog2(datapath, rmp_file,rmz_file,zmin=zmin)
     print ("Done. Getting bg randoms... ")
-    bgRan = get_bg_randoms(ra_file, bgCat,zmin=zmin,ortho=ortho,ortho_index = index)
+    bgRan = get_bg_randoms(ra_file, bgCat,zmin=zmin)
     print( "Done. Getting fg catalog... ")
     # Build a foreground catalog, making sure to only keep what overlaps the DES coverage
     fgCat = get_fg_catalog(datapath,fg_file)
