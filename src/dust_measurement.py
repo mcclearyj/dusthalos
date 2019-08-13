@@ -293,9 +293,9 @@ def plotres(dd_out,dr_out,fr_out=None,rr_out = None, ortho = False,ortho_index =
     ax2.set_xscale('log')
     ax2.legend()
     if not ortho:
-        fig.savefig('../outputs/correlFuncFigures/dust_corr.png')
+        fig.savefig('../outputs/correlationFuncFigures/dust_corr.png')
     else:
-        fig.savefig('dust_corr_ortho-'+str(ortho_index)+'.png')
+        fig.savefig('../outputs/correlationFuncFigures/dust_corr_ortho-'+str(ortho_index)+'.png')
 
 def main(argv):
     datapath = '/home/jemcclea/data2/des_dust'
@@ -344,16 +344,16 @@ def main(argv):
     
     # Now make the correlation objects.
     
-    DK = treecorr.NKCorrelation(min_sep=0.1,max_sep=200.0,bin_size=.65,sep_units='arcmin')
+    DK = treecorr.NKCorrelation(min_sep=0.1,max_sep=200.0,bin_size=.6,sep_units='arcmin')
     DK.process(fgCat,bgCat)
     DK.write(dd_outfile)
-    RK = treecorr.NKCorrelation(min_sep=0.1,max_sep=200.0,bin_size=.65,sep_units='arcmin')
+    RK = treecorr.NKCorrelation(min_sep=0.1,max_sep=200.0,bin_size=.6,sep_units='arcmin')
     RK.process(fgCat,bgRan)
     RK.write(dr_outfile)
-    FR = treecorr.NKCorrelation(min_sep=0.1,max_sep=200.0,bin_size=.65,sep_units='arcmin')
+    FR = treecorr.NKCorrelation(min_sep=0.1,max_sep=200.0,bin_size=.6,sep_units='arcmin')
     FR.process(fgRan,bgCat)
     FR.write(fr_outfile)
-    RR = treecorr.NKCorrelation(min_sep=0.1,max_sep=200.0,bin_size=0.65,sep_units='arcmin')
+    RR = treecorr.NKCorrelation(min_sep=0.1,max_sep=200.0,bin_size=0.6,sep_units='arcmin')
     RR.process(fgRan,bgRan)
     RR.write(rr_outfile)
     

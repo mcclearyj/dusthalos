@@ -67,7 +67,7 @@ def get_bg_catalog(phot_file,rmz_file,zmin=0.1):
     make_rm_colorVsZ(cat)
     
     # Do the reddening estimate in redshift slices.
-    nbins = 10
+    nbins = 2
     
     try:
         est = np.zeros(cat.size)
@@ -101,7 +101,7 @@ def get_bg_catalog(phot_file,rmz_file,zmin=0.1):
         wt_for_plot=np.mean(est_weight) * 100.0
         ax.annotate(('variance ~ %f percent'% wt_for_plot),[.6,.85],xycoords='figure fraction')
         ax.axvline(0,color='black',linestyle='--',alpha=0.5)
-        outn='av_redmagicAll.png'
+        outn='../outputs/av_redmagicAll.png'
         fig.savefig(outn)
     except:
         pdb.set_trace()
@@ -116,7 +116,7 @@ def make_av_hist(est,wt,zrange):
     ax.set_xlabel('A_v of redMagic galaxies at %.3f<z<%.3f'%(zrange[0],zrange[1]))
     ax.annotate(('variance ~ %f percent'% wt),[.6,.85],xycoords='figure fraction')
     ax.axvline(0,color='black',linestyle='--',alpha=0.5)
-    outn='av_redmagic_z'+str(np.mean(zrange))+'.png'
+    outn='../outputs/av_redmagic_z'+str(np.mean(zrange))+'.png'
     fig.savefig(outn)   
     return 0
 
@@ -129,20 +129,20 @@ def make_rm_colormag(photcat,zrange):
     ax=fig.add_subplot(121)
     ax.plot(rmag,gmag-rmag,',')
     var_gmr=np.std((gmag-rmag))
-    ann=ax.annotate("variance is %f.3" % var_gmr)
+    ax.annotate(("variance is %f.3" % var_gmr),[.5,.85],xycoords='axes fraction')
     ax.set_xlabel('r')
     ax.set_ylabel('g - r')
     ax.set_ylim(1,2.5)
+    ax.set_title('redMaGic galaxies at %.3f<z<%.3f'%(zrange[0],zrange[1]))
     ax2=fig.add_subplot(122)
     ax2.plot(imag,rmag-imag,',')
     var_rmi=np.std((rmag-imag))
-    ann=ax.annotate(("variance is %f.3" % var_rmi))
-
+    ax2.annotate(("variance is %f.3" % var_rmi),[.5,.85],xycoords='axes fraction')
     ax2.set_xlabel('i')
     ax2.set_ylabel('r - i')
     ax2.set_ylim(0.25,1.75)
     ax2.set_title('redMaGic galaxies at %.3f<z<%.3f'%(zrange[0],zrange[1]))
-    outn='redmagic_colormag'+str(np.mean(zrange))+'.png'
+    outn='../outputs/redmagic_colormag'+str(np.mean(zrange))+'.png'
     fig.savefig(outn)    
     return 0
 
@@ -161,7 +161,7 @@ def make_rm_colorVsZ(photcat):
     ax2.plot(photcat['ZREDMAGIC'],rmag-imag,',')
     ax2.set_xlabel('redMaGiC redshift')
     ax2.set_ylabel('r - i')   
-    fig.savefig('redmagic_zVsColor.png')
+    fig.savefig('../outputs/redmagic_zVsColor.png')
     
     return 0
 
