@@ -6,3 +6,7 @@ the weight of the Av estimate in that tranche, as defined by the extinction MLE.
 
 Files beginning with "redmagic_colormag" are color-magnitude diagrams for galaxies in that redshift tranche. 
 The "variance" on those figures is simply np.std(mag1-mag2).
+
+av_redmagicAll.png is a histogram of Av values for all redMaGiC background galaxies, as computed 
+in two redshift tranches. The variance is primitive: it is simply the average of the MLE weights in the two redshift bins.
+
