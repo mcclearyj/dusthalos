@@ -83,6 +83,7 @@ def est_reddening(catalog,zeropoint = 30.0, ortho=False,ortho_index = 0):
     colors = (data.T - np.average(data,axis=1)).T
     est = np.sum(delta.T*np.dot(Cinv,colors),axis=0)/(np.dot(dmdp,np.dot(Cinv,dmdp)))
     wt = 1./(np.dot(dmdp,np.dot(Cinv,dmdp)))
+    
     return est,wt
 
 
@@ -124,6 +125,64 @@ def get_bg_catalog(phot_file,rmz_file,zmin=0.1,ortho=False,ortho_index=-1):
                                   ra_units='deg',dec_units='deg',w=est_weight)
     
     catalog.zz = zcat['ZREDMAGIC']
+
+    return catalog
+
+def get_bg_catalog2(datapath,phot_file,rmz_file,zmin=0.15,ortho=False,ortho_index = -1):
+
+    """ Use when the matching catalog has already been made.
+        TO DO: merge with function above, make it a try/except
+    """
+    joint = os.path.join(datapath,'y1a1_mof_rmz.fits')
+    if not os.path.exists(joint):
+        bg_phot = Table.read(phot_file,format='fits')
+        bg_rmz = Table.read(rmz_file,format='fits')
+        print "phot and z files read in"
+        # Match these.
+        inds = np.in1d(bg_phot['coadd_objects_id'],bg_rmz['ID'])
+        cat = bg_phot[inds]
+        cat.sort(['coadd_objects_id'])
+        bg_rmz.sort(['ID'])
+        print "cats matched"
+        # Filter these.
+        keep = (cat['mof_flags']==0) & (cat['flags_badregion']==0) & \
+          (cat['mof_flux_g']>0) & (cat['mof_flux_r']>0) & \
+          (cat['mof_flux_i']>0) & (cat['mof_flux_z']>0) & \
+          (bg_rmz['ZREDMAGIC']>zmin)
+        cat = cat[keep]
+        zcat = bg_rmz[keep]
+        print "cats filtered"
+        # Save to file so we don't have to do this over and over again
+        cat.add_columns([zcat['ZREDMAGIC'],zcat['ZREDMAGIC_E']])
+        cat.write(joint)
+        print "joint cat saved"
+    else:
+        print("found a joint catalog")
+        cat=fitsio.read(joint,format='fits')
+    
+    print "background redMaGiC catalog acquired"
+
+    print "generating bg catalog for correlation"
+
+    # Do the reddening estimate in redshift slices.                                                                                                                                          
+    nbins = 10
+    est = np.zeros(cat.size)
+    est_weight = np.zeros(cat.size)
+
+    zbins = np.percentile(cat['ZREDMAGIC'],np.linspace(0,100,nbins+1))
+    zbins[0] = 0.
+    zbins[-1] = zbins[-1] + 1.
+
+    for i in range(nbins):
+        these = (cat['ZREDMAGIC'] > zbins[i]) & (cat['ZREDMAGIC'] <= zbins[i+1])
+        this_est,this_wt = est_reddening(cat[these],ortho=ortho,ortho_index = ortho_index)
+        est[these] = this_est
+        est_weight[these] = this_wt
+
+    catalog = treecorr.Catalog(ra=cat['ra'],dec=cat['dec'],k=est,\
+                                  ra_units='deg',dec_units='deg',w=est_weight)
+
+    catalog.zz = cat['ZREDMAGIC']
 
     return catalog
 
@@ -208,12 +267,10 @@ def plotres(dd_out,dr_out,fr_out=None,rr_out = None, ortho = False,ortho_index =
     ax.set_xscale('log')
     ax.set_yscale('log')
     #ax.set_ylim(1e-6,.2)
-    ax.set_xlim(.3,200)
-    r = np.logspace(-1,2,10)
+    ax.set_xlim(0.1,250)
+    r = np.logspace(-2,2.7,10)
     av = 2.4e-3 * (r/1.)**(-0.84)
-    ax.plot(r,av,label='Menard (2010)')
-   
-    ax.axhline(0,color='black',linestyle='--',alpha=0.5)
+    ax.plot(r,av,label='Menard (2010)') 
     ax.set_xlabel('impact parameter (arcmin)')
     ax.set_ylabel('A_v (mag)')
     ax.legend()
@@ -231,12 +288,12 @@ def plotres(dd_out,dr_out,fr_out=None,rr_out = None, ortho = False,ortho_index =
         
     ax2.plot(r,av,label='Menard (2010)')
     ax2.axhline(0,color='black',linestyle='--',alpha=0.5)
-    ax2.set_xlabel('impact parameter (arcmin)')
-    ax2.set_ylim(-1E-3,5E-3)
+    ax2.set_xlim(0.07,200)
+    ax2.set_ylim(-5e-4,0.06)
     ax2.set_xscale('log')
     ax2.legend()
     if not ortho:
-        fig.savefig('../outputs/dust_corr.png')
+        fig.savefig('../outputs/correlFuncFigures/dust_corr.png')
     else:
         fig.savefig('dust_corr_ortho-'+str(ortho_index)+'.png')
 
@@ -273,9 +330,10 @@ def main(argv):
     # build a background catalog.
     zmin = 0.15
     print( "Getting bg science catalog...")
-    bgCat = get_bg_catalog(rmp_file,rmz_file,zmin=zmin,ortho=ortho,ortho_index = index)
+    #bgCat = get_bg_catalog(rmp_file,rmz_file,zmin=zmin,ortho=ortho,ortho_index = index)
+    bgCat = get_bg_catalog2(datapath, rmp_file,rmz_file,zmin=zmin)
     print ("Done. Getting bg randoms... ")
-    bgRan = get_bg_randoms(ra_file, bgCat,zmin=zmin)
+    bgRan = get_bg_randoms(ra_file, bgCat,zmin=zmin,ortho=ortho,ortho_index = index)
     print( "Done. Getting fg catalog... ")
     # Build a foreground catalog, making sure to only keep what overlaps the DES coverage
     fgCat = get_fg_catalog(datapath,fg_file)
