@@ -269,7 +269,7 @@ def plotres(dd_out,dr_out,fr_out=None,rr_out = None, ortho = False,ortho_index =
     #ax.set_ylim(1e-6,.2)
     ax.set_xlim(0.1,250)
     r = np.logspace(-2,2.7,10)
-    av = 2.4e-3 * (r/1.)**(-0.84)
+    av = 2.4e-3 * (r/1.92)**(-0.84)
     ax.plot(r,av,label='Menard (2010)') 
     ax.set_xlabel('impact parameter (arcmin)')
     ax.set_ylabel('A_v (mag)')
@@ -286,7 +286,7 @@ def plotres(dd_out,dr_out,fr_out=None,rr_out = None, ortho = False,ortho_index =
         ax2.errorbar(dk['meanR'],dk['kappa']- fr['kappa'],yerr=dk['sigma'],label='fg random subtraction')
         ax2.errorbar(dk['meanR'],dk['kappa'] -fr['kappa'] - dr['kappa'] + rr['kappa'],yerr=dk['sigma'],label='LZ++')
         
-    ax2.plot(r,av,label='Menard (2010)')
+    ax2.plot(r,av,label='adjusted Menard (2010)')
     ax2.axhline(0,color='black',linestyle='--',alpha=0.5)
     ax2.set_xlim(0.07,200)
     ax2.set_ylim(-5e-4,0.06)

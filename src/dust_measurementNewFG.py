@@ -198,11 +198,14 @@ def get_fg_catalog(fg_filen,maskfile = None,nside=4096,nest=False):
     except:
         # Hopefully this is the trimmed catalog!
         data = Table.read(fg_filen,format='fits')
-        ra_cat =  data['ra']
-        dec_cat = data['dec']
+        try:
+            ra_cat =  data['ra']
+            dec_cat = data['dec']
+        except:
+            ra_cat = data['_RAJ2000']
+            dec_cat = data['_DEJ2000']
         tcCatalog = treecorr.Catalog(ra=ra_cat,dec=dec_cat,ra_units='deg',dec_units='deg')
-        print( "Length of catalog read in = %i" % len(dec_cat)
-
+        print( "Length of catalog read in = %i" % len(dec_cat))
 
     return tcCatalog
 
@@ -260,7 +263,7 @@ def get_bg_randoms(bg_file,Cat,zmin=0.2):
                                    ra_units='deg',dec_units='deg')
     return catalog
     
-def plotres(dd_out,dr_out,fr_out=None,rr_out = None, ortho = False,ortho_index = 0):
+def plotres(dd_out,dr_out,fr_out=None,rr_out = None, ortho = False,ortho_index = 0,scl=1.0):
     # Now make a plot.
     dk = fitsio.read(dd_out)
     dr = fitsio.read(dr_out)
@@ -283,7 +286,7 @@ def plotres(dd_out,dr_out,fr_out=None,rr_out = None, ortho = False,ortho_index =
     #ax.set_ylim(1e-6,.2)
     ax.set_xlim(0.1,250)
     r = np.logspace(-2,2.7,10)
-    av = 2.4e-3 * (r/1.94)**(-0.84)
+    av = 2.4e-3 * (r/scl)**(-0.84)
     ax.plot(r,av,label='Menard (2010)') 
     ax.set_xlabel('impact parameter (arcmin)')
     ax.set_ylabel('A_v (mag)')
@@ -300,7 +303,7 @@ def plotres(dd_out,dr_out,fr_out=None,rr_out = None, ortho = False,ortho_index =
         ax2.errorbar(dk['meanR'],dk['kappa']- fr['kappa'],yerr=dk['sigma'],label='fg random subtraction')
         ax2.errorbar(dk['meanR'],dk['kappa'] -fr['kappa'] - dr['kappa'] + rr['kappa'],yerr=dk['sigma'],label='LZ++')
         
-    ax2.plot(r,av,label='Menard (2010)')
+    ax2.plot(r,av,label='scaled Menard (2010)')
     ax2.axhline(0,color='black',linestyle='--',alpha=0.5)
     ax2.set_xlim(0.07,200)
     ax2.set_ylim(-5e-4,0.06)
@@ -317,8 +320,10 @@ def main(argv):
     rmp_name = 'y1a1-gold-mof-badregion.fits'
     rm_mask = 'DES_Y1A1_3x2pt_redMaGiC_MASK_HPIX4096RING.fits'
     ra_name = 'DES_Y1A1_3x2pt_redMaGiC_RANDOMS.fits'
-    #fg_name = 'correctCoords_jacquelinemcc.csv'
     fg_name='galex_trimmed.fits'
+    #fg_name='iifsc_des_overlap.fits'
+    #scl = 13.2 # This changes depending on avg. redshift of fg
+    scl = 1.92
     #fg_name = 'Sscom_exactArea_galzCut.fits'
     rmp_file = os.path.join(datapath,rmp_name)
     rmz_file = os.path.join(datapath,rmz_name)
@@ -329,6 +334,7 @@ def main(argv):
     global ortho
     ortho = False
     index = 3
+
     
     if ortho:
 
