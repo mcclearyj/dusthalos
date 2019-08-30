@@ -279,12 +279,12 @@ def plotres(dd_out,dr_out,fr_out=None,rr_out = None, ortho = False,ortho_index =
     ax2=fig.add_subplot(122)
     try:
         ax2.errorbar(dk['meanr'],dk['kappa'],yerr=dk['sigma'],label='raw')
-        ax2.errorbar(dk['meanr'],dk['kappa']-fr['kappa'],yerr=dk['sigma'],label='fg random subtraction')
-        ax2.errorbar(dk['meanr'],dk['kappa'] -fr['kappa'] - dr['kappa'] + rr['kappa'],yerr=dk['sigma'],label='LZ++')
+        #ax2.errorbar(dk['meanr'],dk['kappa']-fr['kappa'],yerr=dk['sigma'],label='fg random subtraction')
+        #ax2.errorbar(dk['meanr'],dk['kappa'] -fr['kappa'] - dr['kappa'] + rr['kappa'],yerr=dk['sigma'],label='LZ++')
     except:
         ax2.errorbar(dk['meanR'],dk['kappa'],yerr=dk['sigma'],label='raw')        
-        ax2.errorbar(dk['meanR'],dk['kappa']- fr['kappa'],yerr=dk['sigma'],label='fg random subtraction')
-        ax2.errorbar(dk['meanR'],dk['kappa'] -fr['kappa'] - dr['kappa'] + rr['kappa'],yerr=dk['sigma'],label='LZ++')
+        #ax2.errorbar(dk['meanR'],dk['kappa']- fr['kappa'],yerr=dk['sigma'],label='fg random subtraction')
+        #ax2.errorbar(dk['meanR'],dk['kappa'] -fr['kappa'] - dr['kappa'] + rr['kappa'],yerr=dk['sigma'],label='LZ++')
         
     ax2.plot(r,av,label='adjusted Menard (2010)')
     ax2.axhline(0,color='black',linestyle='--',alpha=0.5)
@@ -298,7 +298,7 @@ def plotres(dd_out,dr_out,fr_out=None,rr_out = None, ortho = False,ortho_index =
         fig.savefig('../outputs/correlationFuncFigures/dust_corr_ortho-'+str(ortho_index)+'.png')
 
 def main(argv):
-    datapath = '/home/jemcclea/data2/des_dust'
+    datapath = '/home/jemcclea/data2/des_dust/catalogs'
     rmz_name = 'DES_Y1A1_3x2pt_redMaGiC_zerr_CATALOG.fits'
     rmp_name = 'y1a1-gold-mof-badregion.fits'
     rm_mask = 'DES_Y1A1_3x2pt_redMaGiC_MASK_HPIX4096RING.fits'
@@ -312,7 +312,7 @@ def main(argv):
     fg_file = os.path.join(datapath,fg_name)
     plot = True
     global ortho
-    ortho = False
+    ortho = True
     index = 3
     
     if ortho:
@@ -331,7 +331,7 @@ def main(argv):
     zmin = 0.15
     print( "Getting bg science catalog...")
     #bgCat = get_bg_catalog(rmp_file,rmz_file,zmin=zmin,ortho=ortho,ortho_index = index)
-    bgCat = get_bg_catalog2(datapath, rmp_file,rmz_file,zmin=zmin)
+    bgCat = get_bg_catalog2(datapath, rmp_file,rmz_file,zmin=zmin,ortho=ortho,ortho_index = index)
     print ("Done. Getting bg randoms... ")
     bgRan = get_bg_randoms(ra_file, bgCat,zmin=zmin)
     print( "Done. Getting fg catalog... ")
