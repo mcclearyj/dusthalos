@@ -275,12 +275,12 @@ def plotres(dd_out,dr_out,fr_out=None,rr_out = None, ortho = False,ortho_index =
     ax=fig.add_subplot(121)
     try:
         ax.errorbar(dk['meanr'],dk['kappa'],yerr=dk['sigma'],label='raw')        
-        ax.errorbar(dk['meanr'],dk['kappa']-fr['kappa'],yerr=dk['sigma'],label='fg random subtraction')
-        ax.errorbar(dk['meanr'],dk['kappa'] -fr['kappa'] - dr['kappa'] + rr['kappa'],yerr=dk['sigma'],label='LZ++')
+        #ax.errorbar(dk['meanr'],dk['kappa']-fr['kappa'],yerr=dk['sigma'],label='fg random subtraction')
+        #ax.errorbar(dk['meanr'],dk['kappa'] -fr['kappa'] - dr['kappa'] + rr['kappa'],yerr=dk['sigma'],label='LZ++')
     except:
         ax.errorbar(dk['meanR'],dk['kappa']-fr['kappa'],yerr=dk['sigma'],label='raw')        
-        ax.errorbar(dk['meanR'],dk['kappa']-fr['kappa'],yerr=dk['sigma'],label='fg random subtraction')
-        ax.errorbar(dk['meanR'],dk['kappa'] -fr['kappa'] - dr['kappa'] + rr['kappa'],yerr=dk['sigma'],label='LZ++')
+        #ax.errorbar(dk['meanR'],dk['kappa']-fr['kappa'],yerr=dk['sigma'],label='fg random subtraction')
+        #ax.errorbar(dk['meanR'],dk['kappa'] -fr['kappa'] - dr['kappa'] + rr['kappa'],yerr=dk['sigma'],label='LZ++')
     ax.set_xscale('log')
     ax.set_yscale('log')
     #ax.set_ylim(1e-6,.2)
@@ -296,11 +296,11 @@ def plotres(dd_out,dr_out,fr_out=None,rr_out = None, ortho = False,ortho_index =
     ax2=fig.add_subplot(122)
     try:
         ax2.errorbar(dk['meanr'],dk['kappa'],yerr=dk['sigma'],label='raw')
-        ax2.errorbar(dk['meanr'],dk['kappa']-fr['kappa'],yerr=dk['sigma'],label='fg random subtraction')
+        #ax2.errorbar(dk['meanr'],dk['kappa']-fr['kappa'],yerr=dk['sigma'],label='fg random subtraction')
         ax2.errorbar(dk['meanr'],dk['kappa'] -fr['kappa'] - dr['kappa'] + rr['kappa'],yerr=dk['sigma'],label='LZ++')
     except:
         ax2.errorbar(dk['meanR'],dk['kappa'],yerr=dk['sigma'],label='raw')        
-        ax2.errorbar(dk['meanR'],dk['kappa']- fr['kappa'],yerr=dk['sigma'],label='fg random subtraction')
+        #ax2.errorbar(dk['meanR'],dk['kappa']- fr['kappa'],yerr=dk['sigma'],label='fg random subtraction')
         ax2.errorbar(dk['meanR'],dk['kappa'] -fr['kappa'] - dr['kappa'] + rr['kappa'],yerr=dk['sigma'],label='LZ++')
         
     ax2.plot(r,av,label='scaled Menard (2010)')
@@ -312,7 +312,7 @@ def plotres(dd_out,dr_out,fr_out=None,rr_out = None, ortho = False,ortho_index =
     if not ortho:
         fig.savefig('../outputs/correlationFuncFigures/dust_corr.png')
     else:
-        fig.savefig('../outputs/correlationFuncFigures/dust_corr_ortho-'+str(ortho_index)+'.png')
+        fig.savefig('../outputs/correlationFuncFigures/iifscDust_corr_ortho-'+str(ortho_index)+'.png')
 
 def main(argv):
     datapath = '/home/jemcclea/data2/des_dust/catalogs'
@@ -320,10 +320,10 @@ def main(argv):
     rmp_name = 'y1a1-gold-mof-badregion.fits'
     rm_mask = 'DES_Y1A1_3x2pt_redMaGiC_MASK_HPIX4096RING.fits'
     ra_name = 'DES_Y1A1_3x2pt_redMaGiC_RANDOMS.fits'
-    fg_name='galex_trimmed.fits'
-    #fg_name='iifsc_des_overlap.fits'
-    #scl = 13.2 # This changes depending on avg. redshift of fg
-    scl = 1.92
+    #fg_name='galex_trimmed.fits'
+    fg_name='iifsc_des_overlap.fits'
+    scl = 13.2 # This changes depending on avg. redshift of fg
+    #scl = 1.92
     #fg_name = 'Sscom_exactArea_galzCut.fits'
     rmp_file = os.path.join(datapath,rmp_name)
     rmz_file = os.path.join(datapath,rmz_name)
@@ -332,16 +332,16 @@ def main(argv):
     fg_file = os.path.join(datapath,fg_name)
     plot = True
     global ortho
-    ortho = False
+    ortho = True
     index = 3
 
     
     if ortho:
 
-        dd_outfile = 'dust_correlation_dd_ortho-'+str(index)+'.fits'
-        dr_outfile = 'dust_correlation_dr_ortho-'+str(index)+'.fits'
-        fr_outfile = 'dust_correlation_fr_ortho-'+str(index)+'.fits'
-        rr_outfile = 'dust_correlation_rr_ortho-'+str(index)+'.fits'
+        dd_outfile = '../outputs/dust_correlation_dd_ortho-'+str(index)+'-iifsc.fits'
+        dr_outfile = '../outputs/dust_correlation_dr_ortho-'+str(index)+'-iifsc.fits'
+        fr_outfile = '../outputs/dust_correlation_fr_ortho-'+str(index)+'-iifsc.fits'
+        rr_outfile = '../outputs/dust_correlation_rr_ortho-'+str(index)+'-iifsc.fits'
     else:
         dd_outfile = '../outputs/dust_correlation_dd10.fits'
         dr_outfile = '../outputs/dust_correlation_dr10.fits'
@@ -356,7 +356,7 @@ def main(argv):
     print( "Done. Getting bg science catalog...")
     #bgCat = get_bg_catalog(rmp_file,rmz_file,zmin=zmin,ortho=ortho,ortho_index = index)
     # use if we have already done redMaGiC/redshift xcorr
-    bgCat = get_bg_catalog2(datapath,rmp_file,rmz_file,zmin=zmin)
+    bgCat = get_bg_catalog2(datapath,rmp_file,rmz_file,zmin=zmin, ortho=ortho,ortho_index = index)
     print ("Done. Getting bg randoms... ")
     bgRan = get_bg_randoms(ra_file, bgCat,zmin=zmin)
     print( "Done. Getting fg randoms... ")
