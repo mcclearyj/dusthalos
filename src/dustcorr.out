@@ -1,9 +1,6 @@
 /home/jemcclea/data2/des_dust/dusthalos/src
 Getting fg catalog...
-NSIDE = 4096
-ORDERING = RING in fits file
-INDXSCHM = EXPLICIT
-Length of catalog after cuts = 135761
+Length of catalog read in = 574334
 Done. Getting bg science catalog...
 found a joint catalog
 background redMaGiC catalog acquired

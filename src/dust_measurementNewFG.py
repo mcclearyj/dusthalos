@@ -199,8 +199,11 @@ def get_fg_catalog(fg_filen,maskfile = None,nside=4096,nest=False):
         # Hopefully this is the trimmed catalog!
         data = Table.read(fg_filen,format='fits')
         try:
-            ra_cat =  data['ra']
-            dec_cat = data['dec']
+            #ra_cat =  data['ra']
+            #dec_cat = data['dec']
+            ra_cat =  data['RA']
+            dec_cat = data['DEC']
+
         except:
             ra_cat = data['_RAJ2000']
             dec_cat = data['_DEJ2000']
@@ -276,11 +279,11 @@ def plotres(dd_out,dr_out,fr_out=None,rr_out = None, ortho = False,ortho_index =
     try:
         ax.errorbar(dk['meanr'],dk['kappa'],yerr=dk['sigma'],label='raw')        
         #ax.errorbar(dk['meanr'],dk['kappa']-fr['kappa'],yerr=dk['sigma'],label='fg random subtraction')
-        #ax.errorbar(dk['meanr'],dk['kappa'] -fr['kappa'] - dr['kappa'] + rr['kappa'],yerr=dk['sigma'],label='LZ++')
+        ax.errorbar(dk['meanr'],dk['kappa'] -fr['kappa'] - dr['kappa'] + rr['kappa'],yerr=dk['sigma'],label='LZ++')
     except:
         ax.errorbar(dk['meanR'],dk['kappa']-fr['kappa'],yerr=dk['sigma'],label='raw')        
         #ax.errorbar(dk['meanR'],dk['kappa']-fr['kappa'],yerr=dk['sigma'],label='fg random subtraction')
-        #ax.errorbar(dk['meanR'],dk['kappa'] -fr['kappa'] - dr['kappa'] + rr['kappa'],yerr=dk['sigma'],label='LZ++')
+        ax.errorbar(dk['meanR'],dk['kappa'] -fr['kappa'] - dr['kappa'] + rr['kappa'],yerr=dk['sigma'],label='LZ++')
     ax.set_xscale('log')
     ax.set_yscale('log')
     #ax.set_ylim(1e-6,.2)
@@ -306,13 +309,13 @@ def plotres(dd_out,dr_out,fr_out=None,rr_out = None, ortho = False,ortho_index =
     ax2.plot(r,av,label='scaled Menard (2010)')
     ax2.axhline(0,color='black',linestyle='--',alpha=0.5)
     ax2.set_xlim(0.07,200)
-    ax2.set_ylim(-5e-4,0.06)
+    ax2.set_ylim(-1e-3,0.02)
     ax2.set_xscale('log')
     ax2.legend()
     if not ortho:
-        fig.savefig('../outputs/correlationFuncFigures/dust_corr.png')
+        fig.savefig('../outputs/correlationFuncFigures/dust_corrSTARS.png')
     else:
-        fig.savefig('../outputs/correlationFuncFigures/iifscDust_corr_ortho-'+str(ortho_index)+'.png')
+        fig.savefig('../outputs/correlationFuncFigures/STARS_corr_ortho-'+str(ortho_index)+'.png')
 
 def main(argv):
     datapath = '/home/jemcclea/data2/des_dust/catalogs'
@@ -321,9 +324,10 @@ def main(argv):
     rm_mask = 'DES_Y1A1_3x2pt_redMaGiC_MASK_HPIX4096RING.fits'
     ra_name = 'DES_Y1A1_3x2pt_redMaGiC_RANDOMS.fits'
     #fg_name='galex_trimmed.fits'
-    fg_name='iifsc_des_overlap.fits'
-    scl = 13.2 # This changes depending on avg. redshift of fg
-    #scl = 1.92
+    #fg_name='iifsc_des_overlap.fits'
+    fg_name='des_y1a1_starsMagCut.fits'
+    #scl = 13.2 # This changes depending on avg. redshift of fg
+    scl = 1.92
     #fg_name = 'Sscom_exactArea_galzCut.fits'
     rmp_file = os.path.join(datapath,rmp_name)
     rmz_file = os.path.join(datapath,rmz_name)
@@ -332,7 +336,7 @@ def main(argv):
     fg_file = os.path.join(datapath,fg_name)
     plot = True
     global ortho
-    ortho = True
+    ortho = False
     index = 3
 
     
@@ -349,7 +353,7 @@ def main(argv):
         rr_outfile = '../outputs/dust_correlation_rr10.fits'        
         
     # build a background catalog.
-    zmin = 0.2
+    zmin = 0.15
     print("Getting fg catalog...")
     fgCat = get_fg_catalog(fg_file,maskfile = rmm_file)
 
