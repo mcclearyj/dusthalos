@@ -269,7 +269,7 @@ def plotres(dd_out,dr_out,fr_out=None,rr_out = None, ortho = False,ortho_index =
     #ax.set_ylim(1e-6,.2)
     ax.set_xlim(0.1,250)
     r = np.logspace(-2,2.7,10)
-    av = 2.4e-3 * (r/1.92)**(-0.84)
+    av = 2.4e-3 * (r/3.00)**(-0.84)
     ax.plot(r,av,label='Menard (2010)') 
     ax.set_xlabel('impact parameter (arcmin)')
     ax.set_ylabel('A_v (mag)')

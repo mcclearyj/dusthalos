@@ -313,7 +313,7 @@ def plotres(dd_out,dr_out,fr_out=None,rr_out = None, ortho = False,ortho_index =
     ax2.set_xscale('log')
     ax2.legend()
     if not ortho:
-        fig.savefig('../outputs/correlationFuncFigures/dust_corrSTARS.png')
+        fig.savefig('../outputs/correlationFuncFigures/dust_corrSTARS_matchDistSize.png')
     else:
         fig.savefig('../outputs/correlationFuncFigures/STARS_corr_ortho-'+str(ortho_index)+'.png')
 
@@ -325,9 +325,9 @@ def main(argv):
     ra_name = 'DES_Y1A1_3x2pt_redMaGiC_RANDOMS.fits'
     #fg_name='galex_trimmed.fits'
     #fg_name='iifsc_des_overlap.fits'
-    fg_name='des_y1a1_starsMagCut.fits'
+    fg_name='des_y1a1_stars_MatchScosMagDistSize.fits'
     #scl = 13.2 # This changes depending on avg. redshift of fg
-    scl = 1.92
+    scl = 3.00
     #fg_name = 'Sscom_exactArea_galzCut.fits'
     rmp_file = os.path.join(datapath,rmp_name)
     rmz_file = os.path.join(datapath,rmz_name)
@@ -337,15 +337,15 @@ def main(argv):
     plot = True
     global ortho
     ortho = False
-    index = 3
+    index = 2
 
     
     if ortho:
 
-        dd_outfile = '../outputs/dust_correlation_dd_ortho-'+str(index)+'-iifsc.fits'
-        dr_outfile = '../outputs/dust_correlation_dr_ortho-'+str(index)+'-iifsc.fits'
-        fr_outfile = '../outputs/dust_correlation_fr_ortho-'+str(index)+'-iifsc.fits'
-        rr_outfile = '../outputs/dust_correlation_rr_ortho-'+str(index)+'-iifsc.fits'
+        dd_outfile = '../outputs/dust_correlation_dd_ortho-'+str(index)+'-star.fits'
+        dr_outfile = '../outputs/dust_correlation_dr_ortho-'+str(index)+'-star.fits'
+        fr_outfile = '../outputs/dust_correlation_fr_ortho-'+str(index)+'-star.fits'
+        rr_outfile = '../outputs/dust_correlation_rr_ortho-'+str(index)+'-star.fits'
     else:
         dd_outfile = '../outputs/dust_correlation_dd10.fits'
         dr_outfile = '../outputs/dust_correlation_dr10.fits'
