@@ -1,5 +1,7 @@
 import numpy as np
 from numpy.linalg import norm
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import fitsio
 import treecorr
@@ -7,6 +9,7 @@ import os
 from astropy.table import Table
 import pandas as pd
 import healpy as hp
+import pdb
 
 def get_fg_catalog(datapath,fg_file): 
     try:
@@ -73,7 +76,7 @@ def get_ONbasis(vdust):
     v2prime = v2 - np.dot(v2,vec)*vec - np.dot(v2,u0)*u0 - np.dot(v2,u1)*u1
     u2 = v2prime/norm(v2prime)
 
-    v3 = np.zeros_like(vec); v2[3]= 1.0
+    v3 = np.zeros_like(vec); v3[3]= 1.0
     v3prime = v3 - np.dot(v3,vec)*vec - np.dot(v3,u0)*u0 - np.dot(v3,u1)*u1 - np.dot(v3,u2)*u2
     u3 = v3prime/norm(v3prime)
 
@@ -83,7 +86,7 @@ def get_ONbasis(vdust):
     return u0,u1,u2,u3,vec
 
 
-def est_reddening(catalog,zeropoint = 30.0, basisvector):
+def est_reddening(catalog,zeropoint = 30.0, basisvector=None):
     # Make the colors.
     
     gmag = zeropoint - 2.5*np.log10(catalog['mof_flux_g'])
@@ -142,7 +145,7 @@ def get_bg_catalog2(datapath,phot_file,rmz_file,zmin=0.15):
 
     return redMaGiC
 
-def do_reddening_calculation(inCat,basisVector=basisVector):
+def do_reddening_calculation(cat,basisVector):
     print "generating bg catalog for correlation for this vector in ON basis"
 
     # Do the reddening estimate in redshift slices.
@@ -158,11 +161,11 @@ def do_reddening_calculation(inCat,basisVector=basisVector):
 
     for i in range(nbins):
             these = (cat['ZREDMAGIC'] > zbins[i]) & (cat['ZREDMAGIC'] <= zbins[i+1])
-            this_est,this_wt = est_reddening(cat[these],basisvec = v)
+            this_est,this_wt = est_reddening(cat[these],basisvector = basisVector)
             est[these] = this_est
             est_weight[these] = this_wt
 
-   catalog = treecorr.Catalog(ra=cat['ra'],dec=cat['dec'],k=est,\
+    catalog = treecorr.Catalog(ra=cat['ra'],dec=cat['dec'],k=est,\
          ra_units='deg',dec_units='deg',w=est_weight)
 
     catalog.zz = cat['ZREDMAGIC']
@@ -314,11 +317,11 @@ def main(argv):
         rr_outfile = '../outputs/dust_correlation_rr_orthonorm-v'+str(index)+'.fits'
         fig_outfile = '../outputs/correlationFuncFigures/dustCorr_orthonorm-v'+str(index)+'.png'
         
-        print ("Doing reddening calculation for for vector %s..." % string(v))
+        print ("Doing reddening calculation for for vector %s..." % str(v))
         redcat = do_reddening_calculation(bgCat,basisVector=v)
         print ("Done. Getting bg randoms... ")
-        bgRans = get_bg_randoms(ra_file, bgCat,zmin=zmin)   
-        print ("Done. Now cross-correlating for vector %s..." % string(v))  
+        bgRan = get_bg_randoms(ra_file, redcat,zmin=zmin)   
+        print ("Done. Now cross-correlating for vector %s..." % str(v))  
 
         # Now make the correlation objects.
         DK = treecorr.NKCorrelation(min_sep=0.1,max_sep=200.0,bin_size=.6,sep_units='arcmin')
@@ -335,7 +338,7 @@ def main(argv):
         RR.write(rr_outfile)
 
         if plot:
-            plotres(dd_outfile,dr_outfile,fr_out = fr_outfile,rr_out=rr_outfile,outfilen=fit_outfile)
+            plotres(dd_outfile,dr_outfile,fr_out = fr_outfile,rr_out=rr_outfile,outplotn=fig_outfile)
         index+=1
         
     for v in basis[-1]:
@@ -345,11 +348,11 @@ def main(argv):
         rr_outfile = '../outputs/dust_correlation_rr_orthonorm-vdust.fits'
         fig_outfile = '../outputs/correlationFuncFigures/dustCorr_orthonorm-vdust.png'
         
-        print ("Doing reddening calculation for for vector %s..." % string(v))
+        print ("Doing reddening calculation for for vector %s..." % str(v))
         redcat = do_reddening_calculation(bgCat,basisVector=v)
         print ("Done. Getting bg randoms... ")
-        bgRans = get_bg_randoms(ra_file, bgCat,zmin=zmin)   
-        print ("Done. Now cross-correlating for vector %s..." % string(v))  
+        bgRan = get_bg_randoms(ra_file, redcat,zmin=zmin)   
+        print ("Done. Now cross-correlating for vector %s..." % str(v))  
 
         # Now make the correlation objects.
         DK = treecorr.NKCorrelation(min_sep=0.1,max_sep=200.0,bin_size=.6,sep_units='arcmin')
@@ -366,7 +369,7 @@ def main(argv):
         RR.write(rr_outfile)
 
         if plot:
-            plotres(dd_outfile,dr_outfile,fr_out = fr_outfile,rr_out=rr_outfile,outfilen=fit_outfile)
+            plotres(dd_outfile,dr_outfile,fr_out = fr_outfile,rr_out=rr_outfile,outplotn=fig_outfile)
 
             
 if __name__ == "__main__":

@@ -50,4 +50,4 @@ cd $RUN_DIR
 #export PYTHONPATH="./:/home/jemcclea/data2/thesis_project/Balrog-GalSim/balrog:$PYTHONPATH"
 #echo $PYTHONPATH
 
-python dust_measurementNewFG.py
+python dust_measurement.py
