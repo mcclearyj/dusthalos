@@ -76,14 +76,17 @@ def get_ONbasis(vdust):
     v2prime = v2 - np.dot(v2,vec)*vec - np.dot(v2,u0)*u0 - np.dot(v2,u1)*u1
     u2 = v2prime/norm(v2prime)
 
+    """
+    Apparently this next bit leads to AIDS, so leave it out
     v3 = np.zeros_like(vec); v3[3]= 1.0
     v3prime = v3 - np.dot(v3,vec)*vec - np.dot(v3,u0)*u0 - np.dot(v3,u1)*u1 - np.dot(v3,u2)*u2
     u3 = v3prime/norm(v3prime)
-
-    # That shouldn't have worked, but it did? Dot product of all vectors is Krocnecker delta.
-    # Return this "basis" which is probably not a basis...
-
     return u0,u1,u2,u3,vec
+    """
+
+    # Return basis
+    return vec,u0,u1,u2
+    
 
 
 def est_reddening(catalog,zeropoint = 30.0, basisvector=None):
@@ -308,7 +311,7 @@ def main(argv):
     print( "Getting bg science catalog")
     bgCat = get_bg_catalog2(datapath, rmp_file,rmz_file,zmin=zmin)  
 
-    
+ 
     index = 0
     for v in basis[:-1]:
         dd_outfile = '../outputs/dust_correlation_dd_orthonorm-v'+str(index)+'.fits'
@@ -340,37 +343,38 @@ def main(argv):
         if plot:
             plotres(dd_outfile,dr_outfile,fr_out = fr_outfile,rr_out=rr_outfile,outplotn=fig_outfile)
         index+=1
+
+    # Last calculation: "reddening vector"
+    v=basis[-1]
+    dd_outfile = '../outputs/dust_correlation_dd_orthonorm-vdust.fits'
+    dr_outfile = '../outputs/dust_correlation_dr_orthonorm-vdust.fits'
+    fr_outfile = '../outputs/dust_correlation_fr_orthonorm-vdust.fits'
+    rr_outfile = '../outputs/dust_correlation_rr_orthonorm-vdust.fits'
+    fig_outfile = '../outputs/correlationFuncFigures/dustCorr_orthonorm-vdust.png'
         
-    for v in basis[-1]:
-        dd_outfile = '../outputs/dust_correlation_dd_orthonorm-vdust.fits'
-        dr_outfile = '../outputs/dust_correlation_dr_orthonorm-vdust.fits'
-        fr_outfile = '../outputs/dust_correlation_fr_orthonorm-vdust.fits'
-        rr_outfile = '../outputs/dust_correlation_rr_orthonorm-vdust.fits'
-        fig_outfile = '../outputs/correlationFuncFigures/dustCorr_orthonorm-vdust.png'
-        
-        print ("Doing reddening calculation for for vector %s..." % str(v))
-        redcat = do_reddening_calculation(bgCat,basisVector=v)
-        print ("Done. Getting bg randoms... ")
-        bgRan = get_bg_randoms(ra_file, redcat,zmin=zmin)   
-        print ("Done. Now cross-correlating for vector %s..." % str(v))  
+    print ("Doing reddening calculation for for vector %s..." % str(v))
+    redcat = do_reddening_calculation(bgCat,basisVector=v)
+    print ("Done. Getting bg randoms... ")
+    bgRan = get_bg_randoms(ra_file, redcat,zmin=zmin)   
+    print ("Done. Now cross-correlating for vector %s..." % str(v))  
+    
+    # Now make the correlation objects.
+    DK = treecorr.NKCorrelation(min_sep=0.1,max_sep=200.0,bin_size=.6,sep_units='arcmin')
+    DK.process(fgCat,redcat)
+    DK.write(dd_outfile)
+    RK = treecorr.NKCorrelation(min_sep=0.1,max_sep=200.0,bin_size=.6,sep_units='arcmin')
+    RK.process(fgCat,bgRan)
+    RK.write(dr_outfile)       
+    FR = treecorr.NKCorrelation(min_sep=0.1,max_sep=200.0,bin_size=.6,sep_units='arcmin')
+    FR.process(fgRan,redcat)
+    FR.write(fr_outfile)
+    RR = treecorr.NKCorrelation(min_sep=0.1,max_sep=200.0,bin_size=0.6,sep_units='arcmin')
+    RR.process(fgRan,bgRan)
+    RR.write(rr_outfile)
 
-        # Now make the correlation objects.
-        DK = treecorr.NKCorrelation(min_sep=0.1,max_sep=200.0,bin_size=.6,sep_units='arcmin')
-        DK.process(fgCat,redcat)
-        DK.write(dd_outfile)
-        RK = treecorr.NKCorrelation(min_sep=0.1,max_sep=200.0,bin_size=.6,sep_units='arcmin')
-        RK.process(fgCat,bgRan)
-        RK.write(dr_outfile)       
-        FR = treecorr.NKCorrelation(min_sep=0.1,max_sep=200.0,bin_size=.6,sep_units='arcmin')
-        FR.process(fgRan,redcat)
-        FR.write(fr_outfile)
-        RR = treecorr.NKCorrelation(min_sep=0.1,max_sep=200.0,bin_size=0.6,sep_units='arcmin')
-        RR.process(fgRan,bgRan)
-        RR.write(rr_outfile)
-
-        if plot:
-            plotres(dd_outfile,dr_outfile,fr_out = fr_outfile,rr_out=rr_outfile,outplotn=fig_outfile)
-
+    if plot:
+        plotres(dd_outfile,dr_outfile,fr_out = fr_outfile,rr_out=rr_outfile,outplotn=fig_outfile)
+            
             
 if __name__ == "__main__":
     import pdb, traceback, sys
