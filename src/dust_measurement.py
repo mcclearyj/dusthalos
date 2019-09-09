@@ -80,7 +80,7 @@ def get_ONbasis(vdust):
     # That shouldn't have worked, but it did? Dot product of all vectors is Krocnecker delta.
     # Return this "basis" which is probably not a basis...
 
-   return u0,u1,u2,u3,vec
+    return u0,u1,u2,u3,vec
 
 
 def est_reddening(catalog,zeropoint = 30.0, basisvector):
