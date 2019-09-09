@@ -311,9 +311,41 @@ def main(argv):
     print( "Getting bg science catalog")
     bgCat = get_bg_catalog2(datapath, rmp_file,rmz_file,zmin=zmin)  
 
- 
+    # First calculation: "reddening vector"
+    v=basis[0]
+    dd_outfile = '../outputs/dust_correlation_dd_orthonorm-vdust.fits'
+    dr_outfile = '../outputs/dust_correlation_dr_orthonorm-vdust.fits'
+    fr_outfile = '../outputs/dust_correlation_fr_orthonorm-vdust.fits'
+    rr_outfile = '../outputs/dust_correlation_rr_orthonorm-vdust.fits'
+    fig_outfile = '../outputs/correlationFuncFigures/dustCorr_orthonorm-vdust.png'
+        
+    print ("Doing reddening calculation for for vector %s..." % str(v))
+    redcat = do_reddening_calculation(bgCat,basisVector=v)
+    print ("Done. Getting bg randoms... ")
+    bgRan = get_bg_randoms(ra_file, redcat,zmin=zmin)   
+    print ("Done. Now cross-correlating for vector %s..." % str(v))  
+    
+    # Now make the correlation objects.
+    DK = treecorr.NKCorrelation(min_sep=0.1,max_sep=200.0,bin_size=.6,sep_units='arcmin')
+    DK.process(fgCat,redcat)
+    DK.write(dd_outfile)
+    RK = treecorr.NKCorrelation(min_sep=0.1,max_sep=200.0,bin_size=.6,sep_units='arcmin')
+    RK.process(fgCat,bgRan)
+    RK.write(dr_outfile)       
+    FR = treecorr.NKCorrelation(min_sep=0.1,max_sep=200.0,bin_size=.6,sep_units='arcmin')
+    FR.process(fgRan,redcat)
+    FR.write(fr_outfile)
+    RR = treecorr.NKCorrelation(min_sep=0.1,max_sep=200.0,bin_size=0.6,sep_units='arcmin')
+    RR.process(fgRan,bgRan)
+    RR.write(rr_outfile)
+
+    if plot:
+        plotres(dd_outfile,dr_outfile,fr_out = fr_outfile,rr_out=rr_outfile,outplotn=fig_outfile)
+
+    
+    # Loop through other vector
     index = 0
-    for v in basis[:-1]:
+    for v in basis[1:]:
         dd_outfile = '../outputs/dust_correlation_dd_orthonorm-v'+str(index)+'.fits'
         dr_outfile = '../outputs/dust_correlation_dr_orthonorm-v'+str(index)+'.fits'
         fr_outfile = '../outputs/dust_correlation_fr_orthonorm-v'+str(index)+'.fits'
@@ -344,37 +376,7 @@ def main(argv):
             plotres(dd_outfile,dr_outfile,fr_out = fr_outfile,rr_out=rr_outfile,outplotn=fig_outfile)
         index+=1
 
-    # Last calculation: "reddening vector"
-    v=basis[-1]
-    dd_outfile = '../outputs/dust_correlation_dd_orthonorm-vdust.fits'
-    dr_outfile = '../outputs/dust_correlation_dr_orthonorm-vdust.fits'
-    fr_outfile = '../outputs/dust_correlation_fr_orthonorm-vdust.fits'
-    rr_outfile = '../outputs/dust_correlation_rr_orthonorm-vdust.fits'
-    fig_outfile = '../outputs/correlationFuncFigures/dustCorr_orthonorm-vdust.png'
-        
-    print ("Doing reddening calculation for for vector %s..." % str(v))
-    redcat = do_reddening_calculation(bgCat,basisVector=v)
-    print ("Done. Getting bg randoms... ")
-    bgRan = get_bg_randoms(ra_file, redcat,zmin=zmin)   
-    print ("Done. Now cross-correlating for vector %s..." % str(v))  
-    
-    # Now make the correlation objects.
-    DK = treecorr.NKCorrelation(min_sep=0.1,max_sep=200.0,bin_size=.6,sep_units='arcmin')
-    DK.process(fgCat,redcat)
-    DK.write(dd_outfile)
-    RK = treecorr.NKCorrelation(min_sep=0.1,max_sep=200.0,bin_size=.6,sep_units='arcmin')
-    RK.process(fgCat,bgRan)
-    RK.write(dr_outfile)       
-    FR = treecorr.NKCorrelation(min_sep=0.1,max_sep=200.0,bin_size=.6,sep_units='arcmin')
-    FR.process(fgRan,redcat)
-    FR.write(fr_outfile)
-    RR = treecorr.NKCorrelation(min_sep=0.1,max_sep=200.0,bin_size=0.6,sep_units='arcmin')
-    RR.process(fgRan,bgRan)
-    RR.write(rr_outfile)
-
-    if plot:
-        plotres(dd_outfile,dr_outfile,fr_out = fr_outfile,rr_out=rr_outfile,outplotn=fig_outfile)
-            
+           
             
 if __name__ == "__main__":
     import pdb, traceback, sys
