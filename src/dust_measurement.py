@@ -164,8 +164,7 @@ def do_reddening_calculation(cat,basisVector):
     zbins[0] = 0.
     zbins[-1] = zbins[-1] + 1.
 
-    for i in range(3,7):
-    #for i in range(9,10):
+    for i in range(nbins):
             these = (cat['ZREDMAGIC'] > zbins[i]) & (cat['ZREDMAGIC'] <= zbins[i+1])
             this_est,this_wt = est_reddening(cat[these],basisvector = basisVector)
             est[these] = this_est
@@ -224,8 +223,7 @@ def get_bg_randoms(bg_file,Cat,zmin=0.2):
     zbins[0] = 0.
     zbins[-1] = zbins[-1] + 1.
 
-    #for i in range(7,9):
-    for i in range(9,10):
+    for i in range(nbins):
         these = (ran_cat['Z'] > zbins[i]) & (ran_cat['Z'] <= zbins[i+1])
         these_est = (Cat.zz > zbins[i]) & (Cat.zz <=zbins[i+1])
         ind = np.random.choice(np.arange(np.sum(these_est)),np.sum(these))
@@ -242,36 +240,34 @@ def plotres(dd_out,dr_out,fr_out=None,rr_out = None, outplotn='fig.png'):
     dr = fitsio.read(dr_out)
     fr = fitsio.read(fr_out)
     rr = fitsio.read(rr_out)
+    r = np.logspace(-2,2.7,10)
+    av = 2.4e-3 * (r/scl)**(-0.84)
     
     fig = plt.figure(figsize=(14,7))
     ### in log space
     ax=fig.add_subplot(121)
     try:
         ax.errorbar(dk['meanr'],dk['kappa'],yerr=dk['sigma'],label='raw')        
-        ax.errorbar(dk['meanr'],dk['kappa'] -fr['kappa'] - dr['kappa'] + rr['kappa'],yerr=dk['sigma'],label='LZ++')
+        ax.errorbar(dk['meanr'],dk['kappa'] -fr['kappa'],yerr=dk['sigma'],label='fr sub')
     except:
         ax.errorbar(dk['meanR'],dk['kappa']-fr['kappa'],yerr=dk['sigma'],label='raw')        
-        ax.errorbar(dk['meanR'],dk['kappa'] -fr['kappa'] - dr['kappa'] + rr['kappa'],yerr=dk['sigma'],label='LZ++')
+        ax.errorbar(dk['meanR'],dk['kappa']-fr['kappa'],yerr=dk['sigma'],label='fr sub')
     ax.set_xscale('log')
     ax.set_yscale('log')
-    #ax.set_ylim(1e-6,.2)
     ax.set_xlim(0.1,250)
-    r = np.logspace(-2,2.7,10)
-    av = 2.4e-3 * (r/3.00)**(-0.84)
-    ax.plot(r,av,label='Menard (2010)') 
+    ax.plot(r,av,label='scaled Menard (2010)') 
     ax.set_xlabel('impact parameter (arcmin)')
     ax.set_ylabel('A_v (mag)')
-    ax.legend()
-    
+    ax.legend()    
     ### in linear space
     ax2=fig.add_subplot(122)
     try:
         ax2.errorbar(dk['meanr'],dk['kappa'],yerr=dk['sigma'],label='raw')
-        ax2.errorbar(dk['meanr'],dk['kappa'] -fr['kappa'] - dr['kappa'] + rr['kappa'],yerr=dk['sigma'],label='LZ++')
+        ax2.errorbar(dk['meanr'],dk['kappa'] -fr['kappa'],yerr=dk['sigma'],label='fr sub')
     except:
         ax2.errorbar(dk['meanR'],dk['kappa'],yerr=dk['sigma'],label='raw')        
-        ax2.errorbar(dk['meanR'],dk['kappa'] -fr['kappa'] - dr['kappa'] + rr['kappa'],yerr=dk['sigma'],label='LZ++')        
-    ax2.plot(r,av,label='adjusted Menard (2010)')
+        ax2.errorbar(dk['meanR'],dk['kappa'] -fr['kappa'],yerr=dk['sigma'],label='fr sub')        
+    ax2.plot(r,av,label='scaled Menard (2010)')
     ax2.axhline(0,color='black',linestyle='--',alpha=0.5)
     ax2.set_xlim(0.07,200)
     ax2.set_ylim(-5e-3,0.02)
@@ -289,11 +285,11 @@ def get_output_names(basisInd=None,optimal=False):
         rr_outfile = '../outputs/dust_correlation_rr_orthonorm-voptimal.fits'
         fig_outfile = '../outputs/correlationFuncFigures/dustCorr_orthonorm-voptimal.png'       
     elif (basisInd==0):
-        dd_outfile = '../outputs/dust_correlation5_dd_orthonorm-vdust.fits'
-        dr_outfile = '../outputs/dust_correlation5_dr_orthonorm-vdust.fits'
-        fr_outfile = '../outputs/dust_correlation5_fr_orthonorm-vdust.fits'
-        rr_outfile = '../outputs/dust_correlation5_rr_orthonorm-vdust.fits'
-        fig_outfile = '../outputs/correlationFuncFigures/dustCorr5_orthonorm-vdust.png'      
+        dd_outfile = '../outputs/dust_correlation_dd_orthonorm-vdust.fits'
+        dr_outfile = '../outputs/dust_correlation_dr_orthonorm-vdust.fits'
+        fr_outfile = '../outputs/dust_correlation_fr_orthonorm-vdust.fits'
+        rr_outfile = '../outputs/dust_correlation_rr_orthonorm-vdust.fits'
+        fig_outfile = '../outputs/correlationFuncFigures/dustCorr_orthonorm-vdust.png'      
     else:
         dd_outfile = '../outputs/dust_correlation_dd_orthonorm-v'+str(basisInd)+'.fits'
         dr_outfile = '../outputs/dust_correlation_dr_orthonorm-v'+str(basisInd)+'.fits'
@@ -304,12 +300,11 @@ def get_output_names(basisInd=None,optimal=False):
 
 
 def get_NNoutput_names():
-    dd_outfile = '../outputs/dust_correlation_dd_NN5-vdust.fits'
-    dr_outfile = '../outputs/dust_correlation_dr_NN5-vdust.fits'
-    fr_outfile = '../outputs/dust_correlation_fr_NN5-vdust.fits'
-    rr_outfile = '../outputs/dust_correlation_rr_NN5-vdust.fits'           
+    dd_outfile = '../outputs/dust_correlation_dd_NN-vdust.fits'
+    dr_outfile = '../outputs/dust_correlation_dr_NN-vdust.fits'
+    fr_outfile = '../outputs/dust_correlation_fr_NN-vdust.fits'
+    rr_outfile = '../outputs/dust_correlation_rr_NN-vdust.fits'           
     return dd_outfile,dr_outfile,fr_outfile,rr_outfile
-
 
 
 def do_it_all(v,fgCat,fgRan,bgCat,basisInd=None,optimal=False):
@@ -337,9 +332,8 @@ def do_it_all(v,fgCat,fgRan,bgCat,basisInd=None,optimal=False):
 
     return 
 
-
 def do_NNcor(v,fgCat,fgRan,bgCat,basisInd=None,optimal=False):
-    
+   
     dd_outfile,dr_outfile,fr_outfile,rr_outfile= get_NNoutput_names()
     print ("Doing reddening calculation for for vector %s..." % str(v))
     redcat = do_reddening_calculation(bgCat,basisVector=v)
@@ -358,15 +352,15 @@ def do_NNcor(v,fgCat,fgRan,bgCat,basisInd=None,optimal=False):
     FR.write(fr_outfile)
     RR = treecorr.NNCorrelation(min_sep=0.1,max_sep=200.0,bin_size=0.6,sep_units='arcmin')
     RR.process(fgRan,bgRan)
-    RR.write(rr_outfile)    
-    
+    RR.write(rr_outfile)        
     # calculate correlation... 
     xi,varxi=DK.calculateXi(RR,FR,RK)
-    f=open('xi5.txt','w')
+    f=open('xi.txt','w')
     for i,x in enumerate(xi):
         f.write("%f %f\n" % (x,varxi[i]))
     f.close()
     return 
+
 def do_it_all(v,fgCat,fgRan,bgCat,basisInd=None,optimal=False):
     
     dd_outfile,dr_outfile,fr_outfile,rr_outfile,fig_outfile = get_output_names(basisInd,optimal)
@@ -387,8 +381,7 @@ def do_it_all(v,fgCat,fgRan,bgCat,basisInd=None,optimal=False):
     FR.write(fr_outfile)
     RR = treecorr.NKCorrelation(min_sep=0.1,max_sep=200.0,bin_size=0.6,sep_units='arcmin')
     RR.process(fgRan,bgRan)
-    RR.write(rr_outfile)    
-
+    RR.write(rr_outfile)   
 
     plotres(dd_outfile,dr_outfile,fr_out = fr_outfile,rr_out=rr_outfile,outplotn=fig_outfile)
 
@@ -410,6 +403,9 @@ def main(argv):
     fg_file = os.path.join(datapath,fg_name)
     global zmin
     zmin = 0.15
+    global scl
+    scl = 3.00
+ 
     # This parameter decides whether we want to loop over all basis vectors, or use the "optimal" vector
     global optimal
     optimal = False 
@@ -433,15 +429,14 @@ def main(argv):
     else: 
         # First calculation: "reddening vector"
         vec=basis[0]        
-        #do_it_all(vec,fgCat,fgRan,bgCat,basisInd=0,optimal=False)
-        do_NNcor(vec,fgCat,fgRan,bgCat,basisInd=0,optimal=False)
+        do_it_all(vec,fgCat,fgRan,bgCat,basisInd=0,optimal=False)
+        #do_NNcor(vec,fgCat,fgRan,bgCat,basisInd=0,optimal=False)
+        
         # Loop through other vectors
-        """
-        index = 2
-        for vec in basis[2:]:
+        index = 1
+        for vec in basis[1:]:
             do_it_all(vec,fgCat,fgRan,bgCat,basisInd=index,optimal=False)
             index+=1
-            """                   
             
 if __name__ == "__main__":
     import pdb, traceback, sys
