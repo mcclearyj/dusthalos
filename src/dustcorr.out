@@ -1,24 +1,16 @@
 /home/jemcclea/data2/des_dust/dusthalos/src
 Traceback (most recent call last):
-  File "dust_measurement.py", line 376, in <module>
+  File "dust_measurement.py", line 379, in <module>
     main(sys.argv)
-  File "dust_measurement.py", line 339, in main
-    plotres(dd_outfile,dr_outfile,fr_out = fr_outfile,rr_out=rr_outfile,outplotn=fig_outfile)
-  File "dust_measurement.py", line 240, in plotres
-    fig = plt.figure(figsize=(14,7))
-  File "/halo_nobackup/fiat.lux/jemcclea/Software/anaconda2/lib/python2.7/site-packages/matplotlib/pyplot.py", line 539, in figure
-    **kwargs)
-  File "/halo_nobackup/fiat.lux/jemcclea/Software/anaconda2/lib/python2.7/site-packages/matplotlib/backend_bases.py", line 171, in new_figure_manager
-    return cls.new_figure_manager_given_figure(num, fig)
-  File "/halo_nobackup/fiat.lux/jemcclea/Software/anaconda2/lib/python2.7/site-packages/matplotlib/backend_bases.py", line 177, in new_figure_manager_given_figure
-    canvas = cls.FigureCanvas(figure)
-  File "/halo_nobackup/fiat.lux/jemcclea/Software/anaconda2/lib/python2.7/site-packages/matplotlib/backends/backend_qt5agg.py", line 35, in __init__
-    super(FigureCanvasQTAggBase, self).__init__(figure=figure)
-  File "/halo_nobackup/fiat.lux/jemcclea/Software/anaconda2/lib/python2.7/site-packages/matplotlib/backends/backend_qt5.py", line 235, in __init__
-    _create_qApp()
-  File "/halo_nobackup/fiat.lux/jemcclea/Software/anaconda2/lib/python2.7/site-packages/matplotlib/backends/backend_qt5.py", line 122, in _create_qApp
-    raise RuntimeError('Invalid DISPLAY variable')
-RuntimeError: Invalid DISPLAY variable
+  File "dust_measurement.py", line 352, in main
+    print ("Doing reddening calculation for for vector %s..." % str(v))
+  File "dust_measurement.py", line 352, in main
+    print ("Doing reddening calculation for for vector %s..." % str(v))
+  File "/halo_nobackup/fiat.lux/jemcclea/Software/anaconda2/lib/python2.7/bdb.py", line 49, in trace_dispatch
+    return self.dispatch_line(frame)
+  File "/halo_nobackup/fiat.lux/jemcclea/Software/anaconda2/lib/python2.7/bdb.py", line 68, in dispatch_line
+    if self.quitting: raise BdbQuit
+BdbQuit
 Getting fg catalog and randoms... 
 Length of catalog after cuts = 120073
 NSIDE = 4096
@@ -27,10 +19,9 @@ INDXSCHM = EXPLICIT
 Getting bg science catalog
 found a joint catalog
 background redMaGiC catalog acquired
-Doing reddening calculation for for vector [ 0.71360891 -0.50707861 -0.38411035 -0.29341581]...
-generating bg catalog for correlation for this vector in ON basis
-Done. Getting bg randoms... 
-Done. Now cross-correlating for vector [ 0.71360891 -0.50707861 -0.38411035 -0.29341581]...
-> /halo_nobackup/fiat.lux/jemcclea/Software/anaconda2/lib/python2.7/site-packages/matplotlib/backends/backend_qt5.py(122)_create_qApp()
--> raise RuntimeError('Invalid DISPLAY variable')
+> /halo_nobackup/fiat.lux/jemcclea/des_dust/dusthalos/src/dust_measurement.py(352)main()
+-> print ("Doing reddening calculation for for vector %s..." % str(v))
+(Pdb) 
+> /halo_nobackup/fiat.lux/jemcclea/Software/anaconda2/lib/python2.7/bdb.py(68)dispatch_line()
+-> if self.quitting: raise BdbQuit
 (Pdb) 
