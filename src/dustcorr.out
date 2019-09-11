@@ -1,27 +1,33 @@
 /home/jemcclea/data2/des_dust/dusthalos/src
 Traceback (most recent call last):
-  File "dust_measurement.py", line 379, in <module>
+  File "dust_measurementNewFG.py", line 461, in <module>
     main(sys.argv)
-  File "dust_measurement.py", line 352, in main
-    print ("Doing reddening calculation for for vector %s..." % str(v))
-  File "dust_measurement.py", line 352, in main
-    print ("Doing reddening calculation for for vector %s..." % str(v))
-  File "/halo_nobackup/fiat.lux/jemcclea/Software/anaconda2/lib/python2.7/bdb.py", line 49, in trace_dispatch
-    return self.dispatch_line(frame)
-  File "/halo_nobackup/fiat.lux/jemcclea/Software/anaconda2/lib/python2.7/bdb.py", line 68, in dispatch_line
-    if self.quitting: raise BdbQuit
-BdbQuit
+  File "dust_measurementNewFG.py", line 435, in main
+    fgCat = get_fg_catalog(datapath,fg_file)
+  File "dust_measurementNewFG.py", line 47, in get_fg_catalog
+    data = Table.read(fg_filen,format='fits')
+  File "/halo_nobackup/fiat.lux/jemcclea/Software/anaconda2/lib/python2.7/site-packages/astropy/table/table.py", line 2519, in read
+    out = io_registry.read(cls, *args, **kwargs)
+  File "/halo_nobackup/fiat.lux/jemcclea/Software/anaconda2/lib/python2.7/site-packages/astropy/io/registry.py", line 531, in read
+    data = reader(*args, **kwargs)
+  File "/halo_nobackup/fiat.lux/jemcclea/Software/anaconda2/lib/python2.7/site-packages/astropy/io/fits/connect.py", line 133, in read_table_fits
+    hdulist = fits_open(input)
+  File "/halo_nobackup/fiat.lux/jemcclea/Software/anaconda2/lib/python2.7/site-packages/astropy/io/fits/hdu/hdulist.py", line 160, in fitsopen
+    lazy_load_hdus, **kwargs)
+  File "/halo_nobackup/fiat.lux/jemcclea/Software/anaconda2/lib/python2.7/site-packages/astropy/io/fits/hdu/hdulist.py", line 413, in fromfile
+    lazy_load_hdus=lazy_load_hdus, **kwargs)
+  File "/halo_nobackup/fiat.lux/jemcclea/Software/anaconda2/lib/python2.7/site-packages/astropy/io/fits/hdu/hdulist.py", line 998, in _readfrom
+    fileobj = _File(fileobj, mode=mode, memmap=memmap, cache=cache)
+  File "/halo_nobackup/fiat.lux/jemcclea/Software/anaconda2/lib/python2.7/site-packages/astropy/utils/decorators.py", line 507, in wrapper
+    return function(*args, **kwargs)
+  File "/halo_nobackup/fiat.lux/jemcclea/Software/anaconda2/lib/python2.7/site-packages/astropy/io/fits/file.py", line 150, in __init__
+    self._open_filename(fileobj, mode, overwrite)
+  File "/halo_nobackup/fiat.lux/jemcclea/Software/anaconda2/lib/python2.7/site-packages/astropy/io/fits/file.py", line 483, in _open_filename
+    with fileobj_open(self.name, 'rb') as f:
+  File "/halo_nobackup/fiat.lux/jemcclea/Software/anaconda2/lib/python2.7/site-packages/astropy/io/fits/util.py", line 395, in fileobj_open
+    return open(filename, mode)
+IOError: [Errno 21] Is a directory: '/home/jemcclea/data2/des_dust/catalogs'
 Getting fg catalog and randoms... 
-Length of catalog after cuts = 120073
-NSIDE = 4096
-ORDERING = RING in fits file
-INDXSCHM = EXPLICIT
-Getting bg science catalog
-found a joint catalog
-background redMaGiC catalog acquired
-> /halo_nobackup/fiat.lux/jemcclea/des_dust/dusthalos/src/dust_measurement.py(352)main()
--> print ("Doing reddening calculation for for vector %s..." % str(v))
-(Pdb) 
-> /halo_nobackup/fiat.lux/jemcclea/Software/anaconda2/lib/python2.7/bdb.py(68)dispatch_line()
--> if self.quitting: raise BdbQuit
+> /halo_nobackup/fiat.lux/jemcclea/Software/anaconda2/lib/python2.7/site-packages/astropy/io/fits/util.py(395)fileobj_open()
+-> return open(filename, mode)
 (Pdb) 

@@ -26,7 +26,6 @@
 # Change this environment variable if desired
 #
 
-#export PBS_O_WORKDIR=/home/jemcclea/data2/thesis_project/A2029/Balrog/inputs/tiles/iband
 export PBS_O_WORKDIR=/home/jemcclea/data2/des_dust/dusthalos/src
 # Set your executable directory (optional)
 #
@@ -45,9 +44,4 @@ source /home/jemcclea/.bashrc
 echo $RUN_DIR
 cd $RUN_DIR
 
-#export PATH="./:/home/jemcclea/data2/thesis_project/Balrog-GalSim-NFW/balrog:$PATH"
-#echo $PATH
-#export PYTHONPATH="./:/home/jemcclea/data2/thesis_project/Balrog-GalSim/balrog:$PYTHONPATH"
-#echo $PYTHONPATH
-
-python dust_measurement.py
+python dust_measurementNewFG.py
