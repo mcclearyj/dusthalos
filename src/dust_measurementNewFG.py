@@ -46,10 +46,10 @@ def get_fg_catalog(fg_filen,maskfile = None,nside=4096,nest=False):
         # Hopefully this is the trimmed catalog!
         data = Table.read(fg_filen,format='fits')
         try:
-            #ra_cat =  data['ra']
-            #dec_cat = data['dec']
-            ra_cat =  data['RA']
-            dec_cat = data['DEC']
+            ra_cat =  data['ra']
+            dec_cat = data['dec']
+            #ra_cat =  data['RA']
+            #dec_cat = data['DEC']
 
         except:
             ra_cat = data['_RAJ2000']
@@ -415,14 +415,17 @@ def main(argv):
     #fg_name='iifsc_des_overlap.fits'
     #fg_name='des_y1a1_stars_MatchScosMagDistSize.fits'
     #scl = 13.2 # This changes depending on avg. redshift of fg
+    global scl
     scl = 3.00
     #fg_name = 'Sscom_exactArea_galzCut.fits'
     rmp_file = os.path.join(datapath,rmp_name)
     rmz_file = os.path.join(datapath,rmz_name)
     rmm_file = os.path.join(datapath,rm_mask)
+    global ra_file
     ra_file = os.path.join(datapath,ra_name)
     fg_file = os.path.join(datapath,fg_name)
- 
+    global zmin
+    zmin=0.15
     # This parameter decides whether we want to loop over all basis vectors, or use the "optimal" vector
     global optimal
     optimal = False 
@@ -432,7 +435,7 @@ def main(argv):
     basis = get_ONbasis(vdust)
 
     print( "Getting fg catalog and randoms... ")
-    fgCat = get_fg_catalog(datapath,fg_file)
+    fgCat = get_fg_catalog(fg_file)
     fgRan = get_fg_randoms(maskfile = rmm_file)
     print( "Getting bg science catalog")
     bgCat = get_bg_catalog2(datapath, rmp_file,rmz_file,zmin=zmin)  

@@ -44,4 +44,4 @@ source /home/jemcclea/.bashrc
 echo $RUN_DIR
 cd $RUN_DIR
 
-python dust_measurementNewFG.py
+python dust_measurement.py
