@@ -442,7 +442,7 @@ def main(argv):
 
     if optimal:      
         print("using optimal dust vector...")
-        vec = -0.5923*basis[0]+0.8057175*basis[1]       
+        vec = basis[0]+2.18*basis[1]-13.15*basis[3]
         do_it_all(vec,fgCat,fgRan,bgCat,optimal=True)
 
     else: 

@@ -51,7 +51,7 @@ def get_ONbasis(vdust):
     # so define ON basis vectors along which we can project the (real?) vector
 
     # start by normalizing the input dust vector
-    vec = vdust/norm(vdust)
+    vec = vdust#/norm(vdust)
     
     # Go through the G-S process
     v0 = np.zeros_like(vec); v0[0]= 1.0
@@ -73,7 +73,7 @@ def get_ONbasis2(vdust):
     # Alternative means of generating ON basis
     # verified that basis is in fact ON
     # start by normalizing the input dust vector
-    vec = vdust/norm(vdust)
+    vec = vdust#/norm(vdust)
     
     # Go through the G-S process
     # Doing it slightly differently than before -- what happens?
@@ -280,11 +280,11 @@ def plotres(dd_out,dr_out,fr_out=None,rr_out = None, outplotn='fig.png'):
 
 def get_output_names(basisInd=None,optimal=False):
     if optimal:
-        dd_outfile = '../outputs/dust_correlation_dd_orthonorm2-voptimal.fits'
-        dr_outfile = '../outputs/dust_correlation_dr_orthonorm2-voptimal.fits'
-        fr_outfile = '../outputs/dust_correlation_fr_orthonorm2-voptimal.fits'
-        rr_outfile = '../outputs/dust_correlation_rr_orthonorm2-voptimal.fits'
-        fig_outfile = '../outputs/correlationFuncFigures/dustCorr_orthonorm2-voptimal.png'       
+        dd_outfile = '../outputs/dust_correlation_dd_orthonorm-voptimal.fits'
+        dr_outfile = '../outputs/dust_correlation_dr_orthonorm-voptimal.fits'
+        fr_outfile = '../outputs/dust_correlation_fr_orthonorm-voptimal.fits'
+        rr_outfile = '../outputs/dust_correlation_rr_orthonorm-voptimal.fits'
+        fig_outfile = '../outputs/correlationFuncFigures/dustCorr_orthonorm-voptimal.png'       
     elif (basisInd==0):
         dd_outfile = '../outputs/dust_correlation_dd_orthonorm2-vdust.fits'
         dr_outfile = '../outputs/dust_correlation_dr_orthonorm2-vdust.fits'
@@ -413,7 +413,7 @@ def main(argv):
 
     # First, define our orthonormal vector space based on an input extinction vector
     vdust = np.array([1.12224688, 0.82747095, 0.62680647, 0.47880753])
-    basis = get_ONbasis2(vdust)
+    basis = get_ONbasis(vdust)
 
     print( "Getting fg catalog and randoms... ")
     fgCat = get_fg_catalog(datapath,fg_file)
@@ -423,8 +423,9 @@ def main(argv):
 
     if optimal:      
         print("using optimal dust vector...")
-        vec = -0.5923*basis[0]+0.8057175*basis[1]
-        
+        vec = basis[0]+0.458*basis[1]-0.076*basis[3]
+        #vec = vec/norm(vec)
+        vec = vec/0.85
         do_it_all(vec,fgCat,fgRan,bgCat,optimal=True)
 
     else: 
