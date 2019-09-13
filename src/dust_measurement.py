@@ -70,7 +70,8 @@ def get_ONbasis(vdust):
     return vec,u0,u1,u2
     
 def get_ONbasis2(vdust):
-    # Alternative means...
+    # Alternative means of generating ON basis
+    # verified that basis is in fact ON
     # start by normalizing the input dust vector
     vec = vdust/norm(vdust)
     
@@ -279,23 +280,23 @@ def plotres(dd_out,dr_out,fr_out=None,rr_out = None, outplotn='fig.png'):
 
 def get_output_names(basisInd=None,optimal=False):
     if optimal:
-        dd_outfile = '../outputs/dust_correlation_dd_orthonorm-voptimal.fits'
-        dr_outfile = '../outputs/dust_correlation_dr_orthonorm-voptimal.fits'
-        fr_outfile = '../outputs/dust_correlation_fr_orthonorm-voptimal.fits'
-        rr_outfile = '../outputs/dust_correlation_rr_orthonorm-voptimal.fits'
-        fig_outfile = '../outputs/correlationFuncFigures/dustCorr_orthonorm-voptimal.png'       
+        dd_outfile = '../outputs/dust_correlation_dd_orthonorm2-voptimal.fits'
+        dr_outfile = '../outputs/dust_correlation_dr_orthonorm2-voptimal.fits'
+        fr_outfile = '../outputs/dust_correlation_fr_orthonorm2-voptimal.fits'
+        rr_outfile = '../outputs/dust_correlation_rr_orthonorm2-voptimal.fits'
+        fig_outfile = '../outputs/correlationFuncFigures/dustCorr_orthonorm2-voptimal.png'       
     elif (basisInd==0):
-        dd_outfile = '../outputs/dust_correlation_dd_orthonorm-vdust.fits'
-        dr_outfile = '../outputs/dust_correlation_dr_orthonorm-vdust.fits'
-        fr_outfile = '../outputs/dust_correlation_fr_orthonorm-vdust.fits'
-        rr_outfile = '../outputs/dust_correlation_rr_orthonorm-vdust.fits'
-        fig_outfile = '../outputs/correlationFuncFigures/dustCorr_orthonorm-vdust.png'      
+        dd_outfile = '../outputs/dust_correlation_dd_orthonorm2-vdust.fits'
+        dr_outfile = '../outputs/dust_correlation_dr_orthonorm2-vdust.fits'
+        fr_outfile = '../outputs/dust_correlation_fr_orthonorm2-vdust.fits'
+        rr_outfile = '../outputs/dust_correlation_rr_orthonorm2-vdust.fits'
+        fig_outfile = '../outputs/correlationFuncFigures/dustCorr_orthonorm2-vdust.png'      
     else:
-        dd_outfile = '../outputs/dust_correlation_dd_orthonorm-v'+str(basisInd)+'.fits'
-        dr_outfile = '../outputs/dust_correlation_dr_orthonorm-v'+str(basisInd)+'.fits'
-        fr_outfile = '../outputs/dust_correlation_fr_orthonorm-v'+str(basisInd)+'.fits'
-        rr_outfile = '../outputs/dust_correlation_rr_orthonorm-v'+str(basisInd)+'.fits'
-        fig_outfile = '../outputs/correlationFuncFigures/dustCorr_orthonorm-v'+str(basisInd)+'.png'           
+        dd_outfile = '../outputs/dust_correlation_dd_orthonorm2-v'+str(basisInd)+'.fits'
+        dr_outfile = '../outputs/dust_correlation_dr_orthonorm2-v'+str(basisInd)+'.fits'
+        fr_outfile = '../outputs/dust_correlation_fr_orthonorm2-v'+str(basisInd)+'.fits'
+        rr_outfile = '../outputs/dust_correlation_rr_orthonorm2-v'+str(basisInd)+'.fits'
+        fig_outfile = '../outputs/correlationFuncFigures/dustCorr_orthonorm2-v'+str(basisInd)+'.png'           
     return dd_outfile,dr_outfile,fr_outfile,rr_outfile,fig_outfile
 
 
@@ -412,7 +413,7 @@ def main(argv):
 
     # First, define our orthonormal vector space based on an input extinction vector
     vdust = np.array([1.12224688, 0.82747095, 0.62680647, 0.47880753])
-    basis = get_ONbasis(vdust)
+    basis = get_ONbasis2(vdust)
 
     print( "Getting fg catalog and randoms... ")
     fgCat = get_fg_catalog(datapath,fg_file)
