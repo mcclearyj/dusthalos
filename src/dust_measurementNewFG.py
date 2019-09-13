@@ -411,12 +411,12 @@ def main(argv):
     rmp_name = 'y1a1-gold-mof-badregion.fits'
     rm_mask = 'DES_Y1A1_3x2pt_redMaGiC_MASK_HPIX4096RING.fits'
     ra_name = 'DES_Y1A1_3x2pt_redMaGiC_RANDOMS.fits'
-    #fg_name='galex_trimmed.fits'
-    fg_name='iifsc_des_overlap.fits'
+    fg_name='galex_trimmed.fits'
+    #fg_name='iifsc_des_overlap.fits'
     #fg_name='des_y1a1_stars_MatchScosMagDistSize.fits'
     global scl
-    scl = 13.2 # This changes depending on avg. redshift of fg
-    #scl = 3.00
+    #scl = 13.2 # This changes depending on avg. redshift of fg
+    scl = 3.00
     #fg_name = 'Sscom_exactArea_galzCut.fits'
     rmp_file = os.path.join(datapath,rmp_name)
     rmz_file = os.path.join(datapath,rmz_name)
@@ -442,8 +442,7 @@ def main(argv):
 
     if optimal:      
         print("using optimal dust vector...")
-        vec = -0.5923*basis[0]+0.8057175*basis[1]
-        
+        vec = -0.5923*basis[0]+0.8057175*basis[1]       
         do_it_all(vec,fgCat,fgRan,bgCat,optimal=True)
 
     else: 
