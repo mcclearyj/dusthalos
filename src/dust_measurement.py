@@ -409,7 +409,7 @@ def main(argv):
  
     # This parameter decides whether we want to loop over all basis vectors, or use the "optimal" vector
     global optimal
-    optimal = False 
+    optimal = True 
 
     # First, define our orthonormal vector space based on an input extinction vector
     vdust = np.array([1.12224688, 0.82747095, 0.62680647, 0.47880753])
@@ -423,9 +423,9 @@ def main(argv):
 
     if optimal:      
         print("using optimal dust vector...")
-        vec = basis[0]+0.458*basis[1]-0.076*basis[3]
+        new=basis[0]+0.744*basis[1]-0.2675*basis[2]-0.2175*basis[3]
+        vec=new/0.95
         #vec = vec/norm(vec)
-        vec = vec/0.85
         do_it_all(vec,fgCat,fgRan,bgCat,optimal=True)
 
     else: 

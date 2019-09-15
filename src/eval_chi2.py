@@ -19,11 +19,11 @@ def chi2_beta(beta,kappa_norm,sigma,kappa1_norm,sigma1,sigma_sys = 1e-4):
       x2 = np.sum(np.divide(numerator,denominator))
       return x2
 
-def make_a_chi2_plot(parr,chiarr):
+def make_a_chi2_plot(parr,chiarr,n):
     fig=plt.figure()
     ax=fig.add_subplot(111)
-    ax.plot(alpha_arr,chi2_arr)
-    fig.savefig('chi2_arr.png')   
+    ax.plot(parr,chiarr)
+    fig.savefig(n)   
     return 0
 
 def main():
@@ -50,10 +50,14 @@ def main():
 
     elif(sample=='scos'):
         ## Assuming you want Scos?
-        ddust=fitsio.read(os.path.join(outpath,'dust_correlation_dd_orthonorm-vdust.fits')) # The dust signal -- real fg x real background 
-        frdust=fitsio.read(os.path.join(outpath,'dust_correlation_fr_orthonorm-vdust.fits')) # random fg x background
-        dd1=fitsio.read(os.path.join(outpath,'dust_correlation_dd_orthonorm-v1.fits')) # The dust signal -- real fg x real background 
-        fr1=fitsio.read(os.path.join(outpath,'dust_correlation_fr_orthonorm-v1.fits')) # fg x random background
+        ddust=fitsio.read(os.path.join(outpath,'dust_correlation_dd_orthonorm2-vdust.fits')) # The dust signal -- real fg x real background 
+        frdust=fitsio.read(os.path.join(outpath,'dust_correlation_fr_orthonorm2-vdust.fits')) # random fg x background
+        dd1=fitsio.read(os.path.join(outpath,'dust_correlation_dd_orthonorm2-v1.fits')) # The dust signal -- real fg x real background 
+        fr1=fitsio.read(os.path.join(outpath,'dust_correlation_fr_orthonorm2-v1.fits')) # fg x random background
+        dd2=fitsio.read(os.path.join(outpath,'dust_correlation_dd_orthonorm2-v2.fits')) # The dust signal -- real fg x real background 
+        fr2=fitsio.read(os.path.join(outpath,'dust_correlation_fr_orthonorm2-v2.fits')) # fg x random background
+        dd3=fitsio.read(os.path.join(outpath,'dust_correlation_dd_orthonorm2-v3.fits')) # The dust signal -- real fg x real background 
+        fr3=fitsio.read(os.path.join(outpath,'dust_correlation_fr_orthonorm2-v3.fits')) # fg x random background
 
     else:
         print( "Sample not specified?")
@@ -64,28 +68,37 @@ def main():
     sigmaDust=ddust['sigma']
     kappa1_norm = dd1['kappa']-fr1['kappa']
     sigma1=dd1['sigma']
+    kappa2_norm = dd2['kappa']-fr2['kappa']
+    sigma2=dd2['sigma']
+    kappa3_norm = dd3['kappa']-fr3['kappa']
+    sigma3=dd3['sigma']
 
-    # generate an alpha parameter array
-    print("#\n#minimizing the chi2 function (alpha*kappa_norm - kappa1_norm)**2\n#")
-    alpha_arr=np.arange(-2, 1, 0.001)
+
+    # generate an alpha parameter array for each ON vector:
+    print("#\n#minimizing the chi2 function (alpha*kappa_norm - kappa2_norm)**2\n#")
+    alpha_arr=np.arange(-2, 2, 0.0005)
     chi2_arr=np.zeros_like(alpha_arr)
     chi_arr = []
     for i,alpha in enumerate(alpha_arr):
-        chi2_arr[i]=chi2(alpha,kappaDust_norm,sigmaDust,kappa1_norm,sigma1)
+        #chi2_arr[i]=chi2(alpha,kappaDust_norm,sigmaDust,kappa0_norm,sigma0)
+          chi2_arr[i]=chi2(alpha,kappaDust_norm,sigmaDust,kappaDust_norm,sigmaDust)
     alphabest = alpha_arr[chi2_arr==min(chi2_arr)]
     print("%f is best-fit alpha of propotionality" % alphabest)   
     print("reduced chi2 for alpha is %f\n" %(min(chi2_arr)/12.))
-    
+    make_a_chi2_plot(alpha_arr,chi2_arr,n='alphachi2_vdust.png')
+
 
     # do same thing, but with a beta on the k1 values
-    print("#\n#minimizing the chi2 (beta*kappa_norm - kappa1_norm)**2\n#")
-    beta_arr=np.arange(0, 4, 0.001)
+    print("#\n#minimizing the chi2 (beta*kappa_norm - kappa2_norm)**2\n#")
+    beta_arr=np.arange(-4, 4, 0.001)
     chi2_arr=np.zeros_like(beta_arr)
     for i,beta in enumerate(beta_arr):
-        chi2_arr[i]=chi2_beta(beta,kappaDust_norm,sigmaDust,kappa1_norm,sigma1)       
+        #chi2_arr[i]=chi2_beta(beta,kappaDust_norm,sigmaDust,kappa0_norm,sigma0)
+          chi2_arr[i]=chi2_beta(beta,kappaDust_norm,sigmaDust,kappaDust_norm,sigmaDust)
+       
     print("%f is best-fit beta of propotionality" % (beta_arr[chi2_arr==min(chi2_arr)]))   
     print("reduced chi2 for beta is %f\n" %(min(chi2_arr)/12.))
-    pdb.set_trace()
+    make_a_chi2_plot(beta_arr,chi2_arr,n='betachi2_v0.png')
 
     
     
