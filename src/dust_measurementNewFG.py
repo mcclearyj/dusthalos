@@ -16,7 +16,7 @@ def get_fg_catalog(fg_filen,maskfile = None,nside=4096,nest=False):
     try:
         data = fitsio.read(fg_filen)
 
-        wg,=np.where((data['MAG_AUTO_R'] <= 21.5) & (data['MAG_AUTO_R'] >= 15.0))
+        wg,=np.where((data['MAG_AUTO_R'] <= 23) & (data['MAG_AUTO_R'] >= 15.0))
         data=data[wg]
 
         ra_cat =  data['RA']
@@ -435,7 +435,7 @@ def main(argv):
     basis = get_ONbasis(vdust)
 
     print( "Getting fg catalog and randoms... ")
-    fgCat = get_fg_catalog(fg_file)
+    fgCat = get_fg_catalog(fg_file,maskfile = rmm_file)
     fgRan = get_fg_randoms(maskfile = rmm_file)
     print( "Getting bg science catalog")
     bgCat = get_bg_catalog2(datapath, rmp_file,rmz_file,zmin=zmin)  
