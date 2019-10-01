@@ -13,20 +13,14 @@ import pdb
 
 def get_fg_catalog(fg_filen,maskfile = None,nside=4096,nest=False):
     
-    #data = Table.read(fg_filen,format='fits')
-    #ra_cat=data['RAJ2000']
-    #dec_cat=data['DEJ2000']
-    
     try:
-        data = Table.read(fg_filen,format='csv')
+        data = fitsio.read(fg_filen)
 
-        # To trim catalog down significantly, 
-        # and select on redshift, cut on magnitude
-        wg,=np.where((data['nuv_mag'] <= 21.5) & (data['nuv_class_star'] <= 0.5) )
+        wg,=np.where((data['MAG_AUTO_R'] <= 21.5) & (data['MAG_AUTO_R'] >= 15.0))
         data=data[wg]
 
-        ra_cat =  data['ra']
-        dec_cat = data['dec']
+        ra_cat =  data['RA']
+        dec_cat = data['DEC']
 
         # First, determine indices of maskfile that are non-zero
         hmap = hp.read_map(maskfile,nest=False)
@@ -38,11 +32,12 @@ def get_fg_catalog(fg_filen,maskfile = None,nside=4096,nest=False):
         fgKeep=np.in1d(catHpInd,hpIndex[keep])
 
         # If desired, write this trimmed GALEX catalog to file
-        data[fgKeep].write('galex_trimmed.fits',format='fits',overwrite=True)
+        data[fgKeep].write('desSVM_trimmed.fits',format='fits',overwrite=True)
         tcCatalog = treecorr.Catalog(ra=data[fgKeep]['ra'],dec=data[fgKeep]['dec'],\
                                                    ra_units='deg',dec_units='deg')
         print( "Length of catalog after cuts = %i" % len(fgKeep.nonzero()[0]))
     except:
+        """
         # Hopefully this is the trimmed catalog!
         data = Table.read(fg_filen,format='fits')
         try:
@@ -54,8 +49,11 @@ def get_fg_catalog(fg_filen,maskfile = None,nside=4096,nest=False):
         except:
             ra_cat = data['_RAJ2000']
             dec_cat = data['_DEJ2000']
+       
         tcCatalog = treecorr.Catalog(ra=ra_cat,dec=dec_cat,ra_units='deg',dec_units='deg')
         print( "Length of catalog read in = %i" % len(dec_cat))
+        """
+        pdb.set_trace()
 
     return tcCatalog
 
@@ -302,25 +300,25 @@ def get_output_names(basisInd=None,optimal=False):
         rr_outfile = '../outputs/dustCorr_rr_orthonorm-voptimal-galex.fits'
         fig_outfile = '../outputs/correlationFuncFigures/dustCorr_orthonorm-voptimal-galex.png'       
     elif (basisInd==0):
-        dd_outfile = '../outputs/dustCorr_dd_orthonorm-vdust-galex.fits'
-        dr_outfile = '../outputs/dustCorr_dr_orthonorm-vdust-galex.fits'
-        fr_outfile = '../outputs/dustCorr_fr_orthonorm-vdust-galex.fits'
-        rr_outfile = '../outputs/dustCorr_rr_orthonorm-vdust-galex.fits'
-        fig_outfile = '../outputs/correlationFuncFigures/dustCorr_orthonorm-vdust-galex.png'      
+        dd_outfile = '../outputs/dustCorr_dd_orthonorm-vdust-desSVM.fits'
+        dr_outfile = '../outputs/dustCorr_dr_orthonorm-vdust-desSVM.fits'
+        fr_outfile = '../outputs/dustCorr_fr_orthonorm-vdust-desSVM.fits'
+        rr_outfile = '../outputs/dustCorr_rr_orthonorm-vdust-desSVM.fits'
+        fig_outfile = '../outputs/correlationFuncFigures/dustCorr_orthonorm-vdust-desSVM.png'      
     else:
-        dd_outfile = '../outputs/dustCorr_dd_orthonorm-v'+str(basisInd)+'-galex.fits'
-        dr_outfile = '../outputs/dustCorr_dr_orthonorm-v'+str(basisInd)+'-galex.fits'
-        fr_outfile = '../outputs/dustCorr_fr_orthonorm-v'+str(basisInd)+'-galex.fits'
-        rr_outfile = '../outputs/dustCorr_rr_orthonorm-v'+str(basisInd)+'-galex.fits'
-        fig_outfile = '../outputs/correlationFuncFigures/dustCorr_orthonorm-v'+str(basisInd)+'-galex.png'           
+        dd_outfile = '../outputs/dustCorr_dd_orthonorm-v'+str(basisInd)+'-desSVM.fits'
+        dr_outfile = '../outputs/dustCorr_dr_orthonorm-v'+str(basisInd)+'-desSVM.fits'
+        fr_outfile = '../outputs/dustCorr_fr_orthonorm-v'+str(basisInd)+'-desSVM.fits'
+        rr_outfile = '../outputs/dustCorr_rr_orthonorm-v'+str(basisInd)+'-desSVM.fits'
+        fig_outfile = '../outputs/correlationFuncFigures/dustCorr_orthonorm-v'+str(basisInd)+'-desSVM.png'           
     return dd_outfile,dr_outfile,fr_outfile,rr_outfile,fig_outfile
 
 
 def get_NNoutput_names():
-    dd_outfile = '../outputs/dustCorr_dd_NN-vdust-galex.fits'
-    dr_outfile = '../outputs/dustCorr_dr_NN-vdust-galex.fits'
-    fr_outfile = '../outputs/dustCorr_fr_NN-vdust-galex.fits'
-    rr_outfile = '../outputs/dustCorr_rr_NN-vdust-galex.fits'           
+    dd_outfile = '../outputs/dustCorr_dd_NN-vdust-desSVM.fits'
+    dr_outfile = '../outputs/dustCorr_dr_NN-vdust-desSVM.fits'
+    fr_outfile = '../outputs/dustCorr_fr_NN-vdust-desSVM.fits'
+    rr_outfile = '../outputs/dustCorr_rr_NN-vdust-desSVM.fits'           
     return dd_outfile,dr_outfile,fr_outfile,rr_outfile
 
 
@@ -411,7 +409,8 @@ def main(argv):
     rmp_name = 'y1a1-gold-mof-badregion.fits'
     rm_mask = 'DES_Y1A1_3x2pt_redMaGiC_MASK_HPIX4096RING.fits'
     ra_name = 'DES_Y1A1_3x2pt_redMaGiC_RANDOMS.fits'
-    fg_name='galex_trimmed.fits'
+    #fg_name='galex_trimmed.fits'
+    fg_name='des_SVMlowZ_gals.fits'
     #fg_name='iifsc_des_overlap.fits'
     #fg_name='des_y1a1_stars_MatchScosMagDistSize.fits'
     global scl
@@ -425,7 +424,7 @@ def main(argv):
     ra_file = os.path.join(datapath,ra_name)
     fg_file = os.path.join(datapath,fg_name)
     global zmin
-    zmin=0.15
+    zmin=0.16
     # This parameter decides whether we want to loop over all basis vectors, or use the "optimal" vector
     global optimal
     optimal = False 

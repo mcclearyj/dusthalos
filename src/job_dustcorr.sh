@@ -1,5 +1,5 @@
 #!/bin/bash
-#PBS -q mediumq
+#PBS -q longq
 #PBS -l select=1:ncpus=16
 #PBS -j oe
 #PBS -o dustcorr.out
@@ -44,4 +44,4 @@ source /home/jemcclea/.bashrc
 echo $RUN_DIR
 cd $RUN_DIR
 
-python dust_measurement.py
+python dust_measurementNewFG.py
