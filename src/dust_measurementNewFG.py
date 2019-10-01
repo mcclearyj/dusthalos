@@ -36,6 +36,7 @@ def get_fg_catalog(fg_filen,maskfile = None,nside=4096,nest=False):
         tcCatalog = treecorr.Catalog(ra=data[fgKeep]['ra'],dec=data[fgKeep]['dec'],\
                                                    ra_units='deg',dec_units='deg')
         print( "Length of catalog after cuts = %i" % len(fgKeep.nonzero()[0]))
+        
     except:
         """
         # Hopefully this is the trimmed catalog!
@@ -57,7 +58,7 @@ def get_fg_catalog(fg_filen,maskfile = None,nside=4096,nest=False):
 
     return tcCatalog
 
- def get_ONbasis(vdust):
+def get_ONbasis(vdust):
     # construct an orthonormal set of basis vectors according
     # to the Gram-Schmidt procedure: define V={v0,v1,v2,v3}
     # that spans the "extinction" basis
