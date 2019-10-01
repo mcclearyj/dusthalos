@@ -35,7 +35,7 @@ def get_fg_catalog(fg_filen,maskfile = None,nside=4096,nest=False):
         # If desired, write this trimmed GALEX catalog to file
         data[fgKeep].write('desSVM_trimmed.fits',format='fits',overwrite=True)
         tcCatalog = treecorr.Catalog(ra=data[fgKeep]['RA'],dec=data[fgKeep]['DEC'],\
-                                                   ra_units='deg',dec_units='deg')
+
         print( "Length of catalog after cuts = %i" % len(fgKeep.nonzero()[0]))
         
     except:
