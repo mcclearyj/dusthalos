@@ -14,9 +14,10 @@ import pdb
 def get_fg_catalog(fg_filen,maskfile = None,nside=4096,nest=False):
     
     try:
-        data = fitsio.read(fg_filen)
+        data = Table.read(fg_filen,format='fits')
 
-        wg,=np.where((data['MAG_AUTO_R'] <= 23) & (data['MAG_AUTO_R'] >= 15.0))
+        #wg,=np.where((data['MAG_AUTO_R'] <= 23) & (data['MAG_AUTO_R'] >= 15.0))
+        wg,=np.where(data['MAG_AUTO_R'] <=23)
         data=data[wg]
 
         ra_cat =  data['RA']
