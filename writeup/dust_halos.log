@@ -1,0 +1,18 @@
+This is pdfTeX, Version 3.14159265-2.6-1.40.20 (TeX Live 2019) (preloaded format=pdftex 2019.6.6)  5 OCT 2019 10:07
+entering extended mode
+ restricted \write18 enabled.
+ file:line:error style messages enabled.
+ %&-line parsing enabled.
+**dust_halos.tex
+(./dust_halos.tex
+./dust_halos.tex:1: Undefined control sequence.
+l.1 \documentclass
+                  [11pt, oneside]{article}   	% use "amsart" instead of "art...
+
+? 
+./dust_halos.tex:1: Emergency stop.
+l.1 \documentclass
+                  [11pt, oneside]{article}   	% use "amsart" instead of "art...
+End of file on the terminal!
+
+./dust_halos.tex:1:  ==> Fatal error occurred, no output PDF file produced!
