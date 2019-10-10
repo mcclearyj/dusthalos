@@ -1,3 +1,26 @@
+# constructed with what was "consistent" with our 
+# fg subtraction, but it's not obvious that this was the right thing to do
+# based on the output...
+#
+# # used the following snippet:
+#
+#    dd_outfile,fr_outfile = get_NNoutput_names()
+#    print ("Starting spatial cross-corr...")
+#    redcat = do_reddening_calculation(bgCat,basisVector=v)
+#    # Now make the correlation objects.
+#    DK = treecorr.NNCorrelation(min_sep=0.1,max_sep=200.0,bin_size=.6,sep_units='arcmin')
+#    DK.process(fgCat,redcat)
+#    DK.write(dd_outfile)
+#    FR = treecorr.NNCorrelation(min_sep=0.1,max_sep=200.0,bin_size=.6,sep_units='arcmin')
+#    FR.process(fgRan,redcat)
+#    FR.write(fr_outfile)
+#    RR = treecorr.NNCorrelation(min_sep=0.1,max_sep=200.0,bin_size=.6,sep_units='arcmin')
+#    RR.process(fgRan,fgRan)
+#    RR.write(fr_outfile)
+#
+#    # calculate correlation... 
+#    xi,varxi=DK.calculateXi(RR,dr=FR)
+#
 0.225545 0.006405
 0.239033 0.001936
 0.162880 0.000592

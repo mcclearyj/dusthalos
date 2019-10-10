@@ -14,9 +14,10 @@ import pdb
 def get_fg_catalog(fg_filen,maskfile = None,nside=4096,nest=False):
     
     try:
-        data = Table.read(fg_filen,format='fits')
+       
+        data = Table.read(fg_filen,format='csv')
         
-
+        """
         wg,=np.where(data['MAG_AUTO_R'] <=24)
         data=data[wg]
 
@@ -36,9 +37,10 @@ def get_fg_catalog(fg_filen,maskfile = None,nside=4096,nest=False):
         data[fgKeep].write('desSVM_trimmed.fits',format='fits',overwrite=True)
         tcCatalog = treecorr.Catalog(ra=data[fgKeep]['RA'],dec=data[fgKeep]['DEC'],ra_units='deg',dec_units='deg')
         print( "Length of catalog after cuts = %i" % len(tcCatalog.ra))
+        """
         
     except:
-        """
+        
         # Hopefully this is the trimmed catalog!
         data = Table.read(fg_filen,format='fits')
         try:
@@ -53,8 +55,7 @@ def get_fg_catalog(fg_filen,maskfile = None,nside=4096,nest=False):
        
         tcCatalog = treecorr.Catalog(ra=ra_cat,dec=dec_cat,ra_units='deg',dec_units='deg')
         print( "Length of catalog read in = %i" % len(dec_cat))
-        """
-        pdb.set_trace()
+        
 
     return tcCatalog
 
@@ -137,10 +138,10 @@ def get_bg_catalog2(datapath,phot_file,rmz_file,zmin=0.15):
         cat.write(joint)
         print "joint cat saved"
     else:
-        print("found a joint catalog")
+        print("\n found a redmagic joint catalog\n\n")
         redMaGiC=fitsio.read(joint,format='fits')
     
-    print "background redMaGiC catalog acquired"
+    print "background redMaGiC catalog acquired\n\n"
     return redMaGiC
 
 def do_reddening_calculation(cat,basisVector):
@@ -270,48 +271,52 @@ def plotres(dd_out,fr_out=None, outplotn='fig.png'):
 
 def get_output_names(basisInd=None,optimal=False):
     if optimal:
-        dd_outfile = '../outputs/dustCorr_dd_orthonorm-voptimal-SVM.fits'
-        fr_outfile = '../outputs/dustCorr_fr_orthonorm-voptimal-SVM.fits'
-        fig_outfile = '../outputs/correlationFuncFigures/dustCorr_orthonorm-voptimal-SVM.png'       
+        dd_outfile = '../outputs/dustCorr_dd_orthonorm-voptimal-galex.fits'
+        fr_outfile = '../outputs/dustCorr_fr_orthonorm-voptimal-galex.fits'
+        fig_outfile = '../outputs/correlationFuncFigures/dustCorr_orthonorm-voptimal-galex.png'       
     elif (basisInd==0):
-        dd_outfile = '../outputs/dustCorr_dd_orthonorm-vdust-desSVM.fits'
-        fr_outfile = '../outputs/dustCorr_fr_orthonorm-vdust-desSVM.fits'
-        fig_outfile = '../outputs/correlationFuncFigures/dustCorr_orthonorm-vdust-desSVM.png'      
+        dd_outfile = '../outputs/dustCorr_dd_orthonorm-vdust-galex.fits'
+        fr_outfile = '../outputs/dustCorr_fr_orthonorm-vdust-galex.fits'
+        fig_outfile = '../outputs/correlationFuncFigures/dustCorr_orthonorm-vdust-galex.png'      
     else:
-        dd_outfile = '../outputs/dustCorr_dd_orthonorm-v'+str(basisInd)+'-desSVM.fits'
-        fr_outfile = '../outputs/dustCorr_fr_orthonorm-v'+str(basisInd)+'-desSVM.fits'
-        fig_outfile = '../outputs/correlationFuncFigures/dustCorr_orthonorm-v'+str(basisInd)+'-desSVM.png'           
+        dd_outfile = '../outputs/dustCorr_dd_orthonorm-v'+str(basisInd)+'-galex.fits'
+        fr_outfile = '../outputs/dustCorr_fr_orthonorm-v'+str(basisInd)+'-galex.fits'
+        fig_outfile = '../outputs/correlationFuncFigures/dustCorr_orthonorm-v'+str(basisInd)+'-galex.png'           
     return dd_outfile,fr_outfile,fig_outfile
 
 
 def get_NNoutput_names():
-    dd_outfile = '../outputs/dustCorr_dd_NN-vdust-desSVM.fits'
-    fr_outfile = '../outputs/dustCorr_fr_NN-vdust-desSVM.fits'
-    return dd_outfile,fr_outfile
+    dd_outfile = '../outputs/dust_correlation_dd_NN-vdust.fits'
+    dr_outfile = '../outputs/dust_correlation_dr_NN-vdust.fits'
+    fr_outfile = '../outputs/dust_correlation_fr_NN-vdust.fits'
+    rr_outfile = '../outputs/dust_correlation_rr_NN-vdust.fits'           
+    return dd_outfile,dr_outfile,fr_outfile,rr_outfile
+
 
 def do_NNcor(v,fgCat,fgRan,bgCat,basisInd=None,optimal=False):
-   
-    dd_outfile,fr_outfile = get_NNoutput_names()
-    print ("Starting spatial cross-corr...")
+    
+    #dd_outfile,dr_outfile,fr_outfile,rr_outfile= get_NNoutput_names()
+    print ("\nStarting spatial cross-correlation for vector %s...\n" % str(v))
+    print ("\n   Proceeding with reddening estimate for %s...\n" % str(v))
     redcat = do_reddening_calculation(bgCat,basisVector=v)
+    
+    bgRan = get_bg_randoms(ra_file, redcat,zmin=zmin)   
+   
     # Now make the correlation objects.
     DK = treecorr.NNCorrelation(min_sep=0.1,max_sep=200.0,bin_size=.6,sep_units='arcmin')
     DK.process(fgCat,redcat)
-    DK.write(dd_outfile)
+    RK = treecorr.NNCorrelation(min_sep=0.1,max_sep=200.0,bin_size=.6,sep_units='arcmin')
+    RK.process(fgCat,bgRan)
     FR = treecorr.NNCorrelation(min_sep=0.1,max_sep=200.0,bin_size=.6,sep_units='arcmin')
     FR.process(fgRan,redcat)
-    FR.write(fr_outfile)
-    RR = treecorr.NNCorrelation(min_sep=0.1,max_sep=200.0,bin_size=.6,sep_units='arcmin')
-    RR.process(fgRan,fgRan)
-    RR.write(fr_outfile)
-
-    # calculate correlation... 
-    xi,varxi=DK.calculateXi(RR,dr=FR)
-    f=open('xi.txt','w')
-    for i,x in enumerate(xi):
-        f.write("%f %f\n" % (x,varxi[i]))
+    RR = treecorr.NNCorrelation(min_sep=0.1,max_sep=200.0,bin_size=0.6,sep_units='arcmin')
+    RR.process(fgRan,bgRan)
+    #RR.write(rr_outfile)  
+    xi,varxi=DK.calculateXi(RR,FR,RK)
+    f=open('xi_allzbins.txt','w')
+    for i,x in enumerate(xi): f.write("%f %f\n" % (x,varxi[i]))
     f.close()
-    print ("Done!")
+    print ("Finished spatial cross-correlation!\n\n")
     return 
 
 def do_it_all(v,fgCat,fgRan,bgCat,basisInd=None,optimal=False):
@@ -339,8 +344,8 @@ def main(argv):
     rmp_name = 'y1a1-gold-mof-badregion.fits'
     rm_mask = 'DES_Y1A1_3x2pt_redMaGiC_MASK_HPIX4096RING.fits'
     ra_name = 'DES_Y1A1_3x2pt_redMaGiC_RANDOMS.fits'
-    #fg_name='galex_trimmed.fits'
-    fg_name='des_SVMlowZ_gals.fits'
+    fg_name='galex_trimmed.fits'
+    #fg_name='des_SVMlowZ_gals.fits'
     #fg_name='iifsc_des_overlap.fits'
     #fg_name='des_y1a1_stars_MatchScosMagDistSize.fits'
     global scl
@@ -354,10 +359,10 @@ def main(argv):
     ra_file = os.path.join(datapath,ra_name)
     fg_file = os.path.join(datapath,fg_name)
     global zmin
-    zmin=0.16
+    zmin=0.15
     # This parameter decides whether we want to loop over all basis vectors, or use the "optimal" vector
     global optimal
-    optimal = True
+    optimal = False
 
     # First, define our orthonormal vector space based on an input extinction vector
     vdust = np.array([1.12224688, 0.82747095, 0.62680647, 0.47880753])
@@ -380,7 +385,6 @@ def main(argv):
         vec=basis[0]        
         do_it_all(vec,fgCat,fgRan,bgCat,basisInd=0,optimal=False)
         do_NNcor(vec,fgCat,fgRan,bgCat,basisInd=0,optimal=False)
-        
         # Loop through other vectors
         index = 1
         for vec in basis[1:]:
