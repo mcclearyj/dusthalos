@@ -35,7 +35,6 @@ def get_fg_catalog(fg_filen,maskfile = None,nside=4096,nest=False):
         # If desired, write this trimmed GALEX catalog to file
         data[fgKeep].write('desSVM_trimmed.fits',format='fits',overwrite=True)
         tcCatalog = treecorr.Catalog(ra=data[fgKeep]['RA'],dec=data[fgKeep]['DEC'],ra_units='deg',dec_units='deg')
-        pdb.set_trace()
         print( "Length of catalog after cuts = %i" % len(tcCatalog.ra))
         
     except:
@@ -271,9 +270,9 @@ def plotres(dd_out,fr_out=None, outplotn='fig.png'):
 
 def get_output_names(basisInd=None,optimal=False):
     if optimal:
-        dd_outfile = '../outputs/dustCorr_dd_orthonorm-voptimal-galex.fits'
-        fr_outfile = '../outputs/dustCorr_fr_orthonorm-voptimal-galex.fits'
-        fig_outfile = '../outputs/correlationFuncFigures/dustCorr_orthonorm-voptimal-galex.png'       
+        dd_outfile = '../outputs/dustCorr_dd_orthonorm-voptimal-SVM.fits'
+        fr_outfile = '../outputs/dustCorr_fr_orthonorm-voptimal-SVM.fits'
+        fig_outfile = '../outputs/correlationFuncFigures/dustCorr_orthonorm-voptimal-SVM.png'       
     elif (basisInd==0):
         dd_outfile = '../outputs/dustCorr_dd_orthonorm-vdust-desSVM.fits'
         fr_outfile = '../outputs/dustCorr_fr_orthonorm-vdust-desSVM.fits'
@@ -358,7 +357,7 @@ def main(argv):
     zmin=0.16
     # This parameter decides whether we want to loop over all basis vectors, or use the "optimal" vector
     global optimal
-    optimal = False 
+    optimal = True
 
     # First, define our orthonormal vector space based on an input extinction vector
     vdust = np.array([1.12224688, 0.82747095, 0.62680647, 0.47880753])
@@ -373,7 +372,7 @@ def main(argv):
 
     if optimal:      
         print("using optimal dust vector...")
-        vec = basis[0]+0.0057*basis[1]+0.015*basis[2]+0.088*basis[3]
+        vec = basis[0]+0.818*basis[1]-0.74*basis[2]+0.495*basis[3]
         do_it_all(vec,fgCat,fgRan,bgCat,optimal=True)
 
     else: 

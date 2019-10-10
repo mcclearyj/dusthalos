@@ -91,7 +91,7 @@ def main():
     alpha_arr=np.arange(-1, 2, 0.001)
     chi2_arr=np.zeros_like(alpha_arr)
     for i,alpha in enumerate(alpha_arr):
-          chi2_arr[i]=chi2(alpha,kappaDust_norm,sigmaDust,kappa3_norm,sigma3)
+          chi2_arr[i]=chi2(alpha,kappaDust_norm,sigmaDust,kappa1_norm,sigma1)
     alphabest = alpha_arr[chi2_arr==min(chi2_arr)]
     print("%f is best-fit alpha of propotionality" % alphabest)   
     print("reduced chi2 for alpha is %f\n" %(min(chi2_arr)/12.))
@@ -100,10 +100,10 @@ def main():
 
     # do same thing, but with a beta on the k1 values
     print("#\n#minimizing the chi2 (beta*kappa_norm - kappa2_norm)**2\n#")
-    beta_arr=np.arange(-1., 100., 0.005)
+    beta_arr=np.arange(-1., 3., 0.001)
     chi2_arr=np.zeros_like(beta_arr)
     for i,beta in enumerate(beta_arr):
-          chi2_arr[i]=chi2_beta(beta,kappaDust_norm,sigmaDust,kappa3_norm,sigma3)       
+          chi2_arr[i]=chi2_beta(beta,kappaDust_norm,sigmaDust,kappa1_norm,sigma1)       
     print("%f is best-fit beta of propotionality" % (beta_arr[chi2_arr==min(chi2_arr)]))   
     print("reduced chi2 for beta is %f\n" %(min(chi2_arr)/12.))
     make_a_chi2_plot(beta_arr,chi2_arr,n='betachi2_vdust.png')
