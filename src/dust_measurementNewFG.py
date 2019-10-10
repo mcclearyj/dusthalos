@@ -15,9 +15,9 @@ def get_fg_catalog(fg_filen,maskfile = None,nside=4096,nest=False):
     
     try:
         data = Table.read(fg_filen,format='fits')
+        """
 
-        #wg,=np.where((data['MAG_AUTO_R'] <= 23) & (data['MAG_AUTO_R'] >= 15.0))
-        wg,=np.where(data['MAG_AUTO_R'] <=23)
+        wg,=np.where(data['MAG_AUTO_R'] <=24)
         data=data[wg]
 
         ra_cat =  data['RA']
@@ -34,10 +34,12 @@ def get_fg_catalog(fg_filen,maskfile = None,nside=4096,nest=False):
 
         # If desired, write this trimmed GALEX catalog to file
         data[fgKeep].write('desSVM_trimmed.fits',format='fits',overwrite=True)
-        tcCatalog = treecorr.Catalog(ra=data[fgKeep]['RA'],dec=data[fgKeep]['DEC'],\
-
-        print( "Length of catalog after cuts = %i" % len(fgKeep.nonzero()[0]))
+        tcCatalog = treecorr.Catalog(ra=data[fgKeep]['RA'],dec=data[fgKeep]['DEC'],ra_units='deg',dec_units='deg')
         
+        print( "Length of catalog after cuts = %i" % len(fgKeep.nonzero()[0]))
+        """
+        tcCatalog = treecorr.Catalog(ra=data['RA'],dec=data['DEC'],ra_units='deg',dec_units='deg')                                  
+        print( "Length of catalog after cuts = %i" % len(data['DEC']))
     except:
         """
         # Hopefully this is the trimmed catalog!
@@ -68,7 +70,7 @@ def get_ONbasis(vdust):
     # so define ON basis vectors along which we can project the (real?) vector
 
     # start by normalizing the input dust vector
-    vec = vdust/norm(vdust)
+    vec = vdust
     
     # Go through the G-S process
     v0 = np.zeros_like(vec); v0[0]= 1.0
@@ -251,12 +253,10 @@ def get_bg_randoms(bg_file,Cat,zmin=0.2):
                                    ra_units='deg',dec_units='deg')
     return catalog
     
-def plotres(dd_out,dr_out,fr_out=None,rr_out = None, outplotn='fig.png'):
+def plotres(dd_out,fr_out=None, outplotn='fig.png'):
     # Now make a plot.
     dk = fitsio.read(dd_out)
-    dr = fitsio.read(dr_out)
     fr = fitsio.read(fr_out)
-    rr = fitsio.read(rr_out)
     r = np.logspace(-2,2.7,10)
     av = 2.4e-3 * (r/scl)**(-0.84)
     
@@ -297,110 +297,64 @@ def plotres(dd_out,dr_out,fr_out=None,rr_out = None, outplotn='fig.png'):
 def get_output_names(basisInd=None,optimal=False):
     if optimal:
         dd_outfile = '../outputs/dustCorr_dd_orthonorm-voptimal-galex.fits'
-        dr_outfile = '../outputs/dustCorr_dr_orthonorm-voptimal-galex.fits'
         fr_outfile = '../outputs/dustCorr_fr_orthonorm-voptimal-galex.fits'
-        rr_outfile = '../outputs/dustCorr_rr_orthonorm-voptimal-galex.fits'
         fig_outfile = '../outputs/correlationFuncFigures/dustCorr_orthonorm-voptimal-galex.png'       
     elif (basisInd==0):
         dd_outfile = '../outputs/dustCorr_dd_orthonorm-vdust-desSVM.fits'
-        dr_outfile = '../outputs/dustCorr_dr_orthonorm-vdust-desSVM.fits'
         fr_outfile = '../outputs/dustCorr_fr_orthonorm-vdust-desSVM.fits'
-        rr_outfile = '../outputs/dustCorr_rr_orthonorm-vdust-desSVM.fits'
         fig_outfile = '../outputs/correlationFuncFigures/dustCorr_orthonorm-vdust-desSVM.png'      
     else:
         dd_outfile = '../outputs/dustCorr_dd_orthonorm-v'+str(basisInd)+'-desSVM.fits'
-        dr_outfile = '../outputs/dustCorr_dr_orthonorm-v'+str(basisInd)+'-desSVM.fits'
         fr_outfile = '../outputs/dustCorr_fr_orthonorm-v'+str(basisInd)+'-desSVM.fits'
-        rr_outfile = '../outputs/dustCorr_rr_orthonorm-v'+str(basisInd)+'-desSVM.fits'
         fig_outfile = '../outputs/correlationFuncFigures/dustCorr_orthonorm-v'+str(basisInd)+'-desSVM.png'           
-    return dd_outfile,dr_outfile,fr_outfile,rr_outfile,fig_outfile
+    return dd_outfile,fr_outfile,fig_outfile
 
 
 def get_NNoutput_names():
     dd_outfile = '../outputs/dustCorr_dd_NN-vdust-desSVM.fits'
-    dr_outfile = '../outputs/dustCorr_dr_NN-vdust-desSVM.fits'
     fr_outfile = '../outputs/dustCorr_fr_NN-vdust-desSVM.fits'
-    rr_outfile = '../outputs/dustCorr_rr_NN-vdust-desSVM.fits'           
-    return dd_outfile,dr_outfile,fr_outfile,rr_outfile
-
-
-def do_it_all(v,fgCat,fgRan,bgCat,basisInd=None,optimal=False):
-    
-    dd_outfile,dr_outfile,fr_outfile,rr_outfile,fig_outfile = get_output_names(basisInd,optimal)
-    print ("Doing reddening calculation for for vector %s..." % str(v))
-    redcat = do_reddening_calculation(bgCat,basisVector=v)
-    print ("Done. Getting bg randoms... ")
-    bgRan = get_bg_randoms(ra_file, redcat,zmin=zmin)   
-    print ("Done. Now cross-correlating for vector %s..." % str(v))     
-    # Now make the correlation objects.
-    DK = treecorr.NKCorrelation(min_sep=0.1,max_sep=200.0,bin_size=.6,sep_units='arcmin')
-    DK.process(fgCat,redcat)
-    DK.write(dd_outfile)
-    RK = treecorr.NKCorrelation(min_sep=0.1,max_sep=200.0,bin_size=.6,sep_units='arcmin')
-    RK.process(fgCat,bgRan)
-    RK.write(dr_outfile)       
-    FR = treecorr.NKCorrelation(min_sep=0.1,max_sep=200.0,bin_size=.6,sep_units='arcmin')
-    FR.process(fgRan,redcat)
-    FR.write(fr_outfile)
-    RR = treecorr.NKCorrelation(min_sep=0.1,max_sep=200.0,bin_size=0.6,sep_units='arcmin')
-    RR.process(fgRan,bgRan)
-    RR.write(rr_outfile)    
-    plotres(dd_outfile,dr_outfile,fr_out = fr_outfile,rr_out=rr_outfile,outplotn=fig_outfile)
-
-    return 
+    return dd_outfile,fr_outfile
 
 def do_NNcor(v,fgCat,fgRan,bgCat,basisInd=None,optimal=False):
    
-    dd_outfile,dr_outfile,fr_outfile,rr_outfile= get_NNoutput_names()
-    print ("Doing reddening calculation for for vector %s..." % str(v))
+    dd_outfile,fr_outfile = get_NNoutput_names()
+    print ("Starting spatial cross-corr...")
     redcat = do_reddening_calculation(bgCat,basisVector=v)
-    print ("Done. Getting bg randoms... ")
-    bgRan = get_bg_randoms(ra_file, redcat,zmin=zmin)   
-    print ("Done. Now cross-correlating for vector %s..." % str(v))     
     # Now make the correlation objects.
     DK = treecorr.NNCorrelation(min_sep=0.1,max_sep=200.0,bin_size=.6,sep_units='arcmin')
     DK.process(fgCat,redcat)
     DK.write(dd_outfile)
-    RK = treecorr.NNCorrelation(min_sep=0.1,max_sep=200.0,bin_size=.6,sep_units='arcmin')
-    RK.process(fgCat,bgRan)
-    RK.write(dr_outfile)       
     FR = treecorr.NNCorrelation(min_sep=0.1,max_sep=200.0,bin_size=.6,sep_units='arcmin')
     FR.process(fgRan,redcat)
     FR.write(fr_outfile)
-    RR = treecorr.NNCorrelation(min_sep=0.1,max_sep=200.0,bin_size=0.6,sep_units='arcmin')
-    RR.process(fgRan,bgRan)
-    RR.write(rr_outfile)        
+    RR = treecorr.NNCorrelation(min_sep=0.1,max_sep=200.0,bin_size=.6,sep_units='arcmin')
+    RR.process(fgRan,fgRan)
+    RR.write(fr_outfile)
+
     # calculate correlation... 
-    xi,varxi=DK.calculateXi(RR,FR,RK)
+    xi,varxi=DK.calculateXi(RR,dr=FR)
     f=open('xi.txt','w')
     for i,x in enumerate(xi):
         f.write("%f %f\n" % (x,varxi[i]))
     f.close()
+    print ("Done!")
     return 
 
 def do_it_all(v,fgCat,fgRan,bgCat,basisInd=None,optimal=False):
     
-    dd_outfile,dr_outfile,fr_outfile,rr_outfile,fig_outfile = get_output_names(basisInd,optimal)
+    dd_outfile,fr_outfile,fig_outfile = get_output_names(basisInd,optimal)
     print ("Doing reddening calculation for for vector %s..." % str(v))
     redcat = do_reddening_calculation(bgCat,basisVector=v)
-    print ("Done. Getting bg randoms... ")
-    bgRan = get_bg_randoms(ra_file, redcat,zmin=zmin)   
     print ("Done. Now cross-correlating for vector %s..." % str(v))     
     # Now make the correlation objects.
     DK = treecorr.NKCorrelation(min_sep=0.1,max_sep=200.0,bin_size=.6,sep_units='arcmin')
     DK.process(fgCat,redcat)
     DK.write(dd_outfile)
-    RK = treecorr.NKCorrelation(min_sep=0.1,max_sep=200.0,bin_size=.6,sep_units='arcmin')
-    RK.process(fgCat,bgRan)
-    RK.write(dr_outfile)       
     FR = treecorr.NKCorrelation(min_sep=0.1,max_sep=200.0,bin_size=.6,sep_units='arcmin')
     FR.process(fgRan,redcat)
     FR.write(fr_outfile)
-    RR = treecorr.NKCorrelation(min_sep=0.1,max_sep=200.0,bin_size=0.6,sep_units='arcmin')
-    RR.process(fgRan,bgRan)
-    RR.write(rr_outfile)   
-
-    plotres(dd_outfile,dr_outfile,fr_out = fr_outfile,rr_out=rr_outfile,outplotn=fig_outfile)
+   
+    plotres(dd_outfile,fr_out=fr_outfile,outplotn=fig_outfile)
 
     return 
 
@@ -432,7 +386,8 @@ def main(argv):
     optimal = False 
 
     # First, define our orthonormal vector space based on an input extinction vector
-    vdust = np.array([1.12224688, 0.82747095, 0.62680647, 0.47880753])
+    #vdust = np.array([1.12224688, 0.82747095, 0.62680647, 0.47880753])
+    vdust = np.array([10,9,8,7])  
     basis = get_ONbasis(vdust)
 
     print( "Getting fg catalog and randoms... ")
@@ -443,19 +398,20 @@ def main(argv):
 
     if optimal:      
         print("using optimal dust vector...")
-        vec = basis[0]+2.18*basis[1]-13.15*basis[3]
+        vec = basis[0]+0.0057*basis[1]+0.015*basis[2]+0.088*basis[3]
         do_it_all(vec,fgCat,fgRan,bgCat,optimal=True)
 
     else: 
         # First calculation: "reddening vector"
         vec=basis[0]        
         do_it_all(vec,fgCat,fgRan,bgCat,basisInd=0,optimal=False)
-        #do_NNcor(vec,fgCat,fgRan,bgCat,basisInd=0,optimal=False)
+        do_NNcor(vec,fgCat,fgRan,bgCat,basisInd=0,optimal=False)
         
         # Loop through other vectors
         index = 1
         for vec in basis[1:]:
             do_it_all(vec,fgCat,fgRan,bgCat,basisInd=index,optimal=False)
+            do_NNcor(vec,fgCat,fgRan,bgCat,basisInd=index,optimal=False)
             index+=1
             
 if __name__ == "__main__":
