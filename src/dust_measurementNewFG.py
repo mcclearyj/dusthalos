@@ -15,7 +15,7 @@ def get_fg_catalog(fg_filen,maskfile = None,nside=4096,nest=False):
     
     try:
         data = Table.read(fg_filen,format='fits')
-        """
+        
 
         wg,=np.where(data['MAG_AUTO_R'] <=24)
         data=data[wg]
@@ -35,11 +35,9 @@ def get_fg_catalog(fg_filen,maskfile = None,nside=4096,nest=False):
         # If desired, write this trimmed GALEX catalog to file
         data[fgKeep].write('desSVM_trimmed.fits',format='fits',overwrite=True)
         tcCatalog = treecorr.Catalog(ra=data[fgKeep]['RA'],dec=data[fgKeep]['DEC'],ra_units='deg',dec_units='deg')
+        pdb.set_trace()
+        print( "Length of catalog after cuts = %i" % len(tcCatalog.ra))
         
-        print( "Length of catalog after cuts = %i" % len(fgKeep.nonzero()[0]))
-        """
-        tcCatalog = treecorr.Catalog(ra=data['RA'],dec=data['DEC'],ra_units='deg',dec_units='deg')                                  
-        print( "Length of catalog after cuts = %i" % len(data['DEC']))
     except:
         """
         # Hopefully this is the trimmed catalog!
@@ -88,29 +86,6 @@ def get_ONbasis(vdust):
     # Return basis
     return vec,u0,u1,u2
     
-def get_ONbasis2(vdust):
-    # Alternative means...
-    # start by normalizing the input dust vector
-    vec = vdust/norm(vdust)
-    
-    # Go through the G-S process
-    # Doing it slightly differently than before -- what happens?
-    v0 = np.zeros_like(vec); v0[3]= 1.0
-    v0prime = v0 - np.dot(v0,vec)*vec
-    u0 = v0prime/norm(v0prime)
-
-    v1 = np.zeros_like(vec); v1[1]= 1.0
-    v1prime = v1 - np.dot(v1,vec)*vec - np.dot(v1,u0)*u0
-    u1 = v1prime/norm(v1prime)
-     
-    v2 = np.zeros_like(vec); v2[0]= 1.0
-    v2prime = v2 - np.dot(v2,vec)*vec - np.dot(v2,u0)*u0 - np.dot(v2,u1)*u1
-    u2 = v2prime/norm(v2prime)
-
-    # Return basis
-    return vec,u0,u1,u2
-
-
 
 def est_reddening(catalog,zeropoint = 30.0, basisvector=None):
     # Make the colors.
@@ -386,8 +361,8 @@ def main(argv):
     optimal = False 
 
     # First, define our orthonormal vector space based on an input extinction vector
-    #vdust = np.array([1.12224688, 0.82747095, 0.62680647, 0.47880753])
-    vdust = np.array([10,9,8,7])  
+    vdust = np.array([1.12224688, 0.82747095, 0.62680647, 0.47880753])
+    
     basis = get_ONbasis(vdust)
 
     print( "Getting fg catalog and randoms... ")
@@ -411,7 +386,6 @@ def main(argv):
         index = 1
         for vec in basis[1:]:
             do_it_all(vec,fgCat,fgRan,bgCat,basisInd=index,optimal=False)
-            do_NNcor(vec,fgCat,fgRan,bgCat,basisInd=index,optimal=False)
             index+=1
             
 if __name__ == "__main__":
