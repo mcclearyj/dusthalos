@@ -17,8 +17,10 @@ def get_fg_catalog(fg_filen,maskfile = None,nside=4096,nest=False):
        
         data = Table.read(fg_filen,format='fits')
         
+        # DO NOT DO THIS:
+        # wg,=np.where(data['MAG_AUTO_R'] <=21.5)
         
-        wg,=np.where(data['MAG_AUTO_R'] <=23)
+        wg,=np.where(data['MAG_AUTO_R'] <= 26)
         data=data[wg]
 
         ra_cat =  data['RA']
