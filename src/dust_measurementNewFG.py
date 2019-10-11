@@ -276,31 +276,31 @@ def plotres(dd_out,dr_out,fr_out=None,rr_out = None, outplotn='fig.png'):
 
 def get_output_names(basisInd=None,optimal=False):
     if optimal:
-        dd_outfile = '../outputs/dust_correlation_dd_orthonorm-voptimal-iifsc.fits'
-        dr_outfile = '../outputs/dust_correlation_dr_orthonorm-voptimal-iifsc.fits'
-        fr_outfile = '../outputs/dust_correlation_fr_orthonorm-voptimal-iifsc.fits'
-        rr_outfile = '../outputs/dust_correlation_rr_orthonorm-voptimal-iifsc.fits'
+        dd_outfile = '../outputs/dustCorr_dd_orthonorm-voptimal-iifsc.fits'
+        dr_outfile = '../outputs/dustCorr_dr_orthonorm-voptimal-iifsc.fits'
+        fr_outfile = '../outputs/dustCorr_fr_orthonorm-voptimal-iifsc.fits'
+        rr_outfile = '../outputs/dustCorr_rr_orthonorm-voptimal-iifsc.fits'
         fig_outfile = '../outputs/correlationFuncFigures/dustCorr_orthonorm-voptimal-iifsc.png'       
     elif (basisInd==0):
-        dd_outfile = '../outputs/dust_correlation_dd_orthonorm-vdust-iifsc.fits'
-        dr_outfile = '../outputs/dust_correlation_dr_orthonorm-vdust-iifsc.fits'
-        fr_outfile = '../outputs/dust_correlation_fr_orthonorm-vdust-iifsc.fits'
-        rr_outfile = '../outputs/dust_correlation_rr_orthonorm-vdust-iifsc.fits'
+        dd_outfile = '../outputs/dustCorr_dd_orthonorm-vdust-iifsc.fits'
+        dr_outfile = '../outputs/dustCorr_dr_orthonorm-vdust-iifsc.fits'
+        fr_outfile = '../outputs/dustCorr_fr_orthonorm-vdust-iifsc.fits'
+        rr_outfile = '../outputs/dustCorr_rr_orthonorm-vdust-iifsc.fits'
         fig_outfile = '../outputs/correlationFuncFigures/dustCorr_orthonorm-vdust-iifsc.png'      
     else:
-        dd_outfile = '../outputs/dust_correlation_dd_orthonorm-v'+str(basisInd)+'-iifsc.fits'
-        dr_outfile = '../outputs/dust_correlation_dr_orthonorm-v'+str(basisInd)+'-iifsc.fits'
-        fr_outfile = '../outputs/dust_correlation_fr_orthonorm-v'+str(basisInd)+'-iifsc.fits'
-        rr_outfile = '../outputs/dust_correlation_rr_orthonorm-v'+str(basisInd)+'-iifsc.fits'
+        dd_outfile = '../outputs/dustCorr_dd_orthonorm-v'+str(basisInd)+'-iifsc.fits'
+        dr_outfile = '../outputs/dustCorr_dr_orthonorm-v'+str(basisInd)+'-iifsc.fits'
+        fr_outfile = '../outputs/dustCorr_fr_orthonorm-v'+str(basisInd)+'-iifsc.fits'
+        rr_outfile = '../outputs/dustCorr_rr_orthonorm-v'+str(basisInd)+'-iifsc.fits'
         fig_outfile = '../outputs/correlationFuncFigures/dustCorr_orthonorm-v'+str(basisInd)+'-iifsc.png'           
     return dd_outfile,dr_outfile,fr_outfile,rr_outfile,fig_outfile
 
 
 def get_NNoutput_names():
-    dd_outfile = '../outputs/dust_correlation_dd_NN-vdust.fits'
-    dr_outfile = '../outputs/dust_correlation_dr_NN-vdust.fits'
-    fr_outfile = '../outputs/dust_correlation_fr_NN-vdust.fits'
-    rr_outfile = '../outputs/dust_correlation_rr_NN-vdust.fits'           
+    dd_outfile = '../outputs/dustCorr_dd_NN-vdust.fits'
+    dr_outfile = '../outputs/dustCorr_dr_NN-vdust.fits'
+    fr_outfile = '../outputs/dustCorr_fr_NN-vdust.fits'
+    rr_outfile = '../outputs/dustCorr_rr_NN-vdust.fits'           
     return dd_outfile,dr_outfile,fr_outfile,rr_outfile
 
 
@@ -415,7 +415,7 @@ def main(argv):
      
     # This parameter decides whether we want to loop over all basis vectors, or use the "optimal" vector
     global optimal
-    optimal = False 
+    optimal = True
 
     # First, define our orthonormal vector space based on an input extinction vector
     vdust = np.array([1.12224688, 0.82747095, 0.62680647, 0.47880753])
@@ -429,8 +429,8 @@ def main(argv):
 
     if optimal:      
         print("using optimal dust vector...")
-        new=basis[0]+0.744*basis[1]-0.2675*basis[2]-0.2175*basis[3]
-        vec=new/0.95
+        new=basis[0]+0.665*basis[1]-0.22*basis[2]-0.23*basis[3]
+        vec=new/0.96
         do_it_all(vec,fgCat,fgRan,bgCat,optimal=True)
 
     else: 
