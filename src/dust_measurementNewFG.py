@@ -15,10 +15,10 @@ def get_fg_catalog(fg_filen,maskfile = None,nside=4096,nest=False):
     
     try:
        
-        data = Table.read(fg_filen,format='csv')
+        data = Table.read(fg_filen,format='fits')
         
-        """
-        wg,=np.where(data['MAG_AUTO_R'] <=22)
+        
+        wg,=np.where(data['MAG_AUTO_R'] <=23)
         data=data[wg]
 
         ra_cat =  data['RA']
@@ -37,7 +37,7 @@ def get_fg_catalog(fg_filen,maskfile = None,nside=4096,nest=False):
         data[fgKeep].write('desSVM_trimmed.fits',format='fits',overwrite=True)
         tcCatalog = treecorr.Catalog(ra=data[fgKeep]['RA'],dec=data[fgKeep]['DEC'],ra_units='deg',dec_units='deg')
         print( "Length of catalog after cuts = %i" % len(tcCatalog.ra))
-        """
+        
         
     except:
         
@@ -280,23 +280,23 @@ def plotres(dd_out,dr_out,fr_out=None,rr_out = None, outplotn='fig.png'):
 
 def get_output_names(basisInd=None,optimal=False):
     if optimal:
-        dd_outfile = '../outputs/dustCorr_dd_orthonorm-voptimal-galex.fits'
-        dr_outfile = '../outputs/dustCorr_dr_orthonorm-voptimal-galex.fits'
-        fr_outfile = '../outputs/dustCorr_fr_orthonorm-voptimal-galex.fits'
-        rr_outfile = '../outputs/dustCorr_rr_orthonorm-voptimal-galex.fits'
-        fig_outfile = '../outputs/correlationFuncFigures/dustCorr_orthonorm-voptimal-galex.png'       
+        dd_outfile = '../outputs/dustCorr_dd_orthonorm-voptimal-desSVM.fits'
+        dr_outfile = '../outputs/dustCorr_dr_orthonorm-voptimal-desSVM.fits'
+        fr_outfile = '../outputs/dustCorr_fr_orthonorm-voptimal-desSVM.fits'
+        rr_outfile = '../outputs/dustCorr_rr_orthonorm-voptimal-desSVM.fits'
+        fig_outfile = '../outputs/correlationFuncFigures/dustCorr_orthonorm-voptimal-desSVM.png'       
     elif (basisInd==0):
-        dd_outfile = '../outputs/dustCorr_dd_orthonorm-vdust-iifsc.fits'
-        dr_outfile = '../outputs/dustCorr_dr_orthonorm-vdust-iifsc.fits'
-        fr_outfile = '../outputs/dustCorr_fr_orthonorm-vdust-iifsc.fits'
-        rr_outfile = '../outputs/dustCorr_rr_orthonorm-vdust-iifsc.fits'
-        fig_outfile = '../outputs/correlationFuncFigures/dustCorr_orthonorm-vdust-iifsc.png'      
+        dd_outfile = '../outputs/dustCorr_dd_orthonorm-vdust-desSVM.fits'
+        dr_outfile = '../outputs/dustCorr_dr_orthonorm-vdust-desSVM.fits'
+        fr_outfile = '../outputs/dustCorr_fr_orthonorm-vdust-desSVM.fits'
+        rr_outfile = '../outputs/dustCorr_rr_orthonorm-vdust-desSVM.fits'
+        fig_outfile = '../outputs/correlationFuncFigures/dustCorr_orthonorm-vdust-desSVM.png'      
     else:
-        dd_outfile = '../outputs/dustCorr_dd_orthonorm-v'+str(basisInd)+'-iifsc.fits'
-        dr_outfile = '../outputs/dustCorr_dr_orthonorm-v'+str(basisInd)+'-iifsc.fits'
-        fr_outfile = '../outputs/dustCorr_fr_orthonorm-v'+str(basisInd)+'-iifsc.fits'
-        rr_outfile = '../outputs/dustCorr_rr_orthonorm-v'+str(basisInd)+'-iifsc.fits'
-        fig_outfile = '../outputs/correlationFuncFigures/dustCorr_orthonorm-v'+str(basisInd)+'-iifsc.png'           
+        dd_outfile = '../outputs/dustCorr_dd_orthonorm-v'+str(basisInd)+'-desSVM.fits'
+        dr_outfile = '../outputs/dustCorr_dr_orthonorm-v'+str(basisInd)+'-desSVM.fits'
+        fr_outfile = '../outputs/dustCorr_fr_orthonorm-v'+str(basisInd)+'-desSVM.fits'
+        rr_outfile = '../outputs/dustCorr_rr_orthonorm-v'+str(basisInd)+'-desSVM.fits'
+        fig_outfile = '../outputs/correlationFuncFigures/dustCorr_orthonorm-v'+str(basisInd)+'-desSVM.png'           
     return dd_outfile,dr_outfile,fr_outfile,rr_outfile,fig_outfile
 
 
@@ -359,7 +359,7 @@ def do_NNcor(v,fgCat,fgRan,bgCat,basisInd=None,optimal=False):
     #RR.write(rr_outfile)        
     # calculate correlation... 
     xi,varxi=DK.calculateXi(RR,FR,RK)
-    f=open('xi_iifsc.txt','w')
+    f=open('xi_desSVM.txt','w')
     for i,x in enumerate(xi):
         f.write("%f %f\n" % (x,varxi[i]))
     f.close()
@@ -399,9 +399,9 @@ def main(argv):
     rmp_name = 'y1a1-gold-mof-badregion.fits'
     rm_mask = 'DES_Y1A1_3x2pt_redMaGiC_MASK_HPIX4096RING.fits'
     ra_name = 'DES_Y1A1_3x2pt_redMaGiC_RANDOMS.fits'
-    fg_name='galex_trimmed.fits'
+    #fg_name='galex_trimmed.fits'
     #fg_name='desSVM_trimmed.fits'
-    #fg_name='des_SVMlowZ_gals.fits'
+    fg_name='des_SVMlowZ_gals.fits'
     #fg_name='iifsc_des_overlap.fits'
     #fg_name='des_y1a1_stars_MatchScosMagDistSize.fits'
     global scl
@@ -419,7 +419,7 @@ def main(argv):
      
     # This parameter decides whether we want to loop over all basis vectors, or use the "optimal" vector
     global optimal
-    optimal = True
+    optimal = False
 
     # First, define our orthonormal vector space based on an input extinction vector
     vdust = np.array([1.12224688, 0.82747095, 0.62680647, 0.47880753])
