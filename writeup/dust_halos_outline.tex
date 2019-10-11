@@ -23,36 +23,62 @@
 %\section{}
 %\subsection{}
 
-\section{Motivation\label{sec:intro}}
-%n This is pretty much copied and pasted from ADAP, but that's OK since it's our own words!
-most of the universe?s atoms are hidden from plain sight: stars account for only 10\% of baryons, while the remaining 90\% reside in two gaseous phases that are extremely difficult to observe because of their low densities: the circumgalactic medium (CGM), filling the dark matter halos hosting galaxies, and the more extended intergalactic medium (IGM).  Despite being the focus of intense theoretical and observational research, the CGM and IGM remain poorly understood. This matters because abundance and spatial extent of dust in the Universe is a key component of galaxy formation models, comprises a spatially varying foreground screen that has practical implications for supernova cosmology, and fundamentally limits the homogeneity of samples selected for wide-field surveys. 
+% OK so what the fuck do I want to put in here? I guess it makes sense to start by putting in the figures that I want to put in
+% Those would include: the dusty dust figure, the star-fg correlation, the fg/bkg samples, what else? I guess the Galex and IIFSC plots? I'm much less
+% convinced by those, but I guess we can start... Also, the spatial correlation function would be good. 
 
-Strikingly, Ménard et al. (2010) found, while attempting to measure magnification of 85,000 background quasars by 20 million normal galaxies in SDSS images, a smooth extinction profile extending beyond 1 Mpc (Figure 1, left panel). Peek et al. (2014) perform a similar measurement using as their background sources SDSS Luminous Red Galaxies (LRGs), whose remarkably small dispersion in optical colors allows for high accuracy with a smaller sample size. Together, these measurements imply that more than half of the dust in the universe lies outside galactic disks. This result is highly unexpected: the presence of dust well into the two-halo regime of the matter correlation function defies the predictions of hydrodynamic simulations of dust production and survival, under-predicting the observed Ménard and Peek measurements by an order of magnitude (McKinnon et al. 2017). 
+\section{Motivation\label{sec:intro}}
+\begin{outline}
+\1 Motivate the research based on literature results: obviously Menard, but also Peek, and the theory papers. Do not include figures, except maybe in an appendix
+\1 DO NOT CONGRATULATE
+\end{outline}
 
 
 \section{Methods\label{sec:methods}}
 
 \subsection{A Maximum Likelihood Estimator for Dust Extinction}
 \begin{outline}
+\1 Should probably explain how Av, reddening and Rv are related to one another
+\2 Linearly related! But dust-model dependent
+\2 We chose Rv = 3.1 by default, to allow an easy comparison to literature result, but others may be better...
+
 \1 Develop our MLE formalism; reproduce equations
 	\2 don't forget to include discussion of extinction vector (FM07 or whatever)
-\1 May also want to include the ON and optimal vector generation, at least for a paragraph --YES
+	
+\1 Also want to include the ON and optimal vector generation, at least for a paragraph --YES
 	\2 Think of this like a PCA; as long as the sum is non-negative, we're in good shape. 
 	\2 Dips positive or negative mean that the``principal component" under or overfits the actual trend at that distance
 		\3 little harder to connect to physical meaning for now -- problem for theorists?
-	\2 For development of "optimal" vector, mb show chi-squared plots, just to explain where we got this? 
-		\3 I think I baleeted those, but fairly easy to reproduce 
+	\2 For development of "optimal" vector, show chi-squared plots, just to explain where we get these 
+	
 \1 Discuss how and why we split Av estimate into redshift bins
 	\2 correlating *deviations from mean color space of background galaxies*
 	\2 \textbf{HEY: did we deredden our magnitudes for galactic reddening? Are we hoping that we just "average" over dust? Because that's a bad idea}
-\1 \textbf{yooo need to justify $R_V = 3.1$ and consider using other values of $R_V$}
+
 \end{outline}
 
 \subsection{Correlation Function Algorithm\label{ssec:treecorr}}
 \begin{outline}
 \1 Treecorr algorithm, briefly: it's not my algorithm but it is what we use. Correlating not gal-shear but gal-extinction
+	\2 cite Jarvis, Bernstein, & Jain, 2004, MNRAS, 352, 338
+	\2 ``Nominally the two-point counts-kappa correlation function, although any scalar quantity can be used as ?kappa?. 
+		In lensing, kappa is the convergence, but this could be used for temperature, size, etc
 \1 Mention spatial correlation as well
+	\2 ``The normal two-point correlation function of number counts (typically galaxy counts).''
 \1 Mention null tests: flexibility of algorithm allows us to easily correlate any two samples, so ideal for null tests like star-extinction
+
+``TreeCorr is a package for efficiently computing 2-point and 3-point correlation functions.
+
+The code is hosted at https://github.com/rmjarvis/TreeCorr
+
+It can compute correlations of regular number counts, weak lensing shears, or scalar quantities such as convergence or CMB temperature fluctutations.
+
+2-point correlations may be auto-correlations or cross-correlations. This includes shear-shear, count-shear, count-count, kappa-kappa, etc. (Any combination of shear, kappa, and counts.)
+
+3-point correlations currently can only be auto-correlations. This includes shear-shear-shear, count-count-count, and kappa-kappa-kappa. The cross varieties are planned to be added in the near future.
+
+Both 2- and 3-point functions can be done with the correct curved-sky calculation using RA, Dec coordinates, on a Euclidean tangent plane, or in 3D using either (RA,Dec,r) or (x,y,z) positions.''
+
 \end{outline}
 
 \section{Datasets}\label{sec:data}
@@ -60,12 +86,14 @@ Strikingly, Ménard et al. (2010) found, while attempting to measure magnificatio
 \begin{outline}
 \1 Discuss samples that we used: 
 	\2 redMaGiC as background (discuss algorithm, add some plots of color variance with MLE or color-color plots)
+		\3 Like Peek catalog, these are also LRGs
 		\3 area covers: $290\degree \lesssim \alpha \lesssim 110\degree$
-	\2 GALEX and (maybe) IIFSCz
+	\2 SCOS as foreground
+	\2 FG: GALEX and (maybe) IIFSCz
 	\3 DES with SVM
-\1 Also SVM for DES foreground sample 
-	\2 give some characteristics
-	\2 perhaps move discussion of algorithm to \ref{sec:methods}
+	\2 Also SVM for DES foreground sample 
+		\3 give some characteristics of sample
+		\3 perhaps move discussion of algorithm to \ref{sec:methods}
 		\3 ref needed
 \1 Might be good to have some consistency plots showing overlap of two samples
 \1 Used Healpy to ensure that we are not correlating across empty space, which would have the effect of diluting the observed signal
