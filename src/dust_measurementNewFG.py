@@ -50,8 +50,12 @@ def get_fg_catalog(fg_filen,maskfile = None,nside=4096,nest=False):
             dec_cat = data['DEC']
 
         except:
-            ra_cat = data['_RAJ2000']
-            dec_cat = data['_DEJ2000']
+            try:
+                ra_cat =  data['ra']                                                                                                                   
+                dec_cat = data['dec']
+            except:
+                ra_cat = data['_RAJ2000']
+                dec_cat = data['_DEJ2000']
        
         tcCatalog = treecorr.Catalog(ra=ra_cat,dec=dec_cat,ra_units='deg',dec_units='deg')
         print( "Length of catalog read in = %i" % len(dec_cat))
@@ -276,11 +280,11 @@ def plotres(dd_out,dr_out,fr_out=None,rr_out = None, outplotn='fig.png'):
 
 def get_output_names(basisInd=None,optimal=False):
     if optimal:
-        dd_outfile = '../outputs/dustCorr_dd_orthonorm-voptimal-iifsc.fits'
-        dr_outfile = '../outputs/dustCorr_dr_orthonorm-voptimal-iifsc.fits'
-        fr_outfile = '../outputs/dustCorr_fr_orthonorm-voptimal-iifsc.fits'
-        rr_outfile = '../outputs/dustCorr_rr_orthonorm-voptimal-iifsc.fits'
-        fig_outfile = '../outputs/correlationFuncFigures/dustCorr_orthonorm-voptimal-iifsc.png'       
+        dd_outfile = '../outputs/dustCorr_dd_orthonorm-voptimal-galex.fits'
+        dr_outfile = '../outputs/dustCorr_dr_orthonorm-voptimal-galex.fits'
+        fr_outfile = '../outputs/dustCorr_fr_orthonorm-voptimal-galex.fits'
+        rr_outfile = '../outputs/dustCorr_rr_orthonorm-voptimal-galex.fits'
+        fig_outfile = '../outputs/correlationFuncFigures/dustCorr_orthonorm-voptimal-galex.png'       
     elif (basisInd==0):
         dd_outfile = '../outputs/dustCorr_dd_orthonorm-vdust-iifsc.fits'
         dr_outfile = '../outputs/dustCorr_dr_orthonorm-vdust-iifsc.fits'
@@ -395,14 +399,14 @@ def main(argv):
     rmp_name = 'y1a1-gold-mof-badregion.fits'
     rm_mask = 'DES_Y1A1_3x2pt_redMaGiC_MASK_HPIX4096RING.fits'
     ra_name = 'DES_Y1A1_3x2pt_redMaGiC_RANDOMS.fits'
-    #fg_name='galex_trimmed.fits'
+    fg_name='galex_trimmed.fits'
     #fg_name='desSVM_trimmed.fits'
     #fg_name='des_SVMlowZ_gals.fits'
-    fg_name='iifsc_des_overlap.fits'
+    #fg_name='iifsc_des_overlap.fits'
     #fg_name='des_y1a1_stars_MatchScosMagDistSize.fits'
     global scl
-    scl = 13.2 # This changes depending on avg. redshift of fg
-    #scl = 3.00
+    #scl = 13.2 # This changes depending on avg. redshift of fg
+    scl = 3.00
     #fg_name = 'Sscom_exactArea_galzCut.fits'
     rmp_file = os.path.join(datapath,rmp_name)
     rmz_file = os.path.join(datapath,rmz_name)
@@ -429,8 +433,11 @@ def main(argv):
 
     if optimal:      
         print("using optimal dust vector...")
-        new=basis[0]+0.665*basis[1]-0.22*basis[2]-0.23*basis[3]
-        vec=new/0.96
+        #new=basis[0]-0.37*basis[1]+0.105*basis[2]+0.356*basis[3]
+        #vec=new/0.87
+        new=basis[0]-0.315*basis[1]+0.09*basis[2]-0.15*basis[3]
+        vec=new/1.19
+
         do_it_all(vec,fgCat,fgRan,bgCat,optimal=True)
 
     else: 
