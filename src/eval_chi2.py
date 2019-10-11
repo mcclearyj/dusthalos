@@ -30,8 +30,8 @@ def main():
 
     # uncomment your galaxy sample of choice
     #sample = "iifsc"
-    #sample = "galex"
-    sample = "svm"
+    sample = "galex"
+    #sample = "svm"
     print("using %s sample\n" % sample)
     outpath = '../outputs'
     if (sample=='iifsc'):
@@ -47,6 +47,10 @@ def main():
         frdust=fitsio.read(os.path.join(outpath,'dustCorr_fr_orthonorm-vdust-galex.fits')) # random fg x background
         dd1=fitsio.read(os.path.join(outpath,'dustCorr_dd_orthonorm-v1-galex.fits')) # The dust signal -- real fg x real background 
         fr1=fitsio.read(os.path.join(outpath,'dustCorr_fr_orthonorm-v1-galex.fits')) # random fg x background
+        dd2=fitsio.read(os.path.join(outpath,'dustCorr_dd_orthonorm-v2-galex.fits')) # The dust signal -- real fg x real background 
+        fr2=fitsio.read(os.path.join(outpath,'dustCorr_fr_orthonorm-v2-galex.fits')) # random fg x background
+        dd3=fitsio.read(os.path.join(outpath,'dustCorr_dd_orthonorm-v3-galex.fits')) # The dust signal -- real fg x real background 
+        fr3=fitsio.read(os.path.join(outpath,'dustCorr_fr_orthonorm-v3-galex.fits')) # random fg x background
 
     elif(sample=='scos'):
         ## Assuming you want Scos?
@@ -88,10 +92,10 @@ def main():
 
     # generate an alpha parameter array for each ON vector:
     print("#\n#minimizing the chi2 function (alpha*kappa_norm - kappa2_norm)**2\n#")
-    alpha_arr=np.arange(-1, 2, 0.001)
+    alpha_arr=np.arange(-2, 1, 0.005)
     chi2_arr=np.zeros_like(alpha_arr)
     for i,alpha in enumerate(alpha_arr):
-          chi2_arr[i]=chi2(alpha,kappaDust_norm,sigmaDust,kappa1_norm,sigma1)
+          chi2_arr[i]=chi2(alpha,kappaDust_norm,sigmaDust,kappa3_norm,sigma3)
     alphabest = alpha_arr[chi2_arr==min(chi2_arr)]
     print("%f is best-fit alpha of propotionality" % alphabest)   
     print("reduced chi2 for alpha is %f\n" %(min(chi2_arr)/12.))
@@ -100,10 +104,10 @@ def main():
 
     # do same thing, but with a beta on the k1 values
     print("#\n#minimizing the chi2 (beta*kappa_norm - kappa2_norm)**2\n#")
-    beta_arr=np.arange(-1., 3., 0.001)
+    beta_arr=np.arange(-5., 2., 0.005)
     chi2_arr=np.zeros_like(beta_arr)
     for i,beta in enumerate(beta_arr):
-          chi2_arr[i]=chi2_beta(beta,kappaDust_norm,sigmaDust,kappa1_norm,sigma1)       
+          chi2_arr[i]=chi2_beta(beta,kappaDust_norm,sigmaDust,kappa3_norm,sigma3)       
     print("%f is best-fit beta of propotionality" % (beta_arr[chi2_arr==min(chi2_arr)]))   
     print("reduced chi2 for beta is %f\n" %(min(chi2_arr)/12.))
     make_a_chi2_plot(beta_arr,chi2_arr,n='betachi2_vdust.png')

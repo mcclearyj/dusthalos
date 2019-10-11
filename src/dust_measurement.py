@@ -69,29 +69,6 @@ def get_ONbasis(vdust):
     # Return basis
     return vec,u0,u1,u2
     
-def get_ONbasis2(vdust):
-    # Alternative means of generating ON basis
-    # verified that basis is in fact ON
-    # start by normalizing the input dust vector
-    vec = vdust#/norm(vdust)
-    
-    # Go through the G-S process
-    # Doing it slightly differently than before -- what happens?
-    v0 = np.zeros_like(vec); v0[3]= 1.0
-    v0prime = v0 - np.dot(v0,vec)*vec
-    u0 = v0prime/norm(v0prime)
-
-    v1 = np.zeros_like(vec); v1[1]= 1.0
-    v1prime = v1 - np.dot(v1,vec)*vec - np.dot(v1,u0)*u0
-    u1 = v1prime/norm(v1prime)
-     
-    v2 = np.zeros_like(vec); v2[0]= 1.0
-    v2prime = v2 - np.dot(v2,vec)*vec - np.dot(v2,u0)*u0 - np.dot(v2,u1)*u1
-    u2 = v2prime/norm(v2prime)
-
-    # Return basis
-    return vec,u0,u1,u2
-
 
 
 def est_reddening(catalog,zeropoint = 30.0, basisvector=None):
@@ -334,32 +311,36 @@ def do_it_all(v,fgCat,fgRan,bgCat,basisInd=None,optimal=False):
     return 
 
 def do_NNcor(v,fgCat,fgRan,bgCat,basisInd=None,optimal=False):
-   
+    """
+    There is probably a much faster way to do this, but let's stick to what works!"
+    """
+
     dd_outfile,dr_outfile,fr_outfile,rr_outfile= get_NNoutput_names()
-    print ("Doing reddening calculation for for vector %s..." % str(v))
+    print ("Beginning spatial correlation for for vector %s..." % str(v))
     redcat = do_reddening_calculation(bgCat,basisVector=v)
-    print ("Done. Getting bg randoms... ")
+    print ("Reddening done. Getting bg randoms for vector %s..." % str(v))
     bgRan = get_bg_randoms(ra_file, redcat,zmin=zmin)   
-    print ("Done. Now cross-correlating for vector %s..." % str(v))     
+    print ("Done. Now cross-correlating...")     
     # Now make the correlation objects.
     DK = treecorr.NNCorrelation(min_sep=0.1,max_sep=200.0,bin_size=.6,sep_units='arcmin')
     DK.process(fgCat,redcat)
-    DK.write(dd_outfile)
+    #DK.write(dd_outfile)
     RK = treecorr.NNCorrelation(min_sep=0.1,max_sep=200.0,bin_size=.6,sep_units='arcmin')
     RK.process(fgCat,bgRan)
-    RK.write(dr_outfile)       
+    #RK.write(dr_outfile)       
     FR = treecorr.NNCorrelation(min_sep=0.1,max_sep=200.0,bin_size=.6,sep_units='arcmin')
     FR.process(fgRan,redcat)
-    FR.write(fr_outfile)
+    #FR.write(fr_outfile)
     RR = treecorr.NNCorrelation(min_sep=0.1,max_sep=200.0,bin_size=0.6,sep_units='arcmin')
     RR.process(fgRan,bgRan)
-    RR.write(rr_outfile)        
+    #RR.write(rr_outfile)        
     # calculate correlation... 
     xi,varxi=DK.calculateXi(RR,FR,RK)
-    f=open('xi.txt','w')
+    f=open('xi_scos.txt','w')
     for i,x in enumerate(xi):
         f.write("%f %f\n" % (x,varxi[i]))
     f.close()
+    print ("spatial cross-correlation done!")
     return 
 
 def do_it_all(v,fgCat,fgRan,bgCat,basisInd=None,optimal=False):
@@ -425,14 +406,13 @@ def main(argv):
         print("using optimal dust vector...")
         new=basis[0]+0.744*basis[1]-0.2675*basis[2]-0.2175*basis[3]
         vec=new/0.95
-        #vec = vec/norm(vec)
         do_it_all(vec,fgCat,fgRan,bgCat,optimal=True)
 
     else: 
         # First calculation: "reddening vector"
         vec=basis[0]        
         do_it_all(vec,fgCat,fgRan,bgCat,basisInd=0,optimal=False)
-        #do_NNcor(vec,fgCat,fgRan,bgCat,basisInd=0,optimal=False)
+        do_NNcor(vec,fgCat,fgRan,bgCat,basisInd=0,optimal=False)
         
         # Loop through other vectors
         index = 1
