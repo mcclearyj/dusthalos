@@ -40,7 +40,8 @@ def get_fg_catalog(fg_filen,maskfile = None,nside=4096,nest=False):
         
         
     except:
-        
+        print("didn't get to mask again, interupting...")
+        pdb.set_trace()
         # Hopefully this is the trimmed catalog!
         data = Table.read(fg_filen,format='fits')
         try:
@@ -426,7 +427,7 @@ def main(argv):
     basis = get_ONbasis(vdust)
 
     print( "Getting fg catalog and randoms... ")
-    fgCat = get_fg_catalog(fg_file)
+    fgCat = get_fg_catalog(fg_file,maskfile=rmm_file)
     fgRan = get_fg_randoms(maskfile = rmm_file)
     print( "Getting bg science catalog")
     bgCat = get_bg_catalog2(datapath, rmp_file,rmz_file,zmin=zmin)  
