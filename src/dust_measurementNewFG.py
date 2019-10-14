@@ -36,7 +36,7 @@ def get_fg_catalog(fg_filen,maskfile = None,nside=4096,nest=False):
         fgKeep=np.in1d(catHpInd,hpIndex[keep])
 
         # If desired, write this trimmed GALEX catalog to file
-        data[fgKeep].write('desSVM_try2_trimmed.fits',format='fits',overwrite=True)
+        #data[fgKeep].write('desSVM_try2_trimmed.fits',format='fits',overwrite=True)
         tcCatalog = treecorr.Catalog(ra=data[fgKeep]['RA'],dec=data[fgKeep]['DEC'],ra_units='deg',dec_units='deg')
         print( "Length of catalog after cuts = %i" % len(tcCatalog.ra))
         
@@ -422,7 +422,7 @@ def main(argv):
      
     # This parameter decides whether we want to loop over all basis vectors, or use the "optimal" vector
     global optimal
-    optimal = False
+    optimal = True
 
     # First, define our orthonormal vector space based on an input extinction vector
     vdust = np.array([1.12224688, 0.82747095, 0.62680647, 0.47880753])
@@ -438,8 +438,8 @@ def main(argv):
         print("using optimal dust vector...")
         #new=basis[0]-0.37*basis[1]+0.105*basis[2]+0.356*basis[3]
         #vec=new/0.87
-        new=basis[0]-0.315*basis[1]+0.09*basis[2]-0.15*basis[3]
-        vec=new/1.19
+        new=basis[0]-0.542*basis[1]-0.069*basis[2]+0.192*basis[3]
+        vec=new/1.126
 
         do_it_all(vec,fgCat,fgRan,bgCat,optimal=True)
 
