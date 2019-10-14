@@ -20,7 +20,7 @@ def get_fg_catalog(fg_filen,maskfile = None,nside=4096,nest=False):
         # DO NOT DO THIS:
         # wg,=np.where(data['MAG_AUTO_R'] <=21.5)
         
-        wg,=np.where(data['MAG_AUTO_R'] <= 26)
+        wg,=np.where(data['MAG_AUTO_R'] <= 27)
         data=data[wg]
 
         ra_cat =  data['RA']
@@ -36,7 +36,7 @@ def get_fg_catalog(fg_filen,maskfile = None,nside=4096,nest=False):
         fgKeep=np.in1d(catHpInd,hpIndex[keep])
 
         # If desired, write this trimmed GALEX catalog to file
-        data[fgKeep].write('desSVM_trimmed.fits',format='fits',overwrite=True)
+        data[fgKeep].write('desSVM_try2_trimmed.fits',format='fits',overwrite=True)
         tcCatalog = treecorr.Catalog(ra=data[fgKeep]['RA'],dec=data[fgKeep]['DEC'],ra_units='deg',dec_units='deg')
         print( "Length of catalog after cuts = %i" % len(tcCatalog.ra))
         
@@ -362,7 +362,7 @@ def do_NNcor(v,fgCat,fgRan,bgCat,basisInd=None,optimal=False):
     #RR.write(rr_outfile)        
     # calculate correlation... 
     xi,varxi=DK.calculateXi(RR,FR,RK)
-    f=open('xi_desSVM.txt','w')
+    f=open('xi_desSVM2.txt','w')
     for i,x in enumerate(xi):
         f.write("%f %f\n" % (x,varxi[i]))
     f.close()
@@ -404,7 +404,7 @@ def main(argv):
     ra_name = 'DES_Y1A1_3x2pt_redMaGiC_RANDOMS.fits'
     #fg_name='galex_trimmed.fits'
     #fg_name='desSVM_trimmed.fits'
-    fg_name='des_SVMlowZ_gals.fits'
+    fg_name='des_SVMlowZ_gals_try2.fits'
     #fg_name='iifsc_des_overlap.fits'
     #fg_name='des_y1a1_stars_MatchScosMagDistSize.fits'
     global scl
