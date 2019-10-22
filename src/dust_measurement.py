@@ -129,8 +129,7 @@ def do_reddening_calculation(cat,basisVector):
     zbins[0] = 0.
     zbins[-1] = zbins[-1] + 1.
 
-    #for i in range(3,7):
-    for i in range(9,10):
+    for i in range(nbins)
             these = (cat['ZREDMAGIC'] > zbins[i]) & (cat['ZREDMAGIC'] <= zbins[i+1])
             this_est,this_wt = est_reddening(cat[these],basisvector = basisVector)
             est[these] = this_est
@@ -189,8 +188,7 @@ def get_bg_randoms(bg_file,Cat,zmin=0.2):
     zbins[0] = 0.
     zbins[-1] = zbins[-1] + 1.
 
-    #for i in range(7,9):
-    for i in range(9,10):
+    for i in range(nbins):
         these = (ran_cat['Z'] > zbins[i]) & (ran_cat['Z'] <= zbins[i+1])
         these_est = (Cat.zz > zbins[i]) & (Cat.zz <=zbins[i+1])
         ind = np.random.choice(np.arange(np.sum(these_est)),np.sum(these))
