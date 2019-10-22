@@ -121,7 +121,7 @@ def do_reddening_calculation(cat,basisVector):
     # Do the reddening estimate in redshift slices.
     # Also, loop over vectors in our fake basis
 
-    nbins = 10
+    nbins = 6
     est = np.zeros(cat.size)
     est_weight = np.zeros(cat.size)
 
@@ -182,7 +182,7 @@ def get_bg_randoms(bg_file,Cat,zmin=0.2):
     ran_cat = fitsio.read(bg_file)
     ran_cat = ran_cat[ran_cat['Z']>zmin]
     # Do the reddening estimate in redshift slices.
-    nbins = 10
+    nbins = 6
     est = np.zeros(ran_cat.size)
     est_weight = np.zeros(ran_cat.size)
     zbins = np.percentile(ran_cat['Z'],np.linspace(0,100,nbins+1))
@@ -201,7 +201,7 @@ def get_bg_randoms(bg_file,Cat,zmin=0.2):
                                    ra_units='deg',dec_units='deg')
     return catalog
     
-def plotres(dd_out,dr_out=None,fr_out=None,rr_out = None, outplotn='fig.png'):
+def plotres(dd_out=None,fr_out=None, outplotn='fig.png'):
     # Now make a plot.
     dk = fitsio.read(dd_out)
     fr = fitsio.read(fr_out)
@@ -280,7 +280,7 @@ def do_it_all(v,fgCat,fgRan,bgCat,basisInd=None,optimal=False):
     FR = treecorr.NKCorrelation(min_sep=0.15,max_sep=200.0,bin_size=.3,sep_units='arcmin')
     FR.process(fgRan,redcat)
     FR.write(fr_outfile)
-    plotres(dd_outfile,dr_outfile,outplotn=fig_outfile)
+    plotres(dd_out=dd_outfile,fr_out=fr_outfile,outplotn=fig_outfile)
 
     return 
 
@@ -301,6 +301,8 @@ def main(argv):
     fg_file = os.path.join(datapath,fg_name)
     global zmin
     zmin = 0.4
+    global scl
+    scl=3.06
     # This parameter decides whether we want to loop over all basis vectors, or use the "optimal" vector
     global optimal
     optimal = False 
