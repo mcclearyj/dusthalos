@@ -129,7 +129,7 @@ def do_reddening_calculation(cat,basisVector):
     zbins[0] = 0.
     zbins[-1] = zbins[-1] + 1.
 
-    for i in range(nbins)
+    for i in range(nbins):
             these = (cat['ZREDMAGIC'] > zbins[i]) & (cat['ZREDMAGIC'] <= zbins[i+1])
             this_est,this_wt = est_reddening(cat[these],basisvector = basisVector)
             est[these] = this_est
@@ -326,8 +326,8 @@ def main(argv):
         vec=basis[0]        
         do_it_all(vec,fgCat,fgRan,bgCat,basisInd=0,optimal=False)
         #Loop through other vectors
-        index = 2
-        for vec in basis[2:]:
+        index = 1
+        for vec in basis[1:]:
             do_it_all(vec,fgCat,fgRan,bgCat,basisInd=index,optimal=False)
             index+=1
 
