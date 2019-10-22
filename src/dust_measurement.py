@@ -243,23 +243,23 @@ def plotres(dd_out=None,fr_out=None, outplotn='fig.png'):
 
 def get_output_names(basisInd=None,optimal=False):
     if optimal:
-        dd_outfile = '../outputs/dustCorr_dd_z0.4-voptimal.fits'
-        dr_outfile = '../outputs/dustCorr_dr_z0.4-voptimal.fits'
-        fr_outfile = '../outputs/dustCorr_fr_z0.4-voptimal.fits'
-        rr_outfile = '../outputs/dustCorr_rr_z0.4-voptimal.fits'
-        fig_outfile = '../outputs/correlationFuncFigures/dustCorr_z0.4-voptimal.png'       
+        dd_outfile = '../outputs/dustCorr_dd_midz_fg-voptimal.fits'
+        dr_outfile = '../outputs/dustCorr_dr_midz_fg-voptimal.fits'
+        fr_outfile = '../outputs/dustCorr_fr_midz_fg-voptimal.fits'
+        rr_outfile = '../outputs/dustCorr_rr_midz_fg-voptimal.fits'
+        fig_outfile = '../outputs/correlationFuncFigures/dustCorr_midz_fg-voptimal.png'       
     elif (basisInd==0):
-        dd_outfile = '../outputs/dustCorr_dd_z0.4-vdust.fits'
-        dr_outfile = '../outputs/dustCorr_dr_z0.4-vdust.fits'
-        fr_outfile = '../outputs/dustCorr_fr_z0.4-vdust.fits'
-        rr_outfile = '../outputs/dustCorr_rr_z0.4-vdust.fits'
-        fig_outfile = '../outputs/correlationFuncFigures/dustCorr_z0.4-vdust.png'      
+        dd_outfile = '../outputs/dustCorr_dd_midz_fg-vdust.fits'
+        dr_outfile = '../outputs/dustCorr_dr_midz_fg-vdust.fits'
+        fr_outfile = '../outputs/dustCorr_fr_midz_fg-vdust.fits'
+        rr_outfile = '../outputs/dustCorr_rr_midz_fg-vdust.fits'
+        fig_outfile = '../outputs/correlationFuncFigures/dustCorr_midz_fg-vdust.png'      
     else:
-        dd_outfile = '../outputs/dustCorr_dd_z0.4-v'+str(basisInd)+'.fits'
-        dr_outfile = '../outputs/dustCorr_dr_z0.4-v'+str(basisInd)+'.fits'
-        fr_outfile = '../outputs/dustCorr_fr_z0.4-v'+str(basisInd)+'.fits'
-        rr_outfile = '../outputs/dustCorr_rr_z0.4-v'+str(basisInd)+'.fits'
-        fig_outfile = '../outputs/correlationFuncFigures/dustCorr_z0.4-v'+str(basisInd)+'.png'           
+        dd_outfile = '../outputs/dustCorr_dd_midz_fg-v'+str(basisInd)+'.fits'
+        dr_outfile = '../outputs/dustCorr_dr_midz_fg-v'+str(basisInd)+'.fits'
+        fr_outfile = '../outputs/dustCorr_fr_midz_fg-v'+str(basisInd)+'.fits'
+        rr_outfile = '../outputs/dustCorr_rr_midz_fg-v'+str(basisInd)+'.fits'
+        fig_outfile = '../outputs/correlationFuncFigures/dustCorr_midz_fg-v'+str(basisInd)+'.png'           
     return dd_outfile,dr_outfile,fr_outfile,rr_outfile,fig_outfile
 
 
@@ -290,7 +290,8 @@ def main(argv):
     rmp_name = 'y1a1-gold-mof-badregion.fits'
     rm_mask = 'DES_Y1A1_3x2pt_redMaGiC_MASK_HPIX4096RING.fits'
     ra_name = 'DES_Y1A1_3x2pt_redMaGiC_RANDOMS.fits'
-    fg_name = 'Sscom_exactArea_galzCut.fits'
+    #fg_name = 'Sscom_exactArea_galzCut.fits'
+    fg_name = 'redMaGiC_midz.fits'
     rmp_file = os.path.join(datapath,rmp_name)
     rmz_file = os.path.join(datapath,rmz_name)
     rmm_file = os.path.join(datapath,rm_mask)
@@ -300,7 +301,7 @@ def main(argv):
     global zmin
     zmin = 0.5
     global scl
-    scl=3.06
+    scl=1.0
     # This parameter decides whether we want to loop over all basis vectors, or use the "optimal" vector
     global optimal
     optimal = False 
