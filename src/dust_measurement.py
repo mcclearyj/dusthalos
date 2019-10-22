@@ -85,7 +85,8 @@ def get_bg_catalog2(datapath,phot_file,rmz_file,zmin=0.15):
     Utility function for reading in the DES background catalog
     Use when the matching catalog has already been made.
     """
-    joint = os.path.join(datapath,'y1a1_mof_rmz.fits')
+    #    joint = os.path.join(datapath,'y1a1_mof_rmz.fits')
+    joint = os.path.join(datapath,'redMaGiC_hiz.fits')
     if not os.path.exists(joint):
         bg_phot = Table.read(phot_file,format='fits')
         bg_rmz = Table.read(rmz_file,format='fits')
@@ -113,7 +114,6 @@ def get_bg_catalog2(datapath,phot_file,rmz_file,zmin=0.15):
         redMaGiC=fitsio.read(joint,format='fits')
         redMaGiC_filt=redMaGiC[redMaGiC['ZREDMAGIC']>zmin]
         print "background redMaGiC catalog acquired"
-    
     return redMaGiC_filt
 
 def do_reddening_calculation(cat,basisVector):
@@ -122,7 +122,7 @@ def do_reddening_calculation(cat,basisVector):
     # Do the reddening estimate in redshift slices.
     # Also, loop over vectors in our fake basis
 
-    nbins = 7
+    nbins = 5
     est = np.zeros(cat.size)
     est_weight = np.zeros(cat.size)
 
@@ -270,7 +270,6 @@ def do_it_all(v,fgCat,fgRan,bgCat,basisInd=None,optimal=False):
     print ("Doing reddening calculation for for vector %s..." % str(v))
     redcat = do_reddening_calculation(bgCat,basisVector=v)
     print ("Done. Getting bg randoms... ")
-    bgRan = get_bg_randoms(ra_file, redcat,zmin=zmin)   
     print ("Done. Now cross-correlating for vector %s..." % str(v))     
     # Now make the correlation objects.
     DK = treecorr.NKCorrelation(min_sep=0.15,max_sep=200.0,bin_size=.3,sep_units='arcmin')
@@ -299,7 +298,7 @@ def main(argv):
     ra_file = os.path.join(datapath,ra_name)
     fg_file = os.path.join(datapath,fg_name)
     global zmin
-    zmin = 0.4
+    zmin = 0.5
     global scl
     scl=3.06
     # This parameter decides whether we want to loop over all basis vectors, or use the "optimal" vector
