@@ -5,7 +5,7 @@ This directory contains plots of the galaxy/dust correlation functions for a var
 av_wiseScosSvm.png shows the intrinsic spread in the Av of the foreground galaxies; the "variance" is actually
 the weight from the MLE. 
 
-dustCorr_orthonorm-v*-rm.png is the result of correlating HIZ redmagic sample (0.55<z<0.90) as fg with LOWZ redmagic sample (0.15<z<0.45) as background.
+dustCorr_orthonorm-v*-rm.png is the result of correlating HIZ redmagic sample (0.55<z<0.90) as fg with MIDZ redmagic sample (0.15<z<0.45) as background.
 
 dustCorr_orthonorm-v*-rm2.png is the result of correlating the SCOS sample (as a foreground) with the just the HIZ redmagic sample as a background. Hi-z is 0.55<z<0.90. 
 

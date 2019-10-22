@@ -11,36 +11,21 @@ import pandas as pd
 import healpy as hp
 import pdb
 
-def get_fg_catalog(datapath,fg_file): 
+def get_fg_catalog(datapath,fg_file):
     try:
-        data = Table.read(fg_file,format='fits')
-        ra_cat=data['ra']
-        dec_cat=data['dec']
+        ra_cat =  data['RA']
+        dec_cat = data['DEC']
     except:
-        data = Table.read(fg_file,format='csv')
-        ra_cat,dec_cat=filter_fgPhotcat(fgfile,raname='ra',decname='dec')
-    
-    if os.path.exists(fg_file):
-        print( "Length of catalog after cuts = %i" % len(ra_cat))
-        catalog = treecorr.Catalog(ra=ra_cat,dec=dec_cat,ra_units='deg',dec_units='deg')
-
-    else:
-        probgal=data['probGal']
-        zphot=data['zPhoto_Corr']
-        wg_gal = (probgal >= .70).nonzero()[0]
-        wg_z = (zphot <= 0.12).nonzero()[0]
-        cut_galz=np.intersect1d(wg_gal,wg_z,assume_unique=True)
-        filtered=data[cut_galz]
-        #keep = filtered['bCalCorr'] > 15.0           
-        catalog = treecorr.Catalog(ra=filtered['ra'],dec=filtered['dec'],ra_units='deg',dec_units='deg')
-        print( "Length of catalog after cuts = %i" % len(cut_galz))
-    
         try:
-            filtered.write(os.path.join(datapath,'Sscom_exactArea_galzCut.fits'),format='fits',overwrite=True)
+            ra_cat =  data['ra']                                                                                                                   
+            dec_cat = data['dec']
         except:
-            pass
+            ra_cat = data['_RAJ2000']
+            dec_cat = data['_DEJ2000']
+       
+    catalog = treecorr.Catalog(ra=ra_cat,dec=dec_cat,ra_units='deg',dec_units='deg')
+    print( "Length of catalog = %i" % len(ra_cat))
     return catalog
-
 
 def get_ONbasis(vdust):
     # construct an orthonormal set of basis vectors according
@@ -69,27 +54,6 @@ def get_ONbasis(vdust):
     # Return basis
     return vec,u0,u1,u2
     
-def get_ONbasis2(vdust):
-    # Alternative means...
-    # start by normalizing the input dust vector
-    vec = vdust/norm(vdust)
-    
-    # Go through the G-S process
-    # Doing it slightly differently than before -- what happens?
-    v0 = np.zeros_like(vec); v0[3]= 1.0
-    v0prime = v0 - np.dot(v0,vec)*vec
-    u0 = v0prime/norm(v0prime)
-
-    v1 = np.zeros_like(vec); v1[1]= 1.0
-    v1prime = v1 - np.dot(v1,vec)*vec - np.dot(v1,u0)*u0
-    u1 = v1prime/norm(v1prime)
-     
-    v2 = np.zeros_like(vec); v2[0]= 1.0
-    v2prime = v2 - np.dot(v2,vec)*vec - np.dot(v2,u0)*u0 - np.dot(v2,u1)*u1
-    u2 = v2prime/norm(v2prime)
-
-    # Return basis
-    return vec,u0,u1,u2
 
 
 
@@ -236,42 +200,38 @@ def get_bg_randoms(bg_file,Cat,zmin=0.2):
                                    ra_units='deg',dec_units='deg')
     return catalog
     
-def plotres(dd_out,dr_out,fr_out=None,rr_out = None, outplotn='fig.png'):
+def plotres(dd_out,dr_out=None,fr_out=None,rr_out = None, outplotn='fig.png'):
     # Now make a plot.
     dk = fitsio.read(dd_out)
-    dr = fitsio.read(dr_out)
     fr = fitsio.read(fr_out)
-    rr = fitsio.read(rr_out)
+    r = np.logspace(-2,2.7,10)
+    av = 2.4e-3 * (r/scl)**(-0.84)
     
     fig = plt.figure(figsize=(14,7))
     ### in log space
     ax=fig.add_subplot(121)
     try:
         ax.errorbar(dk['meanr'],dk['kappa'],yerr=dk['sigma'],label='raw')        
-        ax.errorbar(dk['meanr'],dk['kappa'] -fr['kappa'] - dr['kappa'] + rr['kappa'],yerr=dk['sigma'],label='LZ++')
+        ax.errorbar(dk['meanr'],dk['kappa']-fr['kappa'],yerr=dk['sigma'],label='fr sub')
     except:
-        ax.errorbar(dk['meanR'],dk['kappa']-fr['kappa'],yerr=dk['sigma'],label='raw')        
-        ax.errorbar(dk['meanR'],dk['kappa'] -fr['kappa'] - dr['kappa'] + rr['kappa'],yerr=dk['sigma'],label='LZ++')
+        ax.errorbar(dk['meanR'],dk['kappa'],yerr=dk['sigma'],label='raw')        
+        ax.errorbar(dk['meanR'],dk['kappa']-fr['kappa'],yerr=dk['sigma'],label='fr sub')
     ax.set_xscale('log')
     ax.set_yscale('log')
-    #ax.set_ylim(1e-6,.2)
     ax.set_xlim(0.1,250)
-    r = np.logspace(-2,2.7,10)
-    av = 2.4e-3 * (r/3.00)**(-0.84)
-    ax.plot(r,av,label='Menard (2010)') 
+    ax.plot(r,av,label='scaled Menard (2010)') 
     ax.set_xlabel('impact parameter (arcmin)')
     ax.set_ylabel('A_v (mag)')
-    ax.legend()
-    
+    ax.legend()    
     ### in linear space
     ax2=fig.add_subplot(122)
     try:
         ax2.errorbar(dk['meanr'],dk['kappa'],yerr=dk['sigma'],label='raw')
-        ax2.errorbar(dk['meanr'],dk['kappa'] -fr['kappa'] - dr['kappa'] + rr['kappa'],yerr=dk['sigma'],label='LZ++')
+        ax2.errorbar(dk['meanr'],dk['kappa'] -fr['kappa'],yerr=dk['sigma'],label='fr sub')
     except:
         ax2.errorbar(dk['meanR'],dk['kappa'],yerr=dk['sigma'],label='raw')        
-        ax2.errorbar(dk['meanR'],dk['kappa'] -fr['kappa'] - dr['kappa'] + rr['kappa'],yerr=dk['sigma'],label='LZ++')        
-    ax2.plot(r,av,label='adjusted Menard (2010)')
+        ax2.errorbar(dk['meanR'],dk['kappa'] -fr['kappa'],yerr=dk['sigma'],label='fr sub')        
+    ax2.plot(r,av,label='scaled Menard (2010)')
     ax2.axhline(0,color='black',linestyle='--',alpha=0.5)
     ax2.set_xlim(0.07,200)
     ax2.set_ylim(-5e-3,0.02)
@@ -303,14 +263,6 @@ def get_output_names(basisInd=None,optimal=False):
     return dd_outfile,dr_outfile,fr_outfile,rr_outfile,fig_outfile
 
 
-def get_NNoutput_names():
-    dd_outfile = '../outputs/dust_correlation_dd_NN5-vdust.fits'
-    dr_outfile = '../outputs/dust_correlation_dr_NN5-vdust.fits'
-    fr_outfile = '../outputs/dust_correlation_fr_NN5-vdust.fits'
-    rr_outfile = '../outputs/dust_correlation_rr_NN5-vdust.fits'           
-    return dd_outfile,dr_outfile,fr_outfile,rr_outfile
-
-
 
 def do_it_all(v,fgCat,fgRan,bgCat,basisInd=None,optimal=False):
     
@@ -324,75 +276,13 @@ def do_it_all(v,fgCat,fgRan,bgCat,basisInd=None,optimal=False):
     DK = treecorr.NKCorrelation(min_sep=0.1,max_sep=200.0,bin_size=.6,sep_units='arcmin')
     DK.process(fgCat,redcat)
     DK.write(dd_outfile)
-    RK = treecorr.NKCorrelation(min_sep=0.1,max_sep=200.0,bin_size=.6,sep_units='arcmin')
-    RK.process(fgCat,bgRan)
-    RK.write(dr_outfile)       
     FR = treecorr.NKCorrelation(min_sep=0.1,max_sep=200.0,bin_size=.6,sep_units='arcmin')
     FR.process(fgRan,redcat)
     FR.write(fr_outfile)
-    RR = treecorr.NKCorrelation(min_sep=0.1,max_sep=200.0,bin_size=0.6,sep_units='arcmin')
-    RR.process(fgRan,bgRan)
-    RR.write(rr_outfile)    
-    plotres(dd_outfile,dr_outfile,fr_out = fr_outfile,rr_out=rr_outfile,outplotn=fig_outfile)
+    plotres(dd_outfile,dr_outfile,outplotn=fig_outfile)
 
     return 
 
-
-def do_NNcor(v,fgCat,fgRan,bgCat,basisInd=None,optimal=False):
-    
-    dd_outfile,dr_outfile,fr_outfile,rr_outfile= get_NNoutput_names()
-    print ("Doing reddening calculation for for vector %s..." % str(v))
-    redcat = do_reddening_calculation(bgCat,basisVector=v)
-    print ("Done. Getting bg randoms... ")
-    bgRan = get_bg_randoms(ra_file, redcat,zmin=zmin)   
-    print ("Done. Now cross-correlating for vector %s..." % str(v))     
-    # Now make the correlation objects.
-    DK = treecorr.NNCorrelation(min_sep=0.1,max_sep=200.0,bin_size=.6,sep_units='arcmin')
-    DK.process(fgCat,redcat)
-    DK.write(dd_outfile)
-    RK = treecorr.NNCorrelation(min_sep=0.1,max_sep=200.0,bin_size=.6,sep_units='arcmin')
-    RK.process(fgCat,bgRan)
-    RK.write(dr_outfile)       
-    FR = treecorr.NNCorrelation(min_sep=0.1,max_sep=200.0,bin_size=.6,sep_units='arcmin')
-    FR.process(fgRan,redcat)
-    FR.write(fr_outfile)
-    RR = treecorr.NNCorrelation(min_sep=0.1,max_sep=200.0,bin_size=0.6,sep_units='arcmin')
-    RR.process(fgRan,bgRan)
-    RR.write(rr_outfile)    
-    
-    # calculate correlation... 
-    xi,varxi=DK.calculateXi(RR,FR,RK)
-    f=open('xi5.txt','w')
-    for i,x in enumerate(xi):
-        f.write("%f %f\n" % (x,varxi[i]))
-    f.close()
-    return 
-def do_it_all(v,fgCat,fgRan,bgCat,basisInd=None,optimal=False):
-    
-    dd_outfile,dr_outfile,fr_outfile,rr_outfile,fig_outfile = get_output_names(basisInd,optimal)
-    print ("Doing reddening calculation for for vector %s..." % str(v))
-    redcat = do_reddening_calculation(bgCat,basisVector=v)
-    print ("Done. Getting bg randoms... ")
-    bgRan = get_bg_randoms(ra_file, redcat,zmin=zmin)   
-    print ("Done. Now cross-correlating for vector %s..." % str(v))     
-    # Now make the correlation objects.
-    DK = treecorr.NKCorrelation(min_sep=0.1,max_sep=200.0,bin_size=.6,sep_units='arcmin')
-    DK.process(fgCat,redcat)
-    DK.write(dd_outfile)
-    RK = treecorr.NKCorrelation(min_sep=0.1,max_sep=200.0,bin_size=.6,sep_units='arcmin')
-    RK.process(fgCat,bgRan)
-    RK.write(dr_outfile)       
-    FR = treecorr.NKCorrelation(min_sep=0.1,max_sep=200.0,bin_size=.6,sep_units='arcmin')
-    FR.process(fgRan,redcat)
-    FR.write(fr_outfile)
-    RR = treecorr.NKCorrelation(min_sep=0.1,max_sep=200.0,bin_size=0.6,sep_units='arcmin')
-    RR.process(fgRan,bgRan)
-    RR.write(rr_outfile)    
-
-
-    plotres(dd_outfile,dr_outfile,fr_out = fr_outfile,rr_out=rr_outfile,outplotn=fig_outfile)
-
-    return 
 
 
 def main(argv):
@@ -409,7 +299,7 @@ def main(argv):
     ra_file = os.path.join(datapath,ra_name)
     fg_file = os.path.join(datapath,fg_name)
     global zmin
-    zmin = 0.15
+    zmin = 0.4
     # This parameter decides whether we want to loop over all basis vectors, or use the "optimal" vector
     global optimal
     optimal = False 
@@ -433,16 +323,13 @@ def main(argv):
     else: 
         # First calculation: "reddening vector"
         vec=basis[0]        
-        #do_it_all(vec,fgCat,fgRan,bgCat,basisInd=0,optimal=False)
-        do_NNcor(vec,fgCat,fgRan,bgCat,basisInd=0,optimal=False)
-        # Loop through other vectors
-        """
+        do_it_all(vec,fgCat,fgRan,bgCat,basisInd=0,optimal=False)
+        #Loop through other vectors
         index = 2
         for vec in basis[2:]:
             do_it_all(vec,fgCat,fgRan,bgCat,basisInd=index,optimal=False)
             index+=1
-            """                   
-            
+
 if __name__ == "__main__":
     import pdb, traceback, sys
     try:

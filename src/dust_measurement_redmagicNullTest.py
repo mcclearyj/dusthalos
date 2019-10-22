@@ -277,46 +277,7 @@ def get_output_names(basisInd=None,optimal=False):
     return dd_outfile,dr_outfile,fr_outfile,rr_outfile,fig_outfile
 
 
-def get_NNoutput_names():
-    dd_outfile = '../outputs/dust_correlation_dd_NN-vdust-rm.fits'
-    dr_outfile = '../outputs/dust_correlation_dr_NN-vdust-rm.fits'
-    fr_outfile = '../outputs/dust_correlation_fr_NN-vdust-rm.fits'
-    rr_outfile = '../outputs/dust_correlation_rr_NN-vdust-rm.fits'           
-    return dd_outfile,dr_outfile,fr_outfile,rr_outfile
 
-
-def do_NNcor(v,fgCat,fgRan,bgCat,basisInd=None,optimal=False):
-    """
-    There is probably a much faster way to do this, but let's stick to what works!"
-    """
-
-    dd_outfile,dr_outfile,fr_outfile,rr_outfile= get_NNoutput_names()
-    print ("Beginning spatial correlation for for vector %s..." % str(v))
-    redcat = do_reddening_calculation(bgCat,basisVector=v)
-    print ("Reddening done. Getting bg randoms for vector %s..." % str(v))
-    bgRan = get_bg_randoms(ra_file, redcat,zmin=zmin)   
-    print ("Done. Now cross-correlating...")     
-    # Now make the correlation objects.
-    DK = treecorr.NNCorrelation(min_sep=0.15,max_sep=200.0,bin_size=.2,sep_units='arcmin')
-    DK.process(fgCat,redcat)
-    #DK.write(dd_outfile)
-    RK = treecorr.NNCorrelation(min_sep=0.15,max_sep=200.0,bin_size=.2,sep_units='arcmin')
-    RK.process(fgCat,bgRan)
-    #RK.write(dr_outfile)       
-    FR = treecorr.NNCorrelation(min_sep=0.15,max_sep=200.0,bin_size=.2,sep_units='arcmin')
-    FR.process(fgRan,redcat)
-    #FR.write(fr_outfile)
-    RR = treecorr.NNCorrelation(min_sep=0.15,max_sep=200.0,bin_size=0.2,sep_units='arcmin')
-    RR.process(fgRan,bgRan)
-    #RR.write(rr_outfile)        
-    # calculate correlation... 
-    xi,varxi=DK.calculateXi(RR,FR,RK)
-    f=open('xi_scos.txt','w')
-    for i,x in enumerate(xi):
-        f.write("%f %f\n" % (x,varxi[i]))
-    f.close()
-    print ("spatial cross-correlation done!")
-    return 
 
 def do_it_all(v,fgCat,fgRan,bgCat,basisInd=None,optimal=False):
     
