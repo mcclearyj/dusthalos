@@ -12,6 +12,7 @@ import healpy as hp
 import pdb
 
 def get_fg_catalog(datapath,fg_file):
+    data=fitsio.read(fg_file)
     try:
         ra_cat =  data['RA']
         dec_cat = data['DEC']
@@ -243,23 +244,23 @@ def plotres(dd_out,dr_out=None,fr_out=None,rr_out = None, outplotn='fig.png'):
 
 def get_output_names(basisInd=None,optimal=False):
     if optimal:
-        dd_outfile = '../outputs/dust_correlation_dd_orthonorm-voptimal.fits'
-        dr_outfile = '../outputs/dust_correlation_dr_orthonorm-voptimal.fits'
-        fr_outfile = '../outputs/dust_correlation_fr_orthonorm-voptimal.fits'
-        rr_outfile = '../outputs/dust_correlation_rr_orthonorm-voptimal.fits'
-        fig_outfile = '../outputs/correlationFuncFigures/dustCorr_orthonorm-voptimal.png'       
+        dd_outfile = '../outputs/dustCorr_dd_z0.4-voptimal.fits'
+        dr_outfile = '../outputs/dustCorr_dr_z0.4-voptimal.fits'
+        fr_outfile = '../outputs/dustCorr_fr_z0.4-voptimal.fits'
+        rr_outfile = '../outputs/dustCorr_rr_z0.4-voptimal.fits'
+        fig_outfile = '../outputs/correlationFuncFigures/dustCorr_z0.4-voptimal.png'       
     elif (basisInd==0):
-        dd_outfile = '../outputs/dust_correlation5_dd_orthonorm-vdust.fits'
-        dr_outfile = '../outputs/dust_correlation5_dr_orthonorm-vdust.fits'
-        fr_outfile = '../outputs/dust_correlation5_fr_orthonorm-vdust.fits'
-        rr_outfile = '../outputs/dust_correlation5_rr_orthonorm-vdust.fits'
-        fig_outfile = '../outputs/correlationFuncFigures/dustCorr5_orthonorm-vdust.png'      
+        dd_outfile = '../outputs/dustCorr_dd_z0.4-vdust.fits'
+        dr_outfile = '../outputs/dustCorr_dr_z0.4-vdust.fits'
+        fr_outfile = '../outputs/dustCorr_fr_z0.4-vdust.fits'
+        rr_outfile = '../outputs/dustCorr_rr_z0.4-vdust.fits'
+        fig_outfile = '../outputs/correlationFuncFigures/dustCorr_z0.4-vdust.png'      
     else:
-        dd_outfile = '../outputs/dust_correlation_dd_orthonorm-v'+str(basisInd)+'.fits'
-        dr_outfile = '../outputs/dust_correlation_dr_orthonorm-v'+str(basisInd)+'.fits'
-        fr_outfile = '../outputs/dust_correlation_fr_orthonorm-v'+str(basisInd)+'.fits'
-        rr_outfile = '../outputs/dust_correlation_rr_orthonorm-v'+str(basisInd)+'.fits'
-        fig_outfile = '../outputs/correlationFuncFigures/dustCorr_orthonorm-v'+str(basisInd)+'.png'           
+        dd_outfile = '../outputs/dustCorr_dd_z0.4-v'+str(basisInd)+'.fits'
+        dr_outfile = '../outputs/dustCorr_dr_z0.4-v'+str(basisInd)+'.fits'
+        fr_outfile = '../outputs/dustCorr_fr_z0.4-v'+str(basisInd)+'.fits'
+        rr_outfile = '../outputs/dustCorr_rr_z0.4-v'+str(basisInd)+'.fits'
+        fig_outfile = '../outputs/correlationFuncFigures/dustCorr_z0.4-v'+str(basisInd)+'.png'           
     return dd_outfile,dr_outfile,fr_outfile,rr_outfile,fig_outfile
 
 
@@ -273,10 +274,10 @@ def do_it_all(v,fgCat,fgRan,bgCat,basisInd=None,optimal=False):
     bgRan = get_bg_randoms(ra_file, redcat,zmin=zmin)   
     print ("Done. Now cross-correlating for vector %s..." % str(v))     
     # Now make the correlation objects.
-    DK = treecorr.NKCorrelation(min_sep=0.1,max_sep=200.0,bin_size=.6,sep_units='arcmin')
+    DK = treecorr.NKCorrelation(min_sep=0.15,max_sep=200.0,bin_size=.3,sep_units='arcmin')
     DK.process(fgCat,redcat)
     DK.write(dd_outfile)
-    FR = treecorr.NKCorrelation(min_sep=0.1,max_sep=200.0,bin_size=.6,sep_units='arcmin')
+    FR = treecorr.NKCorrelation(min_sep=0.15,max_sep=200.0,bin_size=.3,sep_units='arcmin')
     FR.process(fgRan,redcat)
     FR.write(fr_outfile)
     plotres(dd_outfile,dr_outfile,outplotn=fig_outfile)
