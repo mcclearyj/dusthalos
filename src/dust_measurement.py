@@ -290,8 +290,8 @@ def main(argv):
     rmp_name = 'y1a1-gold-mof-badregion.fits'
     rm_mask = 'DES_Y1A1_3x2pt_redMaGiC_MASK_HPIX4096RING.fits'
     ra_name = 'DES_Y1A1_3x2pt_redMaGiC_RANDOMS.fits'
-    #fg_name = 'Sscom_exactArea_galzCut.fits'
-    fg_name = 'redMaGiC_midz.fits'
+    fg_name = 'Sscom_exactArea_galzCut.fits'
+    #fg_name = 'redMaGiC_midz.fits'
     rmp_file = os.path.join(datapath,rmp_name)
     rmz_file = os.path.join(datapath,rmz_name)
     rmm_file = os.path.join(datapath,rm_mask)
@@ -299,9 +299,9 @@ def main(argv):
     ra_file = os.path.join(datapath,ra_name)
     fg_file = os.path.join(datapath,fg_name)
     global zmin
-    zmin = 0.5
+    zmin = 0.15
     global scl
-    scl=1.0
+    scl=3.0
     # This parameter decides whether we want to loop over all basis vectors, or use the "optimal" vector
     global optimal
     optimal = False 

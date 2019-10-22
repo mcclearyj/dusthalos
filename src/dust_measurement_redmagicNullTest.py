@@ -99,7 +99,8 @@ def get_bg_catalog2(datapath,phot_file,rmz_file,zmin=0.15):
     Use when the matching catalog has already been made.
     """
     #joint = os.path.join(datapath,'y1a1_mof_rmz.fits')
-    joint = os.path.join(datapath,'redMaGiC_midz.fits')
+    #joint = os.path.join(datapath,'redMaGiC_midz.fits')
+    joint = os.path.join(datapath,'redMaGiC_hiz.fits')
     """
     if not os.path.exists(joint):
         bg_phot = Table.read(phot_file,format='fits')
@@ -257,23 +258,23 @@ def plotres(dd_out,dr_out=None,fr_out=None,rr_out = None, outplotn='fig.png'):
 
 def get_output_names(basisInd=None,optimal=False):
     if optimal:
-        dd_outfile = '../outputs/dust_correlation_dd_orthonorm-voptimal-rm.fits'
-        dr_outfile = '../outputs/dust_correlation_dr_orthonorm-voptimal-rm.fits'
-        fr_outfile = '../outputs/dust_correlation_fr_orthonorm-voptimal-rm.fits'
-        rr_outfile = '../outputs/dust_correlation_rr_orthonorm-voptimal-rm.fits'
-        fig_outfile = '../outputs/correlationFuncFigures/dustCorr_orthonorm-voptimal-rm.png'       
+        dd_outfile = '../outputs/dust_correlation_dd_orthonorm-voptimal-rm5.fits'
+        dr_outfile = '../outputs/dust_correlation_dr_orthonorm-voptimal-rm5.fits'
+        fr_outfile = '../outputs/dust_correlation_fr_orthonorm-voptimal-rm5.fits'
+        rr_outfile = '../outputs/dust_correlation_rr_orthonorm-voptimal-rm5.fits'
+        fig_outfile = '../outputs/correlationFuncFigures/dustCorr_orthonorm-voptimal-rm5.png'       
     elif (basisInd==0):
-        dd_outfile = '../outputs/dust_correlation_dd_orthonorm-vdust-rm.fits'
-        dr_outfile = '../outputs/dust_correlation_dr_orthonorm-vdust-rm.fits'
-        fr_outfile = '../outputs/dust_correlation_fr_orthonorm-vdust-rm.fits'
-        rr_outfile = '../outputs/dust_correlation_rr_orthonorm-vdust-rm.fits'
-        fig_outfile = '../outputs/correlationFuncFigures/dustCorr_orthonorm-vdust-rm.png'      
+        dd_outfile = '../outputs/dust_correlation_dd_orthonorm-vdust-rm5.fits'
+        dr_outfile = '../outputs/dust_correlation_dr_orthonorm-vdust-rm5.fits'
+        fr_outfile = '../outputs/dust_correlation_fr_orthonorm-vdust-rm5.fits'
+        rr_outfile = '../outputs/dust_correlation_rr_orthonorm-vdust-rm5.fits'
+        fig_outfile = '../outputs/correlationFuncFigures/dustCorr_orthonorm-vdust-rm5.png'      
     else:
-        dd_outfile = '../outputs/dust_correlation_dd_orthonorm-v'+str(basisInd)+'-rm.fits'
-        dr_outfile = '../outputs/dust_correlation_dr_orthonorm-v'+str(basisInd)+'-rm.fits'
-        fr_outfile = '../outputs/dust_correlation_fr_orthonorm-v'+str(basisInd)+'-rm.fits'
-        rr_outfile = '../outputs/dust_correlation_rr_orthonorm-v'+str(basisInd)+'-rm.fits'
-        fig_outfile = '../outputs/correlationFuncFigures/dustCorr_orthonorm-v'+str(basisInd)+'-rm.png'           
+        dd_outfile = '../outputs/dust_correlation_dd_orthonorm-v'+str(basisInd)+'-rm5.fits'
+        dr_outfile = '../outputs/dust_correlation_dr_orthonorm-v'+str(basisInd)+'-rm5.fits'
+        fr_outfile = '../outputs/dust_correlation_fr_orthonorm-v'+str(basisInd)+'-rm5.fits'
+        rr_outfile = '../outputs/dust_correlation_rr_orthonorm-v'+str(basisInd)+'-rm5.fits'
+        fig_outfile = '../outputs/correlationFuncFigures/dustCorr_orthonorm-v'+str(basisInd)+'-rm5.png'           
     return dd_outfile,dr_outfile,fr_outfile,rr_outfile,fig_outfile
 
 
@@ -312,8 +313,8 @@ def main(argv):
     rmp_name = 'y1a1-gold-mof-badregion.fits'
     rm_mask = 'DES_Y1A1_3x2pt_redMaGiC_MASK_HPIX4096RING.fits'
     ra_name = 'DES_Y1A1_3x2pt_redMaGiC_RANDOMS.fits'
-    #fg_name = 'Sscom_exactArea_galzCut.fits'
-    fg_name='redMaGiC_hiz.fits'
+    fg_name = 'Sscom_exactArea_galzCut.fits'
+    #fg_name='redMaGiC_midz.fits'
     rmp_file = os.path.join(datapath,rmp_name)
     rmz_file = os.path.join(datapath,rmz_name)
     rmm_file = os.path.join(datapath,rm_mask)
@@ -323,7 +324,7 @@ def main(argv):
     global zmin
     zmin = 0.15
     global scl
-    scl = 1.1
+    scl = 3.06
  
     # This parameter decides whether we want to loop over all basis vectors, or use the "optimal" vector
     global optimal
