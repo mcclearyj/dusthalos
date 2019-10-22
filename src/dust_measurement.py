@@ -111,9 +111,10 @@ def get_bg_catalog2(datapath,phot_file,rmz_file,zmin=0.15):
     else:
         print("found a joint catalog")
         redMaGiC=fitsio.read(joint,format='fits')
+        redMaGiC_filt=redMaGiC[redMaGiC['ZREDMAGIC']>zmin]
+        print "background redMaGiC catalog acquired"
     
-    print "background redMaGiC catalog acquired"
-    return redMaGiC
+    return redMaGiC_filt
 
 def do_reddening_calculation(cat,basisVector):
     print "generating bg catalog for correlation for this vector in ON basis"
@@ -121,7 +122,7 @@ def do_reddening_calculation(cat,basisVector):
     # Do the reddening estimate in redshift slices.
     # Also, loop over vectors in our fake basis
 
-    nbins = 5
+    nbins = 7
     est = np.zeros(cat.size)
     est_weight = np.zeros(cat.size)
 
@@ -242,23 +243,23 @@ def plotres(dd_out=None,fr_out=None, outplotn='fig.png'):
 
 def get_output_names(basisInd=None,optimal=False):
     if optimal:
-        dd_outfile = '../outputs/dustCorr_dd_z0.3-voptimal.fits'
-        dr_outfile = '../outputs/dustCorr_dr_z0.3-voptimal.fits'
-        fr_outfile = '../outputs/dustCorr_fr_z0.3-voptimal.fits'
-        rr_outfile = '../outputs/dustCorr_rr_z0.3-voptimal.fits'
-        fig_outfile = '../outputs/correlationFuncFigures/dustCorr_z0.3-voptimal.png'       
+        dd_outfile = '../outputs/dustCorr_dd_z0.4-voptimal.fits'
+        dr_outfile = '../outputs/dustCorr_dr_z0.4-voptimal.fits'
+        fr_outfile = '../outputs/dustCorr_fr_z0.4-voptimal.fits'
+        rr_outfile = '../outputs/dustCorr_rr_z0.4-voptimal.fits'
+        fig_outfile = '../outputs/correlationFuncFigures/dustCorr_z0.4-voptimal.png'       
     elif (basisInd==0):
-        dd_outfile = '../outputs/dustCorr_dd_z0.3-vdust.fits'
-        dr_outfile = '../outputs/dustCorr_dr_z0.3-vdust.fits'
-        fr_outfile = '../outputs/dustCorr_fr_z0.3-vdust.fits'
-        rr_outfile = '../outputs/dustCorr_rr_z0.3-vdust.fits'
-        fig_outfile = '../outputs/correlationFuncFigures/dustCorr_z0.3-vdust.png'      
+        dd_outfile = '../outputs/dustCorr_dd_z0.4-vdust.fits'
+        dr_outfile = '../outputs/dustCorr_dr_z0.4-vdust.fits'
+        fr_outfile = '../outputs/dustCorr_fr_z0.4-vdust.fits'
+        rr_outfile = '../outputs/dustCorr_rr_z0.4-vdust.fits'
+        fig_outfile = '../outputs/correlationFuncFigures/dustCorr_z0.4-vdust.png'      
     else:
-        dd_outfile = '../outputs/dustCorr_dd_z0.3-v'+str(basisInd)+'.fits'
-        dr_outfile = '../outputs/dustCorr_dr_z0.3-v'+str(basisInd)+'.fits'
-        fr_outfile = '../outputs/dustCorr_fr_z0.3-v'+str(basisInd)+'.fits'
-        rr_outfile = '../outputs/dustCorr_rr_z0.3-v'+str(basisInd)+'.fits'
-        fig_outfile = '../outputs/correlationFuncFigures/dustCorr_z0.3-v'+str(basisInd)+'.png'           
+        dd_outfile = '../outputs/dustCorr_dd_z0.4-v'+str(basisInd)+'.fits'
+        dr_outfile = '../outputs/dustCorr_dr_z0.4-v'+str(basisInd)+'.fits'
+        fr_outfile = '../outputs/dustCorr_fr_z0.4-v'+str(basisInd)+'.fits'
+        rr_outfile = '../outputs/dustCorr_rr_z0.4-v'+str(basisInd)+'.fits'
+        fig_outfile = '../outputs/correlationFuncFigures/dustCorr_z0.4-v'+str(basisInd)+'.png'           
     return dd_outfile,dr_outfile,fr_outfile,rr_outfile,fig_outfile
 
 
@@ -298,7 +299,7 @@ def main(argv):
     ra_file = os.path.join(datapath,ra_name)
     fg_file = os.path.join(datapath,fg_name)
     global zmin
-    zmin = 0.3
+    zmin = 0.4
     global scl
     scl=3.06
     # This parameter decides whether we want to loop over all basis vectors, or use the "optimal" vector
