@@ -2,93 +2,252 @@
 \usepackage{geometry}                		% See geometry.pdf to learn the layout options. There are lots.
 \geometry{letterpaper}                   		% ... or a4paper or a5paper or ... 
 %\geometry{landscape}                		% Activate for rotated page geometry
-%\usepackage[parfill]{parskip}    		% Activate to begin paragraphs with an empty line rather than an indent
+\usepackage[parfill]{parskip}    		% Activate to begin paragraphs with an empty line rather than an indent
 \usepackage{graphicx}				% Use pdf, png, jpg, or epsÂ§ with pdflatex; use eps in DVI mode
-								% TeX will automatically convert eps --> pdf in pdflatex		
+	
+\usepackage{amsmath}							% TeX will automatically convert eps --> pdf in pdflatex		
 \usepackage{amssymb}
-\usepackage{ gensymb }
+\usepackage{gensymb}
 \usepackage{outlines}
+\usepackage{verbatim}
+\usepackage[style=numeric-comp]{biblatex}
+%\usepackage{xspace}
+%\usepackage{fancyhdr}
+%\pagestyle{fancy}
+%\fancyhead{}
+\addbibresource{dust_halos.bib}
+\AtEveryBibitem{\clearfield{title}}
 
-%SetFonts
-
-%SetFonts
 
 
-\title{A Search for  Extended Circumgalactic Dust}
+\newcommand{\dMdp}{\rm \frac{\partial M}{\partial \rho}} 
+\newcommand{\dMinline}{$\rm \partial M / \partial \rho$}
+\title{A Search for Extended Circumgalactic Dust}
 \author{Jacqueline McCleary \& Eric Huff}
 %\date{}							% Activate to display a given date or no date
 
 \begin{document}
 \maketitle
-%\section{}
-%\subsection{}
-
 \section{Motivation\label{sec:intro}}
 %n This is pretty much copied and pasted from ADAP, but that's OK since it's our own words!
-most of the universe?s atoms are hidden from plain sight: stars account for only 10\% of baryons, while the remaining 90\% reside in two gaseous phases that are extremely difficult to observe because of their low densities: the circumgalactic medium (CGM), filling the dark matter halos hosting galaxies, and the more extended intergalactic medium (IGM).  Despite being the focus of intense theoretical and observational research, the CGM and IGM remain poorly understood. This matters because abundance and spatial extent of dust in the Universe is a key component of galaxy formation models, comprises a spatially varying foreground screen that has practical implications for supernova cosmology, and fundamentally limits the homogeneity of samples selected for wide-field surveys. 
+% I can refine later. 
+Most of the universe's atoms are hidden from plain sight: stars account for only 10\% of baryons, while the remaining 90\% reside in two gaseous phases that are extremely difficult to observe because of their low densities: the circumgalactic medium (CGM), filling the dark matter halos hosting galaxies, and the more extended intergalactic medium (IGM).  Despite being the focus of intense theoretical and observational research, the CGM and IGM remain poorly understood. This matters because abundance and spatial extent of dust in the Universe is a key component of galaxy formation models, comprises a spatially varying foreground screen that has practical implications for supernova cosmology, and fundamentally limits the homogeneity of samples selected for wide-field surveys. 
 
-While attempting to measure magnification of 85,000 background quasars by 20 million normal galaxies in SDSS images, Ménard et al. (2010) found a smooth extinction profile extending beyond 1 Mpc. Peek et al. (2014) perform a similar measurement using as their background sources SDSS Luminous Red Galaxies (LRGs), whose remarkably small dispersion in optical colors allows for high accuracy with a smaller sample size. Together, these measurements imply that more than half of the dust in the universe lies outside galactic disks. This result is highly unexpected: the presence of dust well into the two-halo regime of the matter correlation function defies the predictions of hydrodynamic simulations of dust production and survival, under-predicting the observed Ménard and Peek measurements by an order of magnitude (McKinnon et al. 2017). 
+While attempting to measure magnification of 85,000 background quasars by 20 million normal galaxies in SDSS images, \cite{menard2010measuring} found a smooth extinction profile extending beyond 1 Mpc. A similar measurement is performed by~\cite{peek2015dust}, using as their background sources SDSS Luminous Red Galaxies (LRGs), whose remarkably small dispersion in optical colors allows for high accuracy with a smaller sample size. Together, these measurements imply that more than half of the dust in the universe lies outside galactic disks. This result is highly unexpected: the presence of dust well into the two-halo regime of the matter correlation function defies the predictions of hydrodynamic simulations of dust production and survival, under-predicting the observed measurements of~\cite{menard2010measuring, peek2015dust} by an order of magnitude~\cite{mckinnon2016dust, vogelsberger2017uniformity}. 
 
-Beyond the Peek and Menard measurements, investigators have searched for dust-induced extinction of background sources near a galaxy (Zaritsky 1994), or in stacks of clusters (Chelouche et al. 2007, Bovy et al. 2008). A direct detection of circumgalactic dust at the $\ge 200$ kpc radii probed by the work of Ménard et al. (2010a) and Peek et al. (2014) would allow for a meaningful comparison to the simulations of cosmological dust abundance such as the ones by McKinnon et al. (2017) and Vogelsberger et al. (2018).  
-% The following paragraph is really good, but not strictly relevant to this result alone
-% More specifically, because the differential extinction measured over a few optical bands doesn't uniquely pin down the dust model, the total CGM dust mass and dust temperature are required. A given extinction profile is compatible with a wide range of dust masses and grain sizes, and has little constraining power by itself.  When combined with emission profiles of dust, the degeneracies are broken and a dust mass column density, the dust temperature and the dust emissivity averaged along the line-of-sight are obtained. These pieces of information allow for an evaluation of dust formation and processing paradigms. 
-%Whether in emission or absorption, direct observation of extragalactic dust remains challenging.  Extended dust emission and reflection has been spotted around nearby galaxies (Kaneda et al. 2009, Hodges-Kluck & Bregman 2014, Smith et al. 2016), but these direct detections see dust emission extending at most 20 kpc beyond stellar disks. 
+Beyond these measurements, investigators have searched for dust-induced extinction of background sources near a galaxy (Zaritsky 1994), or in stacks of clusters (Chelouche et al. 2007, Bovy et al. 2008). A direct detection of circumgalactic dust (CGD) at the $\ge 200$ kpc radii probed by the work of ~\cite{menard2010measuring, peek2015dust} would allow for a meaningful comparison to the simulations of cosmological dust abundance such as the ones by~\cite{mckinnon2016dust, vogelsberger2017uniformity}. 
+
+
+The abundance and spatial extent of dust in the universe is a key component of galaxy formation models. The presence of foreground dust fundamentally limits the homogeneity of samples in wide-field surveys, and has practical implications for cosmology supernovae and cluster weak lensing. Accordingly, errors in foreground dust models will have profound knock-on effects. XXX which ones? XXX
+
+%Yet despite its importance, cosmic dust is generally unaccounted for in the error budgets of cosmological surveys.  For example, supernova (SN) measurements have become a key ingredient in cosmological parameter estimation because of their constant (and large) luminosity as a function of their light curve. The apparent magnitude of a supernova is thus a proxy for its distance. However, a number of effects introduce scatter into the relationship between SN luminosity and distance, including luminosity?light curve shape dependence, a luminosity?color relation, magnification from gravitational lensing and intergalactic extinction. Modelling of SN physics and large sample sizes can average away most of this variance, but not the poorly understood reddening from cosmic dust. For SNe in particular, Ménard et al. (2010b) show that dust affects cosmological parameters such as the matter density of the universe  ?_m and the dark energy equation of state parameter w at the level of a few per cent, which is comparable to the current statistical errors. 
+
+In this context, \cite{menard2010measuring} made an unusual discovery while attempting to measure the magnification of 85,000 background quasars by 20 million galaxies in SDSS images. They found a smooth reddening profile detectable out to 10 Mpc from the foreground galaxies; they ascribe this reddening to a circumgalactic dust halo at cosmological scales. A handful of other studies (e.g,~\cite{peek2015dust}) also find evidence for excess reddening by foreground galaxies. %of background quasar light  as a function of impact parameter from foreground galaxies. 
+%Reddening out to 10 Mpc (clusters are typically 1-2 Mpc across) implies . 
+These results implies that more than half of the dust in the universe lies outside galactic disks, and are in strong tension with the predictions of hydrodynamic simulations of dust processing and survival. 
+
+If this excess dust is real, it has serious implications for all cluster cosmology surveys. All weak lensing analysis depends on accurate galaxy colors to obtain distance estimates, both for creating background galaxy samples and for fitting masses to the galaxy shear signal. A halo of dust at cosmological scales would skew the models used to turn galaxy colors into distances, and may ultimately bias cosmological parameter constraints. An extended halo would also indicate the need to revisit assumptions about how dust enters the CGM, and how long it can survive.
 
 
 \section{Methods\label{sec:methods}}
 
-\subsection{A Maximum Likelihood Estimator for Dust Extinction}
-\begin{outline}
-\1 Develop our MLE formalism; reproduce equations
-	\2 don't forget to include discussion of fiducial extinction vector
-\1 May also want to include the ON and optimal vector generation, at least for a paragraph --YES
-	\2 Think of this like a PCA; as long as the sum is non-negative, we're in good shape. 
-	\2 Dips positive or negative mean that the``principal component" under or overfits the actual trend at that distance
-		\3 little harder to connect to physical meaning for now -- problem for theorists?
-	\2 For development of "optimal" vector, mb show chi-squared plots, just to explain where we got this? 
-		\3 I think I baleeted those, but fairly easy to reproduce 
-\1 Discuss how and why we split Av estimate into redshift bins
-	\2 correlating *deviations from mean color space of background galaxies*
-	\2 \textbf{HEY: did we deredden our magnitudes for galactic reddening? Are we hoping that we just "average" over dust? Because that's a bad idea}
-\1 \textbf{yooo need to justify $R_V = 3.1$ and consider using other values of $R_V$}
-\end{outline}
+A screen of dust will Rayleigh scatter incoming light, resulting in an attenuation or extinction and changing its spectrum by reddening it. The total extinction $\rm A_\lambda$ quantifies wavelength-depended dust absorption; reddening is usually parametrized by the selective extinction red versus blue light: $\rm  E(B-V) = (B-V)_{\rm meas} - (B-V)_0$. %(or similarly, $\rm E(g-i) = (g-i)_{\rm meas} - (g-i)_0 $ for SDSS filters). 
+%More dust yields a more positive selective extinction $\rm E(B-V)$. 
+The steepness of $\rm A_\lambda$ as a function of wavelength is usually parametrized by 
+\begin{equation}
+R_V = \rm{A_V / E(B - V)}
+\end{equation}
+For interstellar Milky Way dust, $R_V \sim 3.1$; dense molecular clouds have $R_V \sim 5$. 
 
-\subsection{Correlation Function Algorithm\label{ssec:treecorr}}
-\begin{outline}
-\1 Treecorr algorithm, briefly: it's not my algorithm but it is what we use. Correlating not gal-shear but gal-extinction
-\1 Mention spatial correlation as well
-\1 Mention null tests: flexibility of algorithm allows us to easily correlate any two samples, so ideal for null tests like star-extinction
-\end{outline}
+% Somewhat wishy-washy, tighten up during editing
+These statements are generally true for dust-induced reddening and extinction. However, we are looking for a faint, extended signal, buried within the noise and color scatter of our background sample. Magnitude differences like $\rm E(B - V)$ are instructive, but somewhat simplistic given the subtlety of the effect. Here, we use maximum likelihood parameter estimation to find a linear combination of wavelengths that represents the best chance of finding the extinction. This optimal estimator is applied to a sample of background galaxies that have been binned in redshift space to control for cosmological (not dust-induced) reddening. Finally, the resulting dust extinction measure is correlated with the presence of foreground galaxies to search . We describe our approach in greater detail below, noting that for the sake of readability all vector or matrix quantities appear in boldface. 
+
+\subsection{A Maximum Likelihood Estimator for Dust Extinction}\label{ssec:estimator}
+
+% intro wording should be refined... words about p{eq:likelihood}arameter estimation?
+For a uniform prior probability distribution of a given parameter, the log-likelihood of XXX a given value is XXX:
+
+\begin{equation}\label{eq:likelihood}
+\log L = \rm \left [\mathbf{D} - \mathbf{M}(\rho)\right ] \frac{\mathbf{C}^{-1}}{2} \left[\mathbf{D} - \mathbf{M}(\rho)\right ]^{\rm T}
+\end{equation}
+
+For galaxies, the data vector $\mathbf{D}$ is an array of magnitudes, e.g.,
+
+\begin{equation}\label{eq:data_vector}
+\mathbf{\rm D} = \{\rm u,g,r,i,z,W1,W2,...\}
+\end{equation}
+while the covariance of the data $\mathbf{C}$ encapsulates both the magnitude measurement uncertainties and cosmic variance. The term $\mathbf{M}(\rho)$ is the best-fit model describing the data $\mathbf{D}$; $\rho$ is the unknown parameter for which Equation~\ref{eq:likelihood} is solved -- here, a unit $\rm A_V$. Taylor expansion of $\mathbf{M}(\rho)$ yields a simple linear approximation for the effect of $\rho$:
+\begin{equation}\label{model}
+\rm \mathbf{M} = M_0 + \rho\ \dMdp
+\end{equation}
+ 
+ In this expansion, $M_0$ are the intrinsic colors of galaxies in the background galaxy sample, without any reddening from dust. The $\rho$ \dMinline~ term is the response of galaxies to a unit dust; \dMinline~is a fiducial (theoretical) extinction curve for dust. To replicate the work of~\cite{menard2010measuring}, we use the extinction model of~\cite{fitzpatrick1999correcting} for $R_V = 3.1$ Milky Way-type dust. 
+
+ The optimal estimator $\hat{\rho}$ for the dust extinction $\rho$, such that $\rho$ maximizes the likelihood in Equation~\ref{eq:likelihood}, is given as: 
+
+\begin{equation}
+\hat{\rho} = \rm \left[ \frac{ \dMdp \ \mathbf{C}^{-1} \left (\mathbf{D} - M_0 \right )} {\dMdp\ \mathbf{C}^{-1 }\ \dMdp} \right ] \label{eq:estimator}
+\end{equation}
+
+where by the Cram\'{e}r-Rao bound, the uncertainty on $\hat{\rho}$ is given by:
+\begin{equation}
+\sigma^2_{\hat{\rho}} = \rm \dMdp\ \mathbf{C}^{-1 }\ \dMdp \label{eq:RCO}
+\end{equation}
+  %\begin{comment}
+ The argument leading to Equations~\ref{eq:estimator} and~\ref{eq:RCO} can also be presented as follows. Each galaxy in the (background) sample has a set of colors
+ \begin{equation}\label{commentEqn:model}
+\mathbf{D} = M_0+ {\rm A_V}\ dM + \text{noise}
+ \end{equation}
+ The noise term is independent of $\rm A_V$, and behaves as a multivariate Gaussian with a covariance $\mathbf{C}$. In the absence of dust, $\mathbf{D}$ minus the mean color of the sample $M_0$ is simply a set of values points drawn from the distribution described by $\mathbf{C}$. The expression 
+ \begin{equation}\label{commentEqn:significance}
+ \frac{\mathbf{C}^{-1}}{2} \left[\mathbf{D} - \mathbf{M}(\rho)\right ]^{\rm T}
+\end{equation} 
+parametrizes how significant the deviation in $\mathbf{D}$ is from $\rm {M_0}$. We may then ask how much of the observed deviation is in the direction we would expect from dust by projecting Equation~\ref{commentEqn:significance} into the theoretical dust curve \dMinline:
+  \begin{equation}
+  \left (\mathbf{D} - M_0 \right )\ \mathbf{C}^{-1} \ \dMdp 
+ \end{equation}
+Rescaling (calibrating) this deviation in background galaxy color from the total dust column, relative to the reddening from a ``unit dust'' column, yields the final form of the estimator in Equations~\ref{eq:estimator}
+\begin{equation}
+\hat{\rho} = \rm \left[ \frac{ \dMdp \ \mathbf{C}^{-1} \left (\mathbf{D} - M_0 \right )} {\dMdp\ \mathbf{C}^{-1 }\ \dMdp} \right ]
+\end{equation}
+The factor
+\begin{equation}
+\frac{\rm \partial M / \partial \rho} {\dMdp\ \mathbf{C}^{-1 }\ \dMdp}
+\end{equation}
+is then a normalized reddening vector per ``unit dust''  
+%\end{comment}
+ 
+ % I'm not entirely sure that this is right  -- Eric's help will be awesome here eventually
+Equations~\ref{model} to~\ref{eq:RCO} implicitly assume that the theoretical extinction curve \dMinline~accurately describes the CGD. For consistency with~\cite{menard2010measure}, we take a fiducial value of \dMinline~that corresponds to $R_V = 3.1$ dust. However, this need not be the case -- circumgalactic dust may have a different reddening vector. To test this idea, we apply the Gram-Schmidt orthogonalization procedure to the fiducial \dMinline. The resulting set of orthonormal vectors span the ``extinction basis,'' into which the true CGD reddening vector is projected. 
+
+%\begin{comment}
+For observations made in the $griz$ filter set, and taking the model of~\cite{fitzpatrick1999correcting} for $R_V = 3.1$ dust, the fiducial \dMinline~extinction vector is
+\begin{align*}
+\mathbf{v_{\rm fid}} &= \left[ 1.12224688, 0.82747095, 0.62680647, 0.47880753 \right ] \label{eq:fid}\\
+&\equiv {\rm A_V}^{\rm fid}
+\end{align*}
+The orthonormal basis vector $\mathbf{v_1}^{\rm ON}$ is constructed as 
+\begin{gather}
+    \mathbf{v_1} = \left [ 1, 0, 0, 0 \right ] \\
+    \mathbf{v'_1} = \mathbf{v_1} - \langle \mathbf{v_1} | \mathbf{v_{\rm fid}}\rangle \ast \mathbf{v}_{\rm fid}\\
+     \mathbf{v_1}^{\rm ON} =  \frac{\mathbf{v'_1}} { \left\| \mathbf{v'}_1 \right\| }\label{eq:ON}
+\end{gather}
+%\end{comment}
+The procedure is then repeated for $\mathbf{v_2} = \left [ 0, 1, 0, 0 \right ]$ and $\mathbf{v_2}=\left [ 0, 0, 1, 0 \right ]$, taking care to subtract the projection of the previous vectors onto each new vector. 
+% Following may be easier 
+The true CGD extinction can then be reconstructed from the individual magnitudes %of the reddening signal along each basis vector 
+through a simple $\chi^2$ minimization, i.e.,
+
+\begin{equation}
+\chi^2 = \sum \frac{\left ( k_{\rm fid} - \alpha_i \  k_i \right )^2}{\left ( \sigma^2_{\rm fid} + \alpha^2_i \ \sigma^2_i \right )}, i = 1,2...
+\end{equation} 
+
+where $k$ is the extinction signal measured measured along a given basis vector: either the fiducial \dMinline~($k_{\rm fid}$) or one of the orthogonal components ($k_1, k_2, ...$) and $\sigma$ is the uncertainty of the extinction measurement. The true CGD extinction is thus
+\begin{equation}
+k^{\rm true} = k^{\rm fid} + \alpha_1 \ k_1 + \alpha_2 \ k_2 + \alpha_3 \ k_3 + ...
+\end{equation}
+
+
+This orthogonalization procedure is analogous to a principal component analysis, where each basis vector captures some of the variance of the reddened galaxy colors. Positive or negative value in the individual components in~\ref{eq:ON} mean that the ``principal component" $\mathbf{v}_{\rm fid}$ either under or overfits the actual trend at that radius. 
+
+\subsection{Galaxy-Reddening Correlation Function\label{ssec:treecorr}}
+
+%There's some repetition here, also the wording is garbage. Does it even need to be here?
+With the dust extinction estimator above in~\ref{ssec:estimator}, we may then correlate the magnitude of dust-induced extinction with the presence of a foreground galaxy. We do this with the \texttt{TreeCorr}\footnote{https://github.com/rmjarvis/TreeCorr} package~\cite{jarvis2004skewness}, specifically the galaxy-kappa cross-correlation. Though intended to correlate galaxy counts with shear signal (i.e., $\kappa$) the code is flexible enough to accommodate any scalar quantity. Here, we correlate foreground galaxy counts with the extinction of background galaxies as determined with the estimator in Equation~\ref{eq:estimator} for the fiducial dust model and its orthogonal components derived in Equation~\ref{eq:ON}. A variety of other two-point correlations, such as foreground star/background galaxy extinction, are performed as null tests. Foreground and background galaxy-galaxy two-point correlation functions are also computed. All correlations are taken in twenty impact parameter bins, from 0.2 to 200 arcminutes (or 200 kiloparsecs to 10 megaparsecs in the average foreground galaxy rest frame). This range of impact parameters matches the physical scales probed in~\cite{menard2010measuring}. % in the average rest frame of our foreground galaxy samples. 
+
+
 
 \section{Datasets}\label{sec:data}
 
+\begin{figure}[htbp]
+   \centering
+   \includegraphics[width=0.5\textwidth]{figures/redmagic_desSVM_overlap.png} 
+   \caption{Example figure showing overlap of SuperCOSMOS foreground galaxies (blue points) with redMaGiC background galaxies (red points). Exact area overlap was established with the \texttt{HEALPy} package.}
+   \label{fig:overlap}
+\end{figure}
+
 \begin{outline}
-\1 Discuss samples that we used: 
-	\2 redMaGiC as background (discuss algorithm, add some plots of color variance with MLE or color-color plots)
-		\3 area covers: $290\degree \lesssim \alpha \lesssim 110\degree$
-	\2 GALEX
-	\3 DES with SVM
-\1 Also SVM for DES foreground sample 
-	\2 give some characteristics
-	\2 perhaps move discussion of algorithm to \ref{sec:methods}
-		\3 ref needed
-\1 Might be good to have some consistency plots showing overlap of two samples
-\1 Used Healpy to ensure that we are not correlating across empty space, which would have the effect of diluting the observed signal
+	\1 redMaGiC as background (discuss algorithm, add some plots of color variance with MLE or color-color plots). 
+	\1The catalog covers the area $290\degree \lesssim \alpha \lesssim 110\degree$ and $-60\degree \lesssim \delta \lesssim -40\degree$ taken from DES Y1 survey data. 
+	\1 Shoot, need to describe that redshifts come from the rmz catalog, and the photometry comes from whatever the gold MOF catalog is -- ref also needed!
+	\1 OK, but first, do describe algorithm. 
+		\2 how does the redMaGiC algorithm actually work. Also, how good is the redshift fitting algorithm? This will be relevant for when we subdivide the background galaxy catalog into redshift slices, and also minimizes contamination with the foreground galaxy sample. 
+		\2 Give redshift range, filter set, etc. 
+		\2 Do these LRGs intrinsically appear in clusters? Not a lot of those in the field, ``dust'' saying -- hopefully doesn't bias our results
+	
+	\1 For MOF catalog, note that magnitudes are dereddened for galactic extinction and are (I think?) based on \texttt{MAG\_AUTO} of SExtractor. I appear to have lost the main catalog, but will have to dig up a reference from somewhere else.	
 \end{outline}
 
-\begin{figure}[htbp] %  figure placement: here, top, bottom, or page
+% That redMaGiC reference may need to be updated?
+% redMaPPer reference: Rykoff E. S. et al., 2014, ApJ, 785, 104 (RM1)
+
+Our background catalog for extinction measurements consists of 599,554 luminous red galaxies drawn from the Dark Energy Survey (DES, citation needed?) Year 1 data release. Galaxies are selected with the red sequence Matched-filter Galaxy Catalog (redMaGiC) algorithm~\cite{rozo2016redmagic}), which fits every galaxy with a red sequence template (itself derived from the redMaPPer red-sequence cluster finder~\cite{rykoff2014red}), computes the resulting photometric redshift and luminosity, and retains only those galaxies for which the galaxy luminosity is high and the fit is good ($\chi^2 < \chi^2_\text{max}$). Rather than a hard cutoff, the redMaGiC selection threshold $\chi^2_\text{max}$ is allowed to float with redshift to assure a constant co-moving galaxy density. Photometric redshifts of redMaGiC galaxies have less than 1\% bias relative to spectroscopic redshifts over the entire range of the catalog ($0.15 < z < 0.85$). The distribution of redshifts is shown in Figure~\ref{fig:redshifts}.  
+\begin{figure} %  figure placement: here, top, bottom, or page
    \centering
    \includegraphics[width=0.75\textwidth]{figures/redshift_histograms.png} 
-	\caption{Redshift distribution of foreground and background samples}
+	\caption{Redshift distribution of the SuperCOSMOS foreground and redMaGiC background galaxy catalogs}
    \label{fig:redshifts}
 \end{figure}
 
-\section{Results\label{sec:results}}
+redMaGiC contains redshifts and errors, but no photometry. We thus match against the DES Year 1 'y1a1-gold-mof-badregion.fits' Red sequence galaxies have the advantage of a relatively tight dispersion in color space, as shown in Figure~\ref{fig:colors}. 
+
+\begin{figure} %  figure placement: here, top, bottom, or page
+   \centering
+   \includegraphics[width=0.75\textwidth]{figures/color_vs_redshift_redMaGiC.png} 
+	\caption{Color of redMaGiC galaxies as a function of redshift. At $z<0.25$, $g-r$ color (green points) is a fairly good indicator of the red sequence ($\sim$ 0.05, though $r-i$ color is amo}
+   \label{fig:redshifts}
+\end{figure}
+
+
+The redMaGiC data includes the standard Dark Energy Survey $griz$ bands which have been dereddened of galactic extinction; due to the generally poor throughput of the Dark Energy Camera in $u$, the catalog does not include data in that filter. %lol include...include. Also, even if dust correction is not perfect, that's already been accounted for in our noise budget (implicitly) by the dispersion in the background red magic galaxy catalog -- within one redshift slice, data does not line up perfectly. 
+
+% This is obviously gibberish, leave in here for now and refine later. 
+The DES masking makes the survey area of redMaGiC galaxies highly inhomogeneous. A mismatch between the foreground and background areas would mean correlating over empty space and diluting the extinction signal. To ensure that the spatial distribution of the foreground galaxies (and randoms) is exactly the same as the redMaGiC galaxies, we used HEALPy\footnote{https://healpy.readthedocs.io/en/latest/} software. \texttt{HEALPy} is a Python implementation of the Hierarchical Equal Area isoLatitude Pixelization (HEALPix) scheme to manage discrete data on the sphere. %HEALPix maps are partitions of the sky into triangular ``pixels''  of equal size at a desired resolution. %The supplied redMaGiC HEALPix map has NPIX = 4096, which divides up the sky into {2.3\times10^6} pixels.
+% Probably too much information in the next sentence...
+\texttt{HEALPy} is used to pixelate the foreground catalogs and cross-match with the HEALPix map that is supplied with the redMaGiC galaxy catalog. The final foreground catalogs contain only galaxies for which the corresponding redMaGiC HEALPix pixel is not empty. An example with the SuperCOSMOS galaxy catalog is shown in Figure~\ref{fig:overlay}. 
+\begin{outline}
+\1 Foregrounds:
+	\2 SuperCOSMOS
+		\3 contains B, R, W1-4 and very good photo-zs
+	\2 GALEX
+		\3 Take a NUV magnitude cut at 21.0 I thought? Centers photo-$z$ distribution at 0.15. Magnitude cut of NUV < 21.0 centers the distribution at $z_{\rm phot} = 0.1$ though it decreases the sample size sharply. 
+
+\1 Also SVM for DES foreground sample --> brief discussion as that didn't work. 
+	\2 give some characteristics
+	\2 perhaps move discussion of algorithm to \ref{sec:methods}
+		\3 ref needed
+\end{outline}
+The Galaxy Evolution Explorer (GALEX) was a NASA mission that imaged 77\% of the sky in at least one of its near-UV (NUV, 232 nm) and far-UV (FUV, 154 nm) bands. 
+
+% For SCos discussion, it does have WISE data! The Wide-field Infrared Survey Explorer (WISE) was a NASA mission that successfully imaged the entire sky in four mid-infrared bands: 3.4 microns (W1), 4.6 microns (W2), 12.1 microns (W3) and 22.2 microns (W4). The resulting catalog contains 750 million sources.  
+
+\section{Results}
+
 \begin{outline}
 \1 Plot up all the results I do have... with dust vector, "optimal" vector for all samples 
+	\2 Don't forget to discuss the $A_V$ Menard fit, and how I rescale it for different sample redshifts
 \1 MB show the "dust mass plot" but maybe also skip because it's not really a dust mass
 \1 Star-bkg correlation is a good null test to show, as is very interesting red magic autocorrelations
 \end{outline}
+
+\begin{figure} %  figure placement: here, top, bottom, or page
+   \centering
+   \includegraphics[width=0.375\textwidth]{figures/better_dustCorrel.png}\\
+   \includegraphics[width=0.375\textwidth]{figures/cheap_dustmass_overlay}
+	\caption{Left: excess extinction A$_{\rm V}$ as a function of separation between foreground SuperCOSMOS and background galaxies. The solid orange line shows the power law for A$_{\rm V}$ from M\'{e}nard et al. Right: Simulated dust surface density as a function of projected radius about galactic centers at z = 0.3, with equivalent dust mass from M\'{e}nard et al.~(black points) and the results from this study (blue points) overplotted. Simulations are taken from McKinnon et al. (2017)}
+   \label{fig:scosCorr}
+   \end{figure}
+   
+The results of the correlation for the SuperCOSMOS galaxy sample are shown in Figure~\ref{fig:scosCorr}. Both impact parameter and separation in the foreground galaxy rest frame are show.  Error bars are the variance of the correlated quantity (A$_{V}$, only including the shot noise propagated into the final correlation. This does not include sample variance, so it is always an underestimate of the actual variance.
+
+
+
+
+
+% This is a note about the error bars on our results plots
+% I think this
+Figure~\ref{fig:scosCorrON} shows that the real reddening vector lies principally in the vdust-v0 plane;  %It would be hella cool to have a coordinate-axis-type plot with v_opt overplotted -- I could probs do in gnu plot!
+ 
 
 \section{Conclusions\label{sec:conclusions}}
 \begin{outline}
@@ -98,5 +257,11 @@ Beyond the Peek and Menard measurements, investigators have searched for dust-in
 	\2 Except that maybe that's controversial for actual MgII folks? Apparently they expect this to be anti-correlated
 \1 For the literature figures, consider placing in appendix?
 \end{outline}
+
+This work is part of a larger project to detect and characterize extended halos of circumgalactic dust. The next phase will by studying 
+
+this measurement constrains the average radial dust column density (and thus dust mass). We will also search for submillimeter emission from the extended dust halos of a statistical sample of galaxies.  Detection of this extended dust emission, separate from the ISM of the galaxies themselves, would be, to the best of our knowledge, the first measurement of its kind. 
+\printbibliography
+
 
 \end{document}  
