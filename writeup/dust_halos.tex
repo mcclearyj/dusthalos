@@ -3,7 +3,7 @@
 \geometry{letterpaper}                   		% ... or a4paper or a5paper or ... 
 %\geometry{landscape}                		% Activate for rotated page geometry
 \usepackage[parfill]{parskip}    		% Activate to begin paragraphs with an empty line rather than an indent
-\usepackage{graphicx}				% Use pdf, png, jpg, or eps§ with pdflatex; use eps in DVI mode
+\usepackage{graphicx}				% Use pdf, png, jpg, or epsÂ§ with pdflatex; use eps in DVI mode
 	
 \usepackage{amsmath}							% TeX will automatically convert eps --> pdf in pdflatex		
 \usepackage{amssymb}
@@ -40,7 +40,7 @@ Beyond these measurements, investigators have searched for dust-induced extincti
 
 The abundance and spatial extent of dust in the universe is a key component of galaxy formation models. The presence of foreground dust fundamentally limits the homogeneity of samples in wide-field surveys, and has practical implications for cosmology supernovae and cluster weak lensing. Accordingly, errors in foreground dust models will have profound knock-on effects. XXX which ones? XXX
 
-%Yet despite its importance, cosmic dust is generally unaccounted for in the error budgets of cosmological surveys.  For example, supernova (SN) measurements have become a key ingredient in cosmological parameter estimation because of their constant (and large) luminosity as a function of their light curve. The apparent magnitude of a supernova is thus a proxy for its distance. However, a number of effects introduce scatter into the relationship between SN luminosity and distance, including luminosity?light curve shape dependence, a luminosity?color relation, magnification from gravitational lensing and intergalactic extinction. Modelling of SN physics and large sample sizes can average away most of this variance, but not the poorly understood reddening from cosmic dust. For SNe in particular, M�nard et al. (2010b) show that dust affects cosmological parameters such as the matter density of the universe  ?_m and the dark energy equation of state parameter w at the level of a few per cent, which is comparable to the current statistical errors. 
+%Yet despite its importance, cosmic dust is generally unaccounted for in the error budgets of cosmological surveys.  For example, supernova (SN) measurements have become a key ingredient in cosmological parameter estimation because of their constant (and large) luminosity as a function of their light curve. The apparent magnitude of a supernova is thus a proxy for its distance. However, a number of effects introduce scatter into the relationship between SN luminosity and distance, including luminosity?light curve shape dependence, a luminosity?color relation, magnification from gravitational lensing and intergalactic extinction. Modelling of SN physics and large sample sizes can average away most of this variance, but not the poorly understood reddening from cosmic dust. For SNe in particular, Ménard et al. (2010b) show that dust affects cosmological parameters such as the matter density of the universe  ?_m and the dark energy equation of state parameter w at the level of a few per cent, which is comparable to the current statistical errors. 
 
 In this context, \cite{menard2010measuring} made an unusual discovery while attempting to measure the magnification of 85,000 background quasars by 20 million galaxies in SDSS images. They found a smooth reddening profile detectable out to 10 Mpc from the foreground galaxies; they ascribe this reddening to a circumgalactic dust halo at cosmological scales. A handful of other studies (e.g,~\cite{peek2015dust}) also find evidence for excess reddening by foreground galaxies. %of background quasar light  as a function of impact parameter from foreground galaxies. 
 %Reddening out to 10 Mpc (clusters are typically 1-2 Mpc across) implies . 
@@ -148,7 +148,7 @@ k^{\rm true} = k^{\rm fid} + \alpha_1 \ k_1 + \alpha_2 \ k_2 + \alpha_3 \ k_3 + 
 \end{equation}
 
 
-This orthogonalization procedure is analogous to a principal component analysis, where each basis vector captures some of the variance of the reddened galaxy colors. Positive or negative value in the individual components in~\ref{eq:ON} mean that the ``principal component" $\mathbf{v}_{\rm fid}$ either under or overfits the actual trend at that radius. 
+This orthogonalization procedure is analogous to a principal component analysis, where each basis vector captures some of the variance of the reddened galaxy colors. XXX Ok, Eric keeps using projection, not PCA. Perhaps remove this XXXPositive or negative value in the individual components in~\ref{eq:ON} mean that the ``principal component" $\mathbf{v}_{\rm fid}$ either under or overfits the actual trend at that radius. 
 
 \subsection{Galaxy-Reddening Correlation Function\label{ssec:treecorr}}
 
@@ -209,6 +209,7 @@ The DES masking makes the survey area of redMaGiC galaxies highly inhomogeneous.
 \1 Foregrounds:
 	\2 SuperCOSMOS
 		\3 contains B, R, W1-4 and very good photo-zs
+		\3 can reference~\cite{}
 	\2 GALEX
 		\3 Take a NUV magnitude cut at 21.0 I thought? Centers photo-$z$ distribution at 0.15. Magnitude cut of NUV < 21.0 centers the distribution at $z_{\rm phot} = 0.1$ though it decreases the sample size sharply. 
 

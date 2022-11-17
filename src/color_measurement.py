@@ -11,7 +11,7 @@ import pandas as pd
 import healpy as hp
 import pdb
 
-def get_fg_catalog(datapath,fg_file): 
+def get_fg_catalog(datapath,fg_file):
     try:
         data = Table.read(fg_file,format='fits')
         ra_cat=data['ra']
@@ -19,7 +19,7 @@ def get_fg_catalog(datapath,fg_file):
     except:
         data = Table.read(fg_file,format='csv')
         ra_cat,dec_cat=filter_fgPhotcat(fgfile,raname='ra',decname='dec')
-    
+
     if os.path.exists(fg_file):
         print( "Length of catalog after cuts = %i" % len(ra_cat))
         catalog = treecorr.Catalog(ra=ra_cat,dec=dec_cat,ra_units='deg',dec_units='deg')
@@ -31,10 +31,10 @@ def get_fg_catalog(datapath,fg_file):
         wg_z = (zphot <= 0.12).nonzero()[0]
         cut_galz=np.intersect1d(wg_gal,wg_z,assume_unique=True)
         filtered=data[cut_galz]
-        #keep = filtered['bCalCorr'] > 15.0           
+        #keep = filtered['bCalCorr'] > 15.0
         catalog = treecorr.Catalog(ra=filtered['ra'],dec=filtered['dec'],ra_units='deg',dec_units='deg')
         print( "Length of catalog after cuts = %i" % len(cut_galz))
-    
+
         try:
             filtered.write(os.path.join(datapath,'Sscom_exactArea_galzCut.fits'),format='fits',overwrite=True)
         except:
@@ -53,7 +53,7 @@ def get_ONbasis(vdust):
 
     # start by normalizing the input dust vector
     vec = vdust/norm(vdust)
-    
+
     # Go through the G-S process
     v0 = np.zeros_like(vec); v0[0]= 1.0
     v0prime = v0 - np.dot(v0,vec)*vec
@@ -77,7 +77,7 @@ def get_ONbasis(vdust):
 
     # Return basis
     return vec,u0,u1,u2
-    
+
 
 
 def est_reddening(catalog,zeropoint = 30.0):
@@ -87,17 +87,17 @@ def est_reddening(catalog,zeropoint = 30.0):
     rmag = zeropoint - 2.5*np.log10(catalog['mof_flux_r'])
     imag = zeropoint - 2.5*np.log10(catalog['mof_flux_i'])
     zmag = zeropoint - 2.5*np.log10(catalog['mof_flux_z'])
-    
+
     est = gmag - rmag
     wt = 1.
-    
+
     return est,wt
 
 
 
 def get_bg_catalog2(datapath,phot_file,rmz_file,zmin=0.15):
 
-    """ 
+    """
     Utility function for reading in the DES background catalog
     Use when the matching catalog has already been made.
     """
@@ -127,7 +127,7 @@ def get_bg_catalog2(datapath,phot_file,rmz_file,zmin=0.15):
     else:
         print("found a joint catalog")
         redMaGiC=fitsio.read(joint,format='fits')
-    
+
     print "background redMaGiC catalog acquired"
 
     return redMaGiC
@@ -156,7 +156,7 @@ def do_reddening_calculation(cat,basisVector):
          ra_units='deg',dec_units='deg',w=est_weight)
 
     catalog.zz = cat['ZREDMAGIC']
-    
+
     return catalog
 
 def hpRaDecToHEALPixel(ra, dec, nside=  4096, nest= False):
@@ -171,16 +171,16 @@ def get_fg_randoms(nrand = 1e6,maskfile = None,nside=4096,nest=False):
     # But how many? Try to get approximately nrand, if possible.
     fcover = np.sum(hmap > 0)*1./hmap.size
     ndraw = np.ceil(nrand/fcover*1.2).astype(int)
-    
-    
+
+
     ran1, ran2 = np.random.random(2*ndraw).reshape(2, -1)
     ra = 2*np.pi * (ran1 - 0.5) * 180/np.pi
     dec= np.arcsin(2.*(ran2-0.5)) * 180/np.pi
 
-    
+
     hpInd = hpRaDecToHEALPixel(ra,dec,nside=nside,nest=nest)
     keep = hmap != hp.UNSEEN
-    
+
     use = np.random.rand(ra.size) < hmap[hpInd]
 
     ra = ra[use]
@@ -192,7 +192,7 @@ def get_fg_randoms(nrand = 1e6,maskfile = None,nside=4096,nest=False):
     # covert ra from [-180,180 )  to [0,360)
     ra = (ra + 360) % 360
     rancat = treecorr.Catalog(ra=ra,dec=dec,ra_units='deg',dec_units='deg')
-    
+
     return rancat
 
 
@@ -213,27 +213,27 @@ def get_bg_randoms(bg_file,Cat,zmin=0.2):
         ind = np.random.choice(np.arange(np.sum(these_est)),np.sum(these))
         est[these] = Cat.k[these_est][ind]
         est_weight[these] = Cat.w[these_est][ind]
-        
+
     catalog = treecorr.Catalog(ra=ran_cat['RA'],dec=ran_cat['DEC'],k=est,w=est_weight,\
                                    ra_units='deg',dec_units='deg')
     return catalog
-    
+
 def plotres(dd_out,dr_out,fr_out=None,rr_out = None, outplotn='fig.png'):
     # Now make a plot.
     dk = fitsio.read(dd_out)
     dr = fitsio.read(dr_out)
     fr = fitsio.read(fr_out)
     rr = fitsio.read(rr_out)
-    
+
     fig = plt.figure(figsize=(14,7))
     ### in log space
     ax=fig.add_subplot(121)
     try:
-        ax.errorbar(dk['meanr'],dk['kappa'],yerr=dk['sigma'],label='raw')        
+        ax.errorbar(dk['meanr'],dk['kappa'],yerr=dk['sigma'],label='raw')
         ax.errorbar(dk['meanr'],dk['kappa']-fr['kappa'],yerr=dk['sigma'],label='fg random subtraction')
         ax.errorbar(dk['meanr'],dk['kappa'] -fr['kappa'] - dr['kappa'] + rr['kappa'],yerr=dk['sigma'],label='LZ++')
     except:
-        ax.errorbar(dk['meanR'],dk['kappa']-fr['kappa'],yerr=dk['sigma'],label='raw')        
+        ax.errorbar(dk['meanR'],dk['kappa']-fr['kappa'],yerr=dk['sigma'],label='raw')
         ax.errorbar(dk['meanR'],dk['kappa']-fr['kappa'],yerr=dk['sigma'],label='fg random subtraction')
         ax.errorbar(dk['meanR'],dk['kappa'] -fr['kappa'] - dr['kappa'] + rr['kappa'],yerr=dk['sigma'],label='LZ++')
     ax.set_xscale('log')
@@ -242,7 +242,7 @@ def plotres(dd_out,dr_out,fr_out=None,rr_out = None, outplotn='fig.png'):
     ax.set_xlim(0.1,250)
     r = np.logspace(-2,2.7,10)
     av = 2.4e-3 * (r/3.00)**(-0.84)
-    ax.plot(r,av,label='Menard (2010)') 
+    ax.plot(r,av,label='Menard (2010)')
     ax.set_xlabel('impact parameter (arcmin)')
     ax.set_ylabel('A_v (mag)')
     ax.legend()
@@ -254,17 +254,17 @@ def plotres(dd_out,dr_out,fr_out=None,rr_out = None, outplotn='fig.png'):
         ax2.errorbar(dk['meanr'],dk['kappa']-fr['kappa'],yerr=dk['sigma'],label='fg random subtraction')
         ax2.errorbar(dk['meanr'],dk['kappa'] -fr['kappa'] - dr['kappa'] + rr['kappa'],yerr=dk['sigma'],label='LZ++')
     except:
-        ax2.errorbar(dk['meanR'],dk['kappa'],yerr=dk['sigma'],label='raw')        
+        ax2.errorbar(dk['meanR'],dk['kappa'],yerr=dk['sigma'],label='raw')
         ax2.errorbar(dk['meanR'],dk['kappa']- fr['kappa'],yerr=dk['sigma'],label='fg random subtraction')
         ax2.errorbar(dk['meanR'],dk['kappa'] -fr['kappa'] - dr['kappa'] + rr['kappa'],yerr=dk['sigma'],label='LZ++')
-        
+
     ax2.plot(r,av,label='adjusted Menard (2010)')
     ax2.axhline(0,color='black',linestyle='--',alpha=0.5)
     ax2.set_xlim(0.07,200)
     #ax2.set_ylim(-5e-4,0.06)
     ax2.set_xscale('log')
     ax2.legend()
-    
+
     fig.savefig(outplotn)
 
 def main(argv):
@@ -281,7 +281,7 @@ def main(argv):
     fg_file = os.path.join(datapath,fg_name)
     plot = True
     zmin = 0.15
-    
+
     # First, define our orthonormal vector space based on an input value
     vdust = np.array([1.12224688, 0.82747095, 0.62680647, 0.47880753])
     basis = get_ONbasis(vdust)
@@ -290,9 +290,9 @@ def main(argv):
     # Only keep what overlaps the DES coverage
     fgCat = get_fg_catalog(datapath,fg_file)
     fgRan = get_fg_randoms(maskfile = rmm_file)
-    
+
     print( "Getting bg science catalog")
-    bgCat = get_bg_catalog2(datapath, rmp_file,rmz_file,zmin=zmin)  
+    bgCat = get_bg_catalog2(datapath, rmp_file,rmz_file,zmin=zmin)
 
     # First calculation: "reddening vector"
     v=basis[0]
@@ -301,20 +301,20 @@ def main(argv):
     fr_outfile = '../outputs/color_correlation_fr_orthonorm-vdust.fits'
     rr_outfile = '../outputs/color_correlation_rr_orthonorm-vdust.fits'
     fig_outfile = '../outputs/correlationFuncFigures/colorCorr_orthonorm-vdust.png'
-        
+
     print ("Doing reddening calculation for for vector %s..." % str(v))
     redcat = do_reddening_calculation(bgCat,basisVector=v)
     print ("Done. Getting bg randoms... ")
-    bgRan = get_bg_randoms(ra_file, redcat,zmin=zmin)   
-    print ("Done. Now cross-correlating for vector %s..." % str(v))  
-    
+    bgRan = get_bg_randoms(ra_file, redcat,zmin=zmin)
+    print ("Done. Now cross-correlating for vector %s..." % str(v))
+
     # Now make the correlation objects.
     DK = treecorr.NKCorrelation(min_sep=0.1,max_sep=200.0,bin_size=.6,sep_units='arcmin')
     DK.process(fgCat,redcat)
     DK.write(dd_outfile)
     RK = treecorr.NKCorrelation(min_sep=0.1,max_sep=200.0,bin_size=.6,sep_units='arcmin')
     RK.process(fgCat,bgRan)
-    RK.write(dr_outfile)       
+    RK.write(dr_outfile)
     FR = treecorr.NKCorrelation(min_sep=0.1,max_sep=200.0,bin_size=.6,sep_units='arcmin')
     FR.process(fgRan,redcat)
     FR.write(fr_outfile)
@@ -322,9 +322,9 @@ def main(argv):
     RR.process(fgRan,bgRan)
     RR.write(rr_outfile)
 
-    plotres(dd_outfile,dr_outfile,fr_out = fr_outfile,rr_out=rr_outfile,outplotn=fig_outfile)
+    plotres(dd_outfile,dr_outfile, fr_out = fr_outfile, rr_out=rr_outfile, outplotn=fig_outfile)
 
-            
+
 if __name__ == "__main__":
     import pdb, traceback, sys
     try:
@@ -332,4 +332,4 @@ if __name__ == "__main__":
     except:
         thingtype, value, tb = sys.exc_info()
         traceback.print_exc()
-        pdb.post_mortem(tb)       
+        pdb.post_mortem(tb)
