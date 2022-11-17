@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.20 (TeX Live 2019) (preloaded format=pdflatex 2019.6.6)  9 DEC 2019 17:08
+This is pdfTeX, Version 3.14159265-2.6-1.40.20 (TeX Live 2019) (preloaded format=pdflatex 2019.5.8)  27 AUG 2020 18:27
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -526,47 +526,123 @@ Package biblatex Info: Automatic encoding selection.
 \openout3 = `dust_halos.bcf'.
 
 Package biblatex Info: Trying to load bibliographic data...
-Package biblatex Info: ... file 'dust_halos.bbl' found.
-(./dust_halos.bbl
-
-Package biblatex Warning: The following entry could not be found
-(biblatex)                in the database:
-(biblatex)                menard2010measure
-(biblatex)                Please verify the spelling and rerun
-(biblatex)                LaTeX afterwards.
-
-)
+Package biblatex Info: ... file 'dust_halos.bbl' not found.
+No file dust_halos.bbl.
 Package biblatex Info: Reference section=0 on input line 29.
 Package biblatex Info: Reference segment=0 on input line 29.
 LaTeX Font Info:    Try loading font information for U+msa on input line 30.
- (/usr/local/texlive/2019/texmf-dist/tex/latex/amsfonts/umsa.fd
+(/usr/local/texlive/2019/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
 LaTeX Font Info:    Try loading font information for U+msb on input line 30.
 
 (/usr/local/texlive/2019/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
-) [1
+)
 
-{/usr/local/texlive/2019/texmf-var/fonts/map/pdftex/updmap/pdftex.map}] [2] [3]
- [4]
+LaTeX Warning: Citation 'menard2010measuring' on page 1 undefined on input line
+ 36.
 
-LaTeX Warning: Reference `ON' on page 5 undefined on input line 151.
 
-<figures/redmagic_desSVM_overlap.png, id=27, 1186.4325pt x 594.22pt>
+LaTeX Warning: Citation 'peek2015dust' on page 1 undefined on input line 36.
+
+
+LaTeX Warning: Citation 'menard2010measuring' on page 1 undefined on input line
+ 36.
+
+
+LaTeX Warning: Citation 'peek2015dust' on page 1 undefined on input line 36.
+
+
+LaTeX Warning: Citation 'mckinnon2016dust' on page 1 undefined on input line 36
+.
+
+
+LaTeX Warning: Citation 'vogelsberger2017uniformity' on page 1 undefined on inp
+ut line 36.
+
+
+LaTeX Warning: Citation 'menard2010measuring' on page 1 undefined on input line
+ 38.
+
+
+LaTeX Warning: Citation 'peek2015dust' on page 1 undefined on input line 38.
+
+
+LaTeX Warning: Citation 'mckinnon2016dust' on page 1 undefined on input line 38
+.
+
+
+LaTeX Warning: Citation 'vogelsberger2017uniformity' on page 1 undefined on inp
+ut line 38.
+
+[1
+
+{/usr/local/texlive/2019/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
+
+LaTeX Warning: Citation 'menard2010measuring' on page 2 undefined on input line
+ 45.
+
+
+LaTeX Warning: Citation 'peek2015dust' on page 2 undefined on input line 45.
+
+[2]
+
+LaTeX Warning: Citation 'menard2010measuring' on page 3 undefined on input line
+ 84.
+
+
+LaTeX Warning: Citation 'fitzpatrick1999correcting' on page 3 undefined on inpu
+t line 84.
+
+
+Overfull \hbox (1.81325pt too wide) in paragraph at lines 84--85
+\OT1/cmr/m/n/10.95 of [[]], we use the ex-tinc-tion model of [[]]
+ []
+
+[3]
+
+LaTeX Warning: Citation 'menard2010measure' on page 4 undefined on input line 1
+21.
+
+
+LaTeX Warning: Citation 'fitzpatrick1999correcting' on page 4 undefined on inpu
+t line 124.
+
+
+Overfull \hbox (29.18976pt too wide) in paragraph at lines 124--125
+[]\OT1/cmr/m/n/10.95 For ob-ser-va-tions made in the $\OML/cmm/m/it/10.95 griz$
+ \OT1/cmr/m/n/10.95 fil-ter set, and tak-ing the model of [[]]
+ []
+
+[4]
+
+LaTeX Warning: Citation 'jarvis2004skewness' on page 5 undefined on input line 
+156.
+
+
+LaTeX Warning: Citation 'menard2010measuring' on page 5 undefined on input line
+ 156.
+
+<figures/redmagic_desSVM_overlap.png, id=26, 1186.4325pt x 594.22pt>
 File: figures/redmagic_desSVM_overlap.png Graphic file (type png)
 <use figures/redmagic_desSVM_overlap.png>
 Package pdftex.def Info: figures/redmagic_desSVM_overlap.png  used on input lin
 e 164.
 (pdftex.def)             Requested size: 215.0023pt x 107.68034pt.
+[5]
 LaTeX Font Info:    Try loading font information for OMS+cmr on input line 170.
 
-(/usr/local/texlive/2019/texmf-dist/tex/latex/base/omscmr.fd
+ (/usr/local/texlive/2019/texmf-dist/tex/latex/base/omscmr.fd
 File: omscmr.fd 2014/09/29 v2.5h Standard LaTeX font definitions
 )
 LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <10.95> not available
 (Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 170.
- [5]
+
+
+LaTeX Warning: Citation 'rozo2016redmagic' on page 6 undefined on input line 18
+4.
+
 
 LaTeX Warning: Citation 'rykoff2014red' on page 6 undefined on input line 184.
 
@@ -591,10 +667,28 @@ LaTeX Warning: Reference `fig:overlay' on page 7 undefined on input line 207.
 
 [7 <./figures/redshift_histograms.png>] [8 <./figures/color_vs_redshift_redMaGi
 C.png>]
+<figures/better_dustCorrel.png, id=51, 761.84625pt x 689.57625pt>
+File: figures/better_dustCorrel.png Graphic file (type png)
+<use figures/better_dustCorrel.png>
+Package pdftex.def Info: figures/better_dustCorrel.png  used on input line 236.
 
-LaTeX Warning: Reference `fig:scosCorr' on page 9 undefined on input line 236.
+(pdftex.def)             Requested size: 161.25172pt x 145.95166pt.
+<figures/cheap_dustmass_overlay.png, id=52, 318.18875pt x 313.17pt>
+File: figures/cheap_dustmass_overlay.png Graphic file (type png)
+<use figures/cheap_dustmass_overlay.png>
+Package pdftex.def Info: figures/cheap_dustmass_overlay.png  used on input line
+ 237.
+(pdftex.def)             Requested size: 161.25172pt x 158.7063pt.
 
-[9] [10] (./dust_halos.aux)
+
+LaTeX Warning: Reference `fig:scosCorrON' on page 9 undefined on input line 250
+.
+
+
+LaTeX Warning: Empty bibliography on input line 265.
+
+[9] [10 <./figures/better_dustCorrel.png> <./figures/cheap_dustmass_overlay.png
+>] (./dust_halos.aux)
 
 LaTeX Warning: There were undefined references.
 
@@ -611,13 +705,13 @@ Package logreq Info: Writing requests to 'dust_halos.run.xml'.
 
  ) 
 Here is how much of TeX's memory you used:
- 9707 strings out of 492609
- 167780 string characters out of 6129049
- 595886 words of memory out of 5000000
- 13500 multiletter control sequences out of 15000+600000
- 15294 words of font info for 58 fonts, out of 8000000 for 9000
+ 9681 strings out of 492616
+ 166949 string characters out of 6129482
+ 595662 words of memory out of 5000000
+ 13474 multiletter control sequences out of 15000+600000
+ 14948 words of font info for 57 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 38i,11n,45p,1346b,1181s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 37i,11n,39p,1345b,1276s stack positions out of 5000i,500n,10000p,200000b,80000s
 </usr/local/texlive/2019/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb
 ></usr/local/texlive/2019/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb>
 </usr/local/texlive/2019/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx8.pfb></
@@ -632,13 +726,12 @@ live/2019/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/local/texliv
 e/2019/texmf-dist/fonts/type1/public/amsfonts/cm/cmr9.pfb></usr/local/texlive/2
 019/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/20
 19/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/local/texlive/2019
-/texmf-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb></usr/local/texlive/2019/
-texmf-dist/fonts/type1/public/amsfonts/cm/cmtt10.pfb></usr/local/texlive/2019/t
-exmf-dist/fonts/type1/public/amsfonts/symbols/msam10.pfb>
-Output written on dust_halos.pdf (10 pages, 682311 bytes).
+/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt10.pfb></usr/local/texlive/2019/
+texmf-dist/fonts/type1/public/amsfonts/symbols/msam10.pfb>
+Output written on dust_halos.pdf (10 pages, 996162 bytes).
 PDF statistics:
  112 PDF objects out of 1000 (max. 8388607)
- 76 compressed objects within 1 object stream
+ 73 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
- 16 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 26 words of extra memory for PDF output out of 10000 (max. 10000000)
 
