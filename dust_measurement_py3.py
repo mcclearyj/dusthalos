@@ -1,12 +1,8 @@
 import numpy as np
 from numpy.linalg import norm
 from matplotlib import rc,rcParams
-rc('font',**{'family':'serif'})
-rc('text', usetex=True)
-
 #matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-plt.ion()
 from astropy.io import fits
 import treecorr
 import os
@@ -24,9 +20,9 @@ def hpRaDecToHEALPixel(ra, dec, nside=  4096, nest= False):
 
 
 def get_fg_catalog(fg_file, vb=False):
-    '''
+    """
     Load foreground catalog, return a treecorr.Catalog() object
-    '''
+    """
 
     if vb is True:
         print(f'loading file {fg_file}...')
@@ -78,10 +74,10 @@ def get_fg_randoms(maskfile, nrand=1e6, nside=4096, partial=True, nest=False, vb
 
 
 def est_reddening(catalog, ortho=False, ortho_index = 0):
-    '''
+    """
     Make the colors.
-    '''
-    
+    """
+
     gmag = catalog['mof_cm_mag_corrected_g']
     rmag = catalog['mof_cm_mag_corrected_r']
     imag = catalog['mof_cm_mag_corrected_i']
@@ -123,7 +119,7 @@ def est_reddening(catalog, ortho=False, ortho_index = 0):
 
 
 def get_bg_catalog(rmz_file, nbins=10, zmin=0.2, vb=False, ortho=False):
-    '''
+    """
     :rmz_joined: joined catalog with both (MOF) photometry and redshift
     :zmin:       minimum redshift of galaxies to consider
     :nbins:      number of bins for color estimation
@@ -131,7 +127,7 @@ def get_bg_catalog(rmz_file, nbins=10, zmin=0.2, vb=False, ortho=False):
     returns treecorr Catalog() object for correlation
 
     Note: code will break if the mof columns below aren't present
-    '''
+    """
 
     if vb == True:
         print(f'Loaded in redMaGic+photometry catalog {rmz_file}')
@@ -173,12 +169,12 @@ def get_bg_catalog(rmz_file, nbins=10, zmin=0.2, vb=False, ortho=False):
 
 
 def get_bg_randoms(bg_rand_file, bgCat, nbins=10, zmin=0.2, vb=False):
-    '''
+    """
     Make random catalog
 
     NOTE: this is not quite right, as the two different redMaGiC catalogs
     use different random files
-    '''
+    """
     if vb == True:
         print(f'Reading in background randoms catalog {bg_rand_file}...')
     rm_rand_all = fitsio.read(bg_rand_file)
@@ -205,111 +201,6 @@ def get_bg_randoms(bg_rand_file, bgCat, nbins=10, zmin=0.2, vb=False):
 
     return bgRan
 
-def plotres(dd_out, dr_out, fr_out=None, rr_out = None, outplotn='fig.png'):
-    # Now make a plot.
-
-    dd_outfile = 'dust_correlation_signal.fits'
-    dr_outfile = 'dust_correlation_bg_randoms.fits'
-    fr_outfile = 'dust_correlation_fg_randoms.fits'
-    rr_outfile = 'dust_correlation_fgxbg_randoms.fits'
-
-    dk = fitsio.read(dd_outfile)
-    dr = fitsio.read(dr_outfile)
-    fr = fitsio.read(fr_outfile)
-    rr = fitsio.read(rr_outfile)
-
-    rcParams['axes.linewidth'] = 1.3
-    rcParams['xtick.labelsize'] = 16
-    rcParams['ytick.labelsize'] = 16
-
-    rcParams['xtick.minor.visible'] = True
-    rcParams['xtick.major.width'] = 1.2
-    rcParams['xtick.minor.width'] = 1.2
-
-    rcParams['xtick.direction'] = 'out'
-    rcParams['ytick.minor.visible'] = True
-    rcParams['ytick.major.width'] = 1.2
-    rcParams['ytick.direction'] = 'out'
-    rcParams['ytick.minor.width'] = 1.2
-
-    low_dk = dk[0:3]
-    hi_dk = dk[3:]
-    mean_lo_dk = np.mean(low_dk['kappa'])
-    mean_lo_r = np.mean(low_dk['meanr'])
-    mean_lo_var = low_dk['sigma'][-1]
-
-    kmr = dk['kappa']-fr['kappa']-dr['kappa']+rr['kappa']
-    low_kmr = kmr[0:3]
-    mean_lo_kmr = np.mean(low_kmr)
-           
-
-    fake_r = [mean_lo_r]; fake_r.extend(dk['meanr'][3:])
-    fake_dk = [mean_lo_dk+mean_lo_var]; fake_dk.extend(dk['kappa'][3:5]+dk['sigma'][3:5]); fake_dk.extend(dk['kappa'][5:])
-    #fake_kmr = [mean_lo_kmr+mean_lo_var]; fake_kmr.extend(kmr['kappa'][3:5]+kmr['sigma'][3:5]); fake_kmr.extend(dk['kappa'][5:])
-    fake_kmr = [mean_lo_kmr+mean_lo_var]; fake_kmr.extend(kmr[3:6]+dk['sigma'][3:6]);fake_kmr.extend(kmr[6:])
-    
-    fake_sig = [low_dk['sigma'][-1]]; fake_sig.extend(dk['sigma'][3:])
-
-    fake_dk1 = [mean_lo_dk+mean_lo_var]; fake_dk1.extend(dk['kappa'][3:])
-   
-
-    fake_r = np.array(fake_r)
-    dk = np.array(dk)
-    scl = 2.017*60 / 1000
-    #dk['meanr']*=scl
-    #fake_r*=scl
-    
-
-    fig = plt.figure(figsize=(10,7), tight_layout=True)
-    ax=fig.add_subplot(111)
-    ax.set_xscale('log')
-    ax.set_yscale('log')
-    ax.plot(fake_r[0:6]*scl, fake_dk1[0:6], ':o', lw=1.2, color='tab:orange',  label=None)
-    ax.plot(fake_r[0:6]*scl, fake_kmr[0:6], ':o', lw=1.2, color='tab:blue',  label=None)
-    ax.plot(fake_r[5:]*scl, fake_dk1[5:], '-o', lw=1., color='tab:orange',  label='raw signal')
-    ax.plot(fake_r[5:]*scl, fake_kmr[5:], '-o', lw=1., color='tab:blue',  label='signal -  randoms')
-
-    
-    err0, caps, bars = ax.errorbar(mean_lo_r*scl,mean_lo_dk+mean_lo_var, yerr=mean_lo_var, color='tab:orange',  capsize=5, uplims=True,label=None)
-    caps[1].set_marker(',')
-    err3, caps, bars = ax.errorbar(dk['meanr'][3]*scl, dk['kappa'][3], yerr=dk['sigma'][3]*0.65, capsize=5,color='tab:orange', uplims=True,label=None)
-    caps[1].set_marker(',')
-
-    err4 = ax.errorbar(dk['meanr'][4]*scl, dk['kappa'][4], yerr=dk['sigma'][4], capsize=5,color='tab:orange',label=None)
-    err5,caps,bar = ax.errorbar(dk['meanr'][5]*scl, dk['kappa'][5], yerr=dk['sigma'][5], lolims=True, capsize=5,color='tab:orange', label=None)
-    caps[1].set_marker(',')
-    
-    err6 = ax.errorbar(dk['meanr'][6:]*scl, dk['kappa'][6:], yerr=dk['sigma'][6:], fmt='o', capsize=5,color='tab:orange', label=None)
-
-    err0,caps,bars = ax.errorbar(mean_lo_r*scl,mean_lo_kmr+mean_lo_var, yerr=mean_lo_var, color='tab:blue',  capsize=5, uplims=True,label=None)
-    caps[1].set_marker(',')
-    
-    err3,caps,bars = ax.errorbar(dk['meanr'][3]*scl, kmr[3]+dk['sigma'][3], yerr=dk['sigma'][3], capsize=5,color='tab:blue',uplims=True, label=None)
-    caps[1].set_marker(',')
-    
-    err4,caps,bars = ax.errorbar(dk['meanr'][4]*scl, kmr[4]+dk['sigma'][4], yerr=dk['sigma'][4]*0.9, capsize=5,color='tab:blue',uplims=True, label=None); caps[1].set_marker(',')
-    err5,caps,bars = ax.errorbar(dk['meanr'][5]*scl, kmr[5]+dk['sigma'][5], yerr=dk['sigma'][5]*0.6, capsize=5,color='tab:blue',uplims=True, label=None);caps[1].set_marker(',')
-    err6=ax.errorbar(dk['meanr'][6:]*scl, kmr[6:], yerr=dk['sigma'][6:], capsize=5,color='tab:blue', label=None)
-
-    #ax.plot(dk['meanr'],dk['kappa'],'o' , color='tab:orange', label='raw signal')
-    #ax.plot(dk['meanr'],kmr,'o', color='tab:blue', label='signal - randoms')
-
-    #ax.errorbar
-    #ax.errorbar(dk['meanr'][4:], dk['kappa'][4:], yerr=dk['sigma'][4:], fmt='o',linestyle=':', capsize=5,color='tab:orange', label='raw signal')
-    #ax.errorbar(dk['meanr'][4:], kmr[4:], yerr=dk['sigma'][4:],fmt='o', linestyle='-', color='tab:blue',capsize=5, label='signal - randoms')
-
-    ax.set_ylim(1e-4,0.4)
-    ax.set_xlim(0.026,25)
-    r = np.logspace(-2,2.7,10)*scl
-    av = 2.4e-3 * (r/2.227)**(-0.84)
-    avplot = ax.plot(r,av,label='Menard+ 2010 (scaled)',color='tab:red')
-    ax.set_xlabel('Impact parameter (Mpc)',fontsize=16)
-    ax.set_ylabel(r'$A_v$ (mag)',fontsize=16)
-    ax.set_title(r'SCOS $\times$ redMaGiC', fontsize=16)
-    ax.legend(fontsize=14)
-
-    fig.tight_layout()
-    fig.savefig(outplotn)
 
 
 def main(argv):
@@ -344,24 +235,24 @@ def main(argv):
 
     # Now make the correlation objects. TO DO: make a separate function
     print('Correlating fg x bg...\n')
-    DK = treecorr.NKCorrelation(min_sep=0.1,max_sep=200.0,bin_size=.6,sep_units='arcmin')
+    DK = treecorr.NKCorrelation(min_sep=0.1, max_sep=200.0, bin_size=.6, sep_units='arcmin')
     DK.process(fgCat,bgCat)
     DK.write(dd_outfile)
     print('Correlating fg x bg_rand...\n')
-    RK = treecorr.NKCorrelation(min_sep=0.1,max_sep=200.0,bin_size=.6,sep_units='arcmin')
+    RK = treecorr.NKCorrelation(min_sep=0.1, max_sep=200.0, bin_size=.6, sep_units='arcmin')
     RK.process(fgCat,bgRan)
     RK.write(dr_outfile)
     print('Correlating fg_rand x bg...\n')
-    FR = treecorr.NKCorrelation(min_sep=0.1,max_sep=200.0,bin_size=.6,sep_units='arcmin')
+    FR = treecorr.NKCorrelation(min_sep=0.1, max_sep=200.0,bin_size=.6, sep_units='arcmin')
     FR.process(fgRan,bgCat)
     FR.write(fr_outfile)
     print('Correlating fg_rand x bg_rand...\n')
-    RR = treecorr.NKCorrelation(min_sep=0.1,max_sep=200.0,bin_size=0.6,sep_units='arcmin')
+    RR = treecorr.NKCorrelation(min_sep=0.1, max_sep=200.0, bin_size=0.6, sep_units='arcmin')
     RR.process(fgRan,bgRan)
     RR.write(rr_outfile)
 
-    print('Plotting output figure...\n')
-    plotres(dd_outfile, dr_outfile, fr_out=fr_outfile, rr_out=rr_outfile, outplotn=fig_output)
+    #print('Plotting output figure...\n')
+    #plotres(dd_outfile, dr_outfile, fr_out=fr_outfile, rr_out=rr_outfile, outplotn=fig_output)
 
     print('Done!')
 
