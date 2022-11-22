@@ -9,27 +9,6 @@ import pdb
 import fitsio
 from astropy.cosmology import Planck18 as cosmo
 
-def rc_params(self):
-
-    rc('font',**{'family':'serif'})
-    rc('text', usetex=True)
-
-    rcParams['axes.linewidth'] = 1.3
-    rcParams['xtick.labelsize'] = 16
-    rcParams['ytick.labelsize'] = 16
-
-    rcParams['xtick.minor.visible'] = True
-    rcParams['xtick.major.width'] = 1.2
-    rcParams['xtick.minor.width'] = 1.2
-
-    rcParams['xtick.direction'] = 'out'
-    rcParams['ytick.minor.visible'] = True
-    rcParams['ytick.major.width'] = 1.2
-    rcParams['ytick.direction'] = 'out'
-    rcParams['ytick.minor.width'] = 1.2
-
-return
-
 
 class DustPlotter():
 
@@ -44,14 +23,35 @@ class DustPlotter():
             Mean redshift of background galaxies
         '''
 
-        self.dk = None
-        self.dr = None
-        self.fr = None
-        self.rr = None
-        self.z_fg = None
-        self.z_theory = None
+        self.dk = dk_file
+        self.dr = dr_file
+        self.fr = fr_file
+        self.rr = rr_file
+        self.z_fg = z_fg
+        self.z_theory = z_theory
 
         self._load_catalogs(dk_file, dr_file, fr_file, rr_file)
+
+        return
+
+    def rc_params(self):
+
+        rc('font',**{'family':'serif'})
+        rc('text', usetex=True)
+
+        rcParams['axes.linewidth'] = 1.3
+        rcParams['xtick.labelsize'] = 16
+        rcParams['ytick.labelsize'] = 16
+
+        rcParams['xtick.minor.visible'] = True
+        rcParams['xtick.major.width'] = 1.2
+        rcParams['xtick.minor.width'] = 1.2
+
+        rcParams['xtick.direction'] = 'out'
+        rcParams['ytick.minor.visible'] = True
+        rcParams['ytick.major.width'] = 1.2
+        rcParams['ytick.direction'] = 'out'
+        rcParams['ytick.minor.width'] = 1.2
 
         return
 
@@ -77,37 +77,83 @@ class DustPlotter():
         self.fr = fitsio.read(fr_file)
         self.rr = fitsio.read(rr_file)
 
-    return
+        return
 
 
-    def _plot_res(self, outplotn):
+    def _plot_res(self, outplotn, kpc):
         '''
-        Plot up the correlation results, compare to the
-        published result.
-
+        Plot up the correlation results, compare to the published result.
         dk : fg x bg correlation
         dr : fg x random
         fr : random fg x bg
         rr : fg random x bg random
+        kpc : if true, plot x-axis in kpc units not arcmin (default false)
         outplotn : name for file to plot
         '''
+
         dk = self.dk
         dr = self.dr
         fr = self.fr
         rr = self.rr
 
-        # Convert from arcmin to kpc
-        theory_scl = cosmo.kpc_proper_per_arcmin(self.z_theory)
-        scl = cosmo.kpc_proper_per_arcmin(self.z_fg)
+        self.rc_params()
 
-        r = np.logspace(-2,2.7,10)*scl
-        # Converts us from arcminutes to kpc
-        av = 2.5e-3 * (r)**(-0.86) # Ideally, will do a shaded plot with error bar of relationship
+        # Scale Menard theory relationship to present-day
+        # Proper kpc yields answer closest to the "book answer"
+        theory_kpc = cosmo.kpc_proper_per_arcmin(self.z_theory)
+        fg_gal_kpc = cosmo.kpc_proper_per_arcmin(self.z_fg)
+
+        if kpc == True:
+            # Converts us from arcminutes to kpc
+            scl = fg_gal_kpc.value
+            #theory_scl = 304*cosmo.h -- yields their answer
+            theory_scl = theory_kpc.value
+            xlabel_unit = 'kpc'
+        else:
+            # Keep plot in arcminutes
+            scl = 1.0
+            theory_scl  = (fg_gal_kpc/theory_kpc).value
+            xlabel_unit = 'arcmin'
+
+
+        # Not sure this is right, trying to go from arcmin at z=0.36 to
+        # equivalent arcmin at z=0.11
+        # r is defined in arcminutes, so keep it in arcminutes.
+        # The relationship does seem to be defined in "inverse arcminutes"/"inverse kpc"
+        # so scales need to be 1/kpc_per_arcmin
+        # SO, 1/arcmin *(1/(kpc_per_arcmin)) -- arcmin/kpc.
+        theory_r = np.logspace(-2,5,10)
+        av = 2.5e-3 * (theory_r/theory_scl)**(-0.86)
 
         fig, ax = plt.subplots(figsize=(10,7), tight_layout=True)
+
+        ax.plot(theory_r,av,label=f'Menard (2010) scaled to z={self.z_fg}', color='tab:red')
+
+
+        ax.errorbar(dk['meanr']*scl, dk['kappa'], yerr=dk['sigma'],
+                    fmt='-.o',capsize=5, color='tab:orange',
+                    label='raw signal')
+        ax.errorbar(dk['meanr']*scl, dk['kappa']-fr['kappa'],
+                    yerr=dk['sigma'], fmt='-',capsize=5,
+                    color='tab:green', label='signal - fg_random')
+        ax.errorbar(dk['meanr']*scl,
+                    dk['kappa']-fr['kappa']-dr['kappa']+rr['kappa'],
+                    yerr=dk['sigma'],fmt='-o',capsize=5, color='tab:blue',
+                    label='signal - all_randoms')
+
         ax.set_xscale('log')
         ax.set_yscale('log')
+        ax.set_xlim(0.05*scl, 200*scl)
+        ax.set_ylim(1E-5, 0.1)
+        ax.set_xlabel(f'Impact parameter ({xlabel_unit})', fontsize=16)
+        ax.set_ylabel(r'$A_v$ (mag)', fontsize=16)
+        ax.set_title('SCOS x redMaGiC', fontsize=16)
+        ax.legend(fontsize=14)
 
+        fig.savefig(outplotn)
+
+
+        return
 
 
     def _plot_res_subsample(self):
@@ -193,7 +239,7 @@ class DustPlotter():
         r = np.logspace(-2,2.7,10)*scl
         av = 2.4e-3 * (r/2.227)**(-0.84)
         avplot = ax.plot(r,av,label='Menard+ 2010 (scaled)',color='tab:red')
-        ax.set_xlabel('Impact parameter (Mpc)',fontsize=16)
+        ax.set_xlabel('Impact parameter (kpc)',fontsize=16)
         ax.set_ylabel(r'$A_v$ (mag)',fontsize=16)
         ax.set_title(r'SCOS $\times$ redMaGiC', fontsize=16)
         ax.legend(fontsize=14)
@@ -203,4 +249,19 @@ class DustPlotter():
 
         return
 
-        def run(self, z_fg=None, z_th=0.36, )
+    def plot_res(self, outplotn='dust_correlation_plot.png',
+                    kpc=False, subsample=False):
+        '''
+        outplotn : save plot file to
+        kpc : if true, plot x-axis in kpc units (default)
+        subsample : use special-purpose plotting software
+        '''
+
+        if subsample == True:
+            self._plot_res_subsample()
+
+        else:
+            print(f'saving correlation plot figure to {outplotn}')
+            self._plot_res(outplotn, kpc)
+
+        return

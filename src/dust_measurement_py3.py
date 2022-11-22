@@ -11,6 +11,8 @@ import healpy as hp
 import pdb
 import fitsio
 
+from plotter import DustPlotter
+
 
 def hpRaDecToHEALPixel(ra, dec, nside=  4096, nest= False):
     phi = ra * np.pi / 180.0
@@ -19,30 +21,50 @@ def hpRaDecToHEALPixel(ra, dec, nside=  4096, nest= False):
     return hpInd
 
 
-def get_fg_catalog(fg_file, vb=False):
-    """
+def get_fg_catalog(fg_file, fg_z_col, fgr_file=None):
+    '''
     Load foreground catalog, return a treecorr.Catalog() object
-    """
+    '''
 
-    if vb is True:
-        print(f'loading file {fg_file}...')
+    print(f'loading file {fg_file}...')
+
     data=Table.read(fg_file,format='fits')
     ra_cat =  data['ra']
     dec_cat = data['dec']
+    z = data[fg_z_col]
+    mean_z = np.mean(z)
 
-    if vb is True:
-        print(f'making treecorr.Catalog for {fg_file}')
-    fgCat = treecorr.Catalog(ra=ra_cat, dec=dec_cat, \
-            ra_units='deg',dec_units='deg')
+    print(f'making treecorr.Catalog for {fg_file}')
+
+    fgCat = treecorr.Catalog(ra=ra_cat,
+                                dec=dec_cat,
+                                ra_units='deg',
+                                dec_units='deg'
+                                )
     print("Length of catalog = %i" % len(ra_cat))
 
-    return fgCat
+    if fgr_file is not None:
+
+        print(f'making treecorr.Catalog for {fgr_file}')
+
+        fg_rand_tab = Table.read(fgr_file)
+
+        fgRan = treecorr.Catalog(ra=fg_rand_tab['ra'],
+                                    dec=fg_rand_tab['dec'],
+                                    ra_units='deg',
+                                    dec_units='deg'
+                                    )
+    else:
+        fgRan = None
+
+    return fgCat, fgRan, mean_z
 
 
-def get_fg_randoms(maskfile, nrand=1e6, nside=4096, partial=True, nest=False, vb=False):
+def make_fg_randoms(maskfile, nrand=1e6, nside=4096, partial=True, nest=False):
     # Make randoms on the sphere.
-    if vb == True:
-        print("loading hmap, making randoms")
+
+    print('loading hmap, making randoms')
+
     hmap, hd = hp.read_map(maskfile, partial=partial, nest=nest, h=True)
     # But how many? Try to get approximately nrand, if possible.
     fcover = np.sum(hmap > 0)*1./hmap.size
@@ -61,13 +83,17 @@ def get_fg_randoms(maskfile, nrand=1e6, nside=4096, partial=True, nest=False, vb
     dec = dec[use]
     ra = ra[:int(nrand)]
     dec = dec[:int(nrand)]
-
     # covert ra from [-180,180 )  to [0,360)
-    # Need to double-check this RA/Dec conversion
-    if vb == True:
-        print("making fg random treecorr catalog")
     ra = (ra + 360) % 360
-    fgRan = treecorr.Catalog(ra=ra, dec=dec, \
+
+    fg_out = Table([ra, dec], names=['ra', 'dec'])
+    fg_out.write('wiseSCOS_randoms.fits', overwrite=True)
+    # Need to double-check this RA/Dec conversion
+
+    print('making fg random treecorr catalog\n')
+
+
+    fgRan = treecorr.Catalog(ra=ra, dec=dec,
             ra_units='deg',dec_units='deg')
 
     return fgRan
@@ -136,12 +162,9 @@ def get_bg_catalog(rmz_file, nbins=10, zmin=0.2, vb=False, ortho=False):
     except:
         rmz_joined = Table.read(rmz_file)
 
-    keep = (rmz_joined['mof_flags']==0) & (rmz_joined['flags_badregions']==0) & \
-        (rmz_joined['mof_cm_flux_g']>0) & (rmz_joined['mof_cm_flux_r']>0) & \
-        (rmz_joined['mof_cm_flux_i']>0) & (rmz_joined['mof_cm_flux_z']>0) & \
-        (rmz_joined['zredmagic'] > zmin)
+    # How important is mof_flags?
+    # Also, this is done every time a new background catalog is generated!!!
 
-    # This is a weird digitize thing?
     if vb == True:
         print(f'Beginning background catalog reddening calculation...')
 
@@ -204,46 +227,58 @@ def get_bg_randoms(bg_rand_file, bgCat, nbins=10, zmin=0.2, vb=False):
 
 
 def main(argv):
-    zmin = 0.16
+    zmin = 0.15
+    z_theory = 0.36
     ortho = False
     vb = True
     nbins = 7
-    datapath = '/home/j.mccleary/dust_halos'
-    fg_name  = 'SCOS_rmz_match_z_lt_0.15.fits'
+    datapath = '/Users/j.mccleary/Research/dusty_halos/catalogs'
+    outdir   = '/Users/j.mccleary/Research/dusty_halos/'
     rmz_cat  = 'rmz_y3mof_subset_stacked.fits'
     rm_rand  = 'y3a2_gold2.2.1_redmagic_highdens_randoms.fits'
     rm_mask  = 'y3_gold_2.2.1_RING_joint_redmagic_v0.5.1_wide_maglim_v2.2_mask.fits'
+    fg_name  = 'SCOS_rmz_match_z_lt_0.15.fits'
+    fg_z_col = 'zPhoto_Corr'
+    fg_rand  = 'wiseSCOS_randoms.fits'
 
-    dd_outfile = 'dust_correlation_signal.fits'
-    dr_outfile = 'dust_correlation_bg_randoms.fits'
-    fr_outfile = 'dust_correlation_fg_randoms.fits'
-    rr_outfile = 'dust_correlation_fgxbg_randoms.fits'
-    fig_output = 'dust_correlation_scosRM.png'
+    dk_outfile = os.path.join(outdir,'dust_correlation_signal.fits')
+    dr_outfile = os.path.join(outdir,'dust_correlation_bg_randoms.fits')
+    fr_outfile = os.path.join(outdir,'dust_correlation_fg_randoms.fits')
+    rr_outfile = os.path.join(outdir,'dust_correlation_fgxbg_randoms.fits')
+    fig_output = os.path.join(outdir,'dust_correlation_scosRM.png')
 
     rmz_file = os.path.join(datapath, rmz_cat)
     rmm_file = os.path.join(datapath, rm_mask)
     ran_file = os.path.join(datapath, rm_rand)
     fg_file  = os.path.join(datapath, fg_name)
+    fgr_file = os.path.join(datapath, fg_rand)
+
+
 
     print('Getting fg catalog and randoms...\n')
-    fgCat = get_fg_catalog(fg_file, vb=vb)
-    fgRan = get_fg_randoms(maskfile=rmm_file, partial=True, nest=False)
+
+    fgCat, fgRan, z_fg = get_fg_catalog(fg_file, fgr_file=fgr_file, fg_z_col=fg_z_col)
+
+    if fgRan is None:
+        fgRan = make_fg_randoms(maskfile=rmm_file,
+                                partial=True, nest=False)
 
     print('Getting bg science catalog and randoms...\n')
+
     bgCat = get_bg_catalog(rmz_file, zmin=zmin, vb=vb, nbins=nbins)
     bgRan = get_bg_randoms(ran_file, bgCat, zmin=zmin, vb=vb, nbins=nbins)
 
     # Now make the correlation objects. TO DO: make a separate function
     print('Correlating fg x bg...\n')
-    DK = treecorr.NKCorrelation(min_sep=0.1, max_sep=200.0, bin_size=.6, sep_units='arcmin')
+    DK = treecorr.NKCorrelation(min_sep=0.1, max_sep=200.0, bin_size=0.6, sep_units='arcmin')
     DK.process(fgCat,bgCat)
-    DK.write(dd_outfile)
+    DK.write(dk_outfile)
     print('Correlating fg x bg_rand...\n')
-    RK = treecorr.NKCorrelation(min_sep=0.1, max_sep=200.0, bin_size=.6, sep_units='arcmin')
+    RK = treecorr.NKCorrelation(min_sep=0.1, max_sep=200.0, bin_size=0.6, sep_units='arcmin')
     RK.process(fgCat,bgRan)
     RK.write(dr_outfile)
     print('Correlating fg_rand x bg...\n')
-    FR = treecorr.NKCorrelation(min_sep=0.1, max_sep=200.0,bin_size=.6, sep_units='arcmin')
+    FR = treecorr.NKCorrelation(min_sep=0.1, max_sep=200.0,bin_size=0.6, sep_units='arcmin')
     FR.process(fgRan,bgCat)
     FR.write(fr_outfile)
     print('Correlating fg_rand x bg_rand...\n')
@@ -251,8 +286,16 @@ def main(argv):
     RR.process(fgRan,bgRan)
     RR.write(rr_outfile)
 
-    #print('Plotting output figure...\n')
-    #plotres(dd_outfile, dr_outfile, fr_out=fr_outfile, rr_out=rr_outfile, outplotn=fig_output)
+
+    print('Plotting output figure...\n')
+    plot = DustPlotter(dk_file = dk_outfile,
+                            dr_file = dr_outfile,
+                            fr_file = fr_outfile,
+                            rr_file = rr_outfile,
+                            z_fg = z_fg,
+                            z_theory = z_theory)
+
+    plot.plot_res(outplotn=fig_output, kpc=True)
 
     print('Done!')
 
