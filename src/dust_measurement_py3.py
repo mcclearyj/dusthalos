@@ -87,7 +87,7 @@ def make_fg_randoms(maskfile, nrand=1e6, nside=4096, partial=True, nest=False):
     ra = (ra + 360) % 360
 
     fg_out = Table([ra, dec], names=['ra', 'dec'])
-    fg_out.write('wiseSCOS_randoms.fits', overwrite=True)
+    fg_out.write('wiseSCOS_random_catalog.fits', overwrite=True)
     # Need to double-check this RA/Dec conversion
 
     print('making fg random treecorr catalog\n')
@@ -233,7 +233,7 @@ def main(argv):
     vb = True
     nbins = 7
     datapath = '/Users/j.mccleary/Research/dusty_halos/catalogs'
-    outdir   = '/Users/j.mccleary/Research/dusty_halos/'
+    outdir   = '/Users/j.mccleary/Research/dusty_halos/outputs'
     rmz_cat  = 'rmz_y3mof_subset_stacked.fits'
     rm_rand  = 'y3a2_gold2.2.1_redmagic_highdens_randoms.fits'
     rm_mask  = 'y3_gold_2.2.1_RING_joint_redmagic_v0.5.1_wide_maglim_v2.2_mask.fits'
