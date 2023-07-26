@@ -14,10 +14,10 @@ import fitsio
 from plotter import DustPlotter
 
 
-def hpRaDecToHEALPixel(ra, dec, nside=  4096, nest= False):
+def hpRaDecToHEALPixel(ra, dec, nside=4096, nest=False):
     phi = ra * np.pi / 180.0
     theta = (90.0 - dec) * np.pi / 180.0
-    hpInd = hp.ang2pix(nside, theta, phi, nest= nest)
+    hpInd = hp.ang2pix(nside, theta, phi, nest=nest)
     return hpInd
 
 
@@ -71,8 +71,8 @@ def make_fg_randoms(maskfile, nrand=1e6, nside=4096, partial=True, nest=False):
     ndraw = np.ceil(nrand/fcover*1.2).astype(int)
 
     ran1, ran2 = np.random.random(2*ndraw).reshape(2, -1)
-    ra  = 2*np.pi * (ran1 - 0.5) * 180/np.pi
-    dec = np.arcsin(2.*(ran2-0.5)) * 180/np.pi
+    ra  = 2. * np.pi * (ran1 - 0.5) * 180./np.pi
+    dec = np.arcsin(2. * (ran2 - 0.5)) * 180./np.pi
 
     hpInd = hpRaDecToHEALPixel(ra,dec,nside=nside,nest=nest)
     keep  = hmap != hp.UNSEEN

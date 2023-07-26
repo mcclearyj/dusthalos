@@ -8,9 +8,53 @@ import healpy as hp
 import pdb
 import fitsio
 from astropy.cosmology import Planck18 as cosmo
+import astropy.coordinates as coord
+import astropy.units as u
+from astropy.coordinates import SkyCoord
+from astropy.table import Table
 
 
-class DustPlotter():
+class RCParamsMixin:
+    ##
+    ## Make plot settings pretty
+    ##
+
+    def set_rc_params(self, fontsize=None):
+
+        print("Setting Matplotlib RC parameters...")
+
+        if fontsize is None:
+            fontsize=16
+        else:
+            fontsize=int(fontsize)
+
+        rc('font',**{'family':'serif'})
+        rc('text', usetex=True)
+
+        #plt.rcParams.update({'figure.facecolor':'w'})
+        plt.rcParams.update({'axes.linewidth': 1.3})
+        plt.rcParams.update({'xtick.labelsize': fontsize})
+        plt.rcParams.update({'ytick.labelsize': fontsize})
+        plt.rcParams.update({'xtick.major.size': 8})
+        plt.rcParams.update({'xtick.major.width': 1.3})
+        plt.rcParams.update({'xtick.minor.visible': True})
+        plt.rcParams.update({'xtick.minor.width': 1.})
+        plt.rcParams.update({'xtick.minor.size': 6})
+        plt.rcParams.update({'xtick.direction': 'out'})
+        plt.rcParams.update({'ytick.major.width': 1.3})
+        plt.rcParams.update({'ytick.major.size': 8})
+        plt.rcParams.update({'ytick.minor.visible': True})
+        plt.rcParams.update({'ytick.minor.width': 1.})
+        plt.rcParams.update({'ytick.minor.size':6})
+        plt.rcParams.update({'ytick.direction':'out'})
+        plt.rcParams.update({'axes.labelsize': fontsize})
+        plt.rcParams.update({'axes.titlesize': fontsize})
+        plt.rcParams.update({'legend.fontsize': int(fontsize-2)})
+
+        return
+
+
+class DustPlotter(RCParamsMixin):
 
     def __init__(self, dk_file=None, dr_file=None, fr_file=None,
                     rr_file=None, z_fg=None, z_theory=None):
@@ -34,26 +78,6 @@ class DustPlotter():
 
         return
 
-    def rc_params(self):
-
-        rc('font',**{'family':'serif'})
-        rc('text', usetex=True)
-
-        rcParams['axes.linewidth'] = 1.3
-        rcParams['xtick.labelsize'] = 16
-        rcParams['ytick.labelsize'] = 16
-
-        rcParams['xtick.minor.visible'] = True
-        rcParams['xtick.major.width'] = 1.2
-        rcParams['xtick.minor.width'] = 1.2
-
-        rcParams['xtick.direction'] = 'out'
-        rcParams['ytick.minor.visible'] = True
-        rcParams['ytick.major.width'] = 1.2
-        rcParams['ytick.direction'] = 'out'
-        rcParams['ytick.minor.width'] = 1.2
-
-        return
 
     def _load_catalogs(self, dk_file, dr_file, fr_file, rr_file):
         '''
@@ -249,6 +273,7 @@ class DustPlotter():
 
         return
 
+
     def plot_res(self, outplotn='dust_correlation_plot.png',
                     kpc=False, subsample=False):
         '''
@@ -265,3 +290,91 @@ class DustPlotter():
             self._plot_res(outplotn, kpc)
 
         return
+
+
+class OverlapPlotter(RCParamsMixin):
+
+    def __init__(self, cat1_name=None, cat2_name=None,
+                    outname='catalog_overlap.pdf', outdir='./'):
+        '''
+        Make nice catalog RA/Dec overlap plot in both Cartesian and
+        Aitoff projection
+
+        Inputs
+            cat1: path to first catalog
+            cat2: path to second catalog
+            outname: name to save figure to
+            outdir: where should file be saved
+
+        TO DO: add smarter error handling for the cat1/cat2 objects
+        '''
+
+        self.cat1_name = cat1_name
+        self.cat2_name = cat2_name
+        self.outname = outname
+        self.outdir = outdir
+
+
+        if type(cat1_name)==str:
+            self.cat1 = Table.read(cat1_name)
+        else:
+            self.cat1 = cat1_name
+
+        if type(cat2_name)==str:
+            self.cat2 = Table.read(cat2_name)
+        else:
+            self.cat2 = cat2_name
+
+
+    def make_plot(self, outname=None, projection=None):
+        '''
+        TO DO: need to fix catalog labels, also find a smarter way
+        to deal with coordinate systems of the two.
+
+        Note: default "projection" is rectilinear; other options include
+        "mollweide", "aitoff", and "hammer" (time).
+        '''
+
+        self.set_rc_params(fontsize=16)
+
+        if outname is None:
+            outname = self.outname
+
+        if (os.path.dirname(outname)==''):
+            outname=os.path.join(self.outdir, outname)
+
+        # Create SkyCoord object to hold RA, Dec of catalogs
+        cat1 = self.cat1; cat2 = self.cat2
+        label1 = os.path.basename(self.cat1_name)
+        label2 = os.path.basename(self.cat2_name)
+
+        try:
+            gal1 = SkyCoord(cat1['l'], cat1['b'], frame='galactic', unit=u.deg)
+            sky1 = gal1.icrs
+        except:
+            sky1 = SkyCoord(cat1['ra'], cat1['dec'], frame='icrs', unit=u.deg)
+
+        try:
+            gal2 = SkyCoord(cat2['l'], cat2['b'], frame='galactic', unit=u.deg)
+            sky2 = gal2.icrs
+        except:
+            sky2 = SkyCoord(cat2['ra'], cat2['dec'], frame='icrs', unit=u.deg)
+
+        # Create a plot instance (can also use axes class)
+        # Note: aitoff projection apparently avoids mollweide's extreme edge distortions
+
+        fig, ax = plt.subplots(1,1, figsize=(11.5, 8), tight_layout=True, \
+                        subplot_kw=dict(projection=projection))
+        ax.grid(True)
+        ax.set_xlabel('RA', fontsize=14); ax.set_ylabel('Dec', fontsize=14)
+
+        # Plot the points - it takes a long time for them all to show up!
+        ax.plot(sky1.ra.wrap_at('180d').radian, sky1.dec.radian, '.', markersize=0.02,\
+                    label=label1, color='xkcd:bluegrey')
+        ax.plot(sky2.ra.wrap_at('180d').radian, sky2.dec.radian, '.', markersize=0.02, \
+                    label=label2, color='xkcd:hot pink')
+        ax.legend(markerscale=400, loc='upper right', fontsize=14)
+        fig.tight_layout()
+
+        fig.savefig(outname)
+        fig.savefig(outname.replace('pdf', 'png'))
