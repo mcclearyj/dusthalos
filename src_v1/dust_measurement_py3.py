@@ -92,7 +92,6 @@ def make_fg_randoms(maskfile, nrand=1e6, nside=4096, partial=True, nest=False):
 
     print('making fg random treecorr catalog\n')
 
-
     fgRan = treecorr.Catalog(ra=ra, dec=dec,
             ra_units='deg',dec_units='deg')
 
