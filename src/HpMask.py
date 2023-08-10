@@ -67,6 +67,18 @@ class HpMask:
 
         return
 
+
+    def apply_mask(coords):
+        '''
+        Apply catalog mask to a set of coordinates
+        '''
+        # Do some sanity checking
+        if type(coords) is not SkyCoord:
+            raise TypeError('Supplied "coords" is not an instance of ' + \
+                            'astropy.coordinates.SkyCoord')
+        pass
+        return
+
     @staticmethod
     def get_overlapping_masks(coords, mask1, mask2):
         '''
@@ -79,9 +91,9 @@ class HpMask:
         if type(coords) is not SkyCoord:
             raise TypeError('Supplied "coords" is not an instance of ' + \
                             'astropy.coordinates.SkyCoord')
-        if (type(mask1) is not Mask):
+        if (type(mask1) is not HpMask):
             raise TypeError('Supplied "mask1" is not an instance of hpMask')
-        if (type(mask2) is not Mask):
+        if (type(mask2) is not HpMask):
             raise TypeError('Supplied "mask2" is not an instance of hpMask')
 
         nside1 = mask1.NSIDE; nside2 = mask2.NSIDE
@@ -112,9 +124,8 @@ class HpMask:
         # Initialize lists that will hold coordinates and indices of galaxies
         selected_coords = []; good_gals = []
 
-        # Loop
-        for j, coord, pix1, pix2 in zip(range(len(coords), coords, ipix1, ipix2):
+        for j, coord, pix1, pix2 in zip(np.arange(len(coords)), coords, ipix1, ipix2):
             if (mask1.mask[pix1]>0) and (mask2.mask[pix2]>0):
-                good_gals.append(i); selected_coords.append(coord)
+                good_gals.append(j); selected_coords.append(coord)
 
         return good_gals, SkyCoord(selected_coords)

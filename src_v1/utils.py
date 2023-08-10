@@ -78,18 +78,34 @@ def read_yaml(yaml_file):
         return yaml.load(stream, Loader=loader)
 
 
-def match_coords(cat1, cat2, ratag1=None, dectag1=None,
-                ratag2=None, dectag2=None, radius=0.5):
+def match_coords(cat1, cat2, ra_tag1=None, dec_tag1=None,
+                ra_tag2=None, dec_tag2=None, radius=0.5):
     '''
-    Utility function to match cat1 to cat 2 using celestial coordinates.
-    This assumes cat1/cat2 are astropy.Table objects.
+    Utility function to match cat1 to cat 2 using celestial coordinates. Uses
+    the htm.Matcher class from the esutil Python library:
+
+    https://github.com/esheldon/esutil/tree/master/esutil
+
+    Inputs:
+        cat1: catalog to which cat2 is matched; must be astropy.Table instance
+        cat2: catalog that gets matched to cat1; must be astropy.Table instance
+        ra_tag1: column name for cat1 right ascension
+                 [default: 'ra' or 'ALPHAWIN_J2000']
+        dec_tag1: column name for cat1 declination
+                  [default: 'dec' or 'DELTAWIN_J2000']
+        ra_tag2: column name for cat2 right ascension (type=string)
+                 [default: 'ra' or 'ALPHAWIN_J2000']
+        dec_tag2: column name for cat2 declination
+                  [default: 'dec' or 'DELTAWIN_J2000']
+        radius: maximum offset in arcseconds between potentially matched objects
+
     '''
 
     # Either 'ra/dec' or 'ALPHAWIN_J2000/DELTAWIN_J2000'!
     try:
-        if (ratag1 is not None) and (dectag1 is not None):
-            cat1_ra = cat1[ratag1]
-            cat1_dec =  cat1[dectag1]
+        if (ra_tag1 is not None) and (dec_tag1 is not None):
+            cat1_ra = cat1[ra_tag1]
+            cat1_dec =  cat1[dec_tag1]
         elif 'ra' in cat1.colnames:
             cat1_ra = cat1['ra']
             cat1_dec =  cat1['dec']
@@ -97,14 +113,14 @@ def match_coords(cat1, cat2, ratag1=None, dectag1=None,
             cat1_ra = cat1['ALPHAWIN_J2000']
             cat1_dec =  cat1['DELTAWIN_J2000']
         else:
-            raise KeyError('cat1: no "ra,dec" or "{ALPHA,DELTA}WIN_J2000" columns')
+            raise KeyError('cat1: no "ra, dec" or "{ALPHA, DELTA}WIN_J2000" columns')
     except:
         print("Couldn't load catalog 1 RA & Dec")
 
     try:
-        if (ratag2 is not None) and (dectag2 is not None):
-            cat2_ra = cat2[ratag1]
-            cat2_dec =  cat2[dectag1]
+        if (ra_tag2 is not None) and (dec_tag2 is not None):
+            cat2_ra = cat2[ra_tag1]
+            cat2_dec =  cat2[dec_tag1]
         elif 'ra' in cat2.colnames:
             cat2_ra = cat2['ra']
             cat2_dec =  cat2['dec']
@@ -112,7 +128,7 @@ def match_coords(cat1, cat2, ratag1=None, dectag1=None,
             cat2_ra = cat2['ALPHAWIN_J2000']
             cat2_dec =  cat2['DELTAWIN_J2000']
         else:
-            raise KeyError('cat2: no "ra,dec" or "{ALPHA,DELTA}WIN_J2000" columns')
+            raise KeyError('cat2: no "ra, dec" or "{ALPHA, DELTA}WIN_J2000" columns')
     except:
         print("Couldn't load catalog 2 RA & Dec")
 
