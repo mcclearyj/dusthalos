@@ -346,19 +346,22 @@ class OverlapPlotter(RCParamsMixin):
         # Create SkyCoord object to hold RA, Dec of catalogs
         cat1 = self.cat1; cat2 = self.cat2
         label1 = os.path.basename(self.cat1_name)
-        label2 = os.path.basename(self.cat2_name)
+        if cat2 is not None:
+            label2 = os.path.basename(self.cat2_name)
 
         try:
             gal1 = SkyCoord(cat1['l'], cat1['b'], frame='galactic', unit=u.deg)
             sky1 = gal1.icrs
-        except:
+        except KeyError:
             sky1 = SkyCoord(cat1['ra'], cat1['dec'], frame='icrs', unit=u.deg)
 
         try:
             gal2 = SkyCoord(cat2['l'], cat2['b'], frame='galactic', unit=u.deg)
             sky2 = gal2.icrs
-        except:
+        except KeyError:
             sky2 = SkyCoord(cat2['ra'], cat2['dec'], frame='icrs', unit=u.deg)
+        except TypeError:
+            sky2 = None
 
         # Create a plot instance (can also use axes class)
         # Note: aitoff projection apparently avoids mollweide's extreme edge distortions
@@ -369,10 +372,11 @@ class OverlapPlotter(RCParamsMixin):
         ax.set_xlabel('RA', fontsize=14); ax.set_ylabel('Dec', fontsize=14)
 
         # Plot the points - it takes a long time for them all to show up!
-        ax.plot(sky1.ra.wrap_at('180d').radian, sky1.dec.radian, '.', markersize=0.02,\
-                    label=label1, color='xkcd:bluegrey')
-        ax.plot(sky2.ra.wrap_at('180d').radian, sky2.dec.radian, '.', markersize=0.02, \
-                    label=label2, color='xkcd:hot pink')
+        ax.plot(sky1.ra.wrap_at('180d').radian, sky1.dec.radian, '.',
+                    markersize=0.02, label=label1, color='xkcd:bluegrey')
+        if (sky2 is not None):
+            ax.plot(sky2.ra.wrap_at('180d').radian, sky2.dec.radian, '.',
+                        markersize=0.02, label=label2, color='xkcd:hot pink')
         ax.legend(markerscale=400, loc='upper right', fontsize=14)
         fig.tight_layout()
 

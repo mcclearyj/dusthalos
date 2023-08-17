@@ -7,7 +7,7 @@ from astropy.io import fits
 import astropy.units as u
 import astropy.coordinates as coord
 from astropy.coordinates import SkyCoord
-
+import time
 
 ##
 ## TO DO: make a single, inheritable seeded random for making random catalogs
@@ -24,67 +24,122 @@ class HpMask:
     the empty or unseen HEALPix pixels could be useful too.
     '''
 
-    def __init__(self, maskfile=None, partial=False, coordframe=None):
+    def __init__(self, filepath=None, partial=False, coordframe=None):
         # Do some sanity checking
-        if maskfile is None:
-            raise ValueError('Missing required parameter "maskfile"')
+        if filepath is None:
+            raise ValueError('Missing required parameter "filepath"')
         if coordframe is None:
             print('Assuming mask is based on equatorial coordinates ("icrs")')
             coordframe = 'icrs'
 
         # Define attributes
-        self.maskfile = maskfile # relative or absolute path
+        self.filepath = filepath # relative or absolute path
         self.partial = partial
         self.NSIDE = -1
         self.mask = None
         self.mask_header = {}
         self.seen = []
+        self.all_nside_hpix = []
         self.coordframe = coordframe
 
         # Load mask
-        self._load_mask()
+        self._load_mask(filepath = self.filepath)
 
-    def _load_mask(self):
+    def _load_mask(self, filepath):
         '''
         Load up the mask file with a way to handle partial masks
         '''
 
         try:
-            mask, h = hp.read_map(self.maskfile, h=True, partial=self.partial)
+            mask, h = hp.read_map(self.filepath, h=True, partial=self.partial)
         except FileNotFoundError as fnf:
-            print(fnf)
+            print("File not found: ", fnf)
         except ValueError as e:
-            print(e)
-            print("hpMask is probably partial, setting partial=True")
+            print("WARNING: hp.read_map() returned the following error: ", e)
+            print("This means hpMask is probably partial; setting partial=True")
             self.partial = True
-            mask, h = hp.read_map(self.maskfile, h=True, partial=self.partial)
+            mask, h = hp.read_map(self.filepath, h=True, partial=self.partial)
 
         # Set class attributes
         self.mask = mask
         self.mask_header = dict(h)
         self.NSIDE = self.mask_header['NSIDE']
         self.seen = (mask > 0) & (mask != hp.UNSEEN)
+        # Incredibly, mask doesn't contain anything like this.
+        self.all_nside_hpix = np.arange(hp.nside2npix(self.NSIDE))
 
         return
 
 
-    def apply_mask(coords):
+    def apply_mask(self, coords, lonlat=True, vb=True):
         '''
-        Apply catalog mask to a set of coordinates
+        Apply mask to a set of coordinates.
+
+        Inputs
+            coords: SkyCoords instance to be placed in HEALPIx
+            lonlat: Boolean specifying whether or not coordinates are
+                    longitude/latitude (degrees). If True, they are. If False,
+                    they are healpy longitude and co-latitude (units=radians)
+            vb: verbose output [True/False; default True]
+
+        Returns
+            ind: indices of successful coordinates
+            matched_coords: matched coordinates
         '''
-        # Do some sanity checking
+
+        # Make sure coordinates are in acceptable format
         if type(coords) is not SkyCoord:
-            raise TypeError('Supplied "coords" is not an instance of ' + \
+            raise TypeError('Supplied "coords" must be an instance of ' + \
                             'astropy.coordinates.SkyCoord')
-        pass
-        return
+
+        # OH! I need to do the silly range(len) thing because after being
+        # read in by HEALPy,  the mask is just
+        # the mask *value* not the mask HEALPixel. So dumb!
+
+        # Identify good mask pixels
+        good_map_hpix = self.all_nside_hpix[self.seen]
+
+        # Probably superfluous, but just in case.
+        if lonlat is True:
+            ra = coords.ra.deg; dec = coords.dec.deg
+        else:
+            ra = coords.ra.rad; dec = coords.dec.rad
+
+        # Get HEALPixel for each RA, Dec
+        hpInd = hp.ang2pix(self.NSIDE, ra, dec, lonlat=lonlat)
+
+        # Identify coordinates that fall into good (unmasked) HEALPixels
+        overlap = np.in1d(hpInd, good_map_hpix)
+
+        # Create object index array and return good indices, good coords
+        gal_ind = np.arange(len(coords))
+
+        if vb is True:
+            print('\n\n HpMask.apply_mask: Mask applied to input SkyCoordinates')
+            print(f" {len(gal_ind[overlap])}/{len(gal_ind)} objects " +
+                        "overlapped with mask HEALPix")
+            print(f"  --> fractional overlap/match rate = " +
+                        f"{len(gal_ind[overlap])*100.0/len(gal_ind):.1f}%" +
+                        " of objects \n")
+
+        if len(gal_ind[overlap]) == 0:
+            print('WARNING: No galaxies in input catalog matched to mask')
+
+        return gal_ind[overlap]
 
     @staticmethod
-    def get_overlapping_masks(coords, mask1, mask2):
+    def apply_overlapping_masks(coords, mask1, mask2):
         '''
         Return coordinates and indices of objects that lie in the overlap area
-        of two HEALPix masks. Coords should be an instance of SkyCoords, and
-        mask1 and mask2 should be instances of HpMask.
+        of two HEALPix masks.
+
+        Parameters
+            coords: SkyCoords instance to be placed in overlapping HEALPixels
+            mask1, mask2: Instances of HpMask for which to calculate overlap
+
+        Returns
+            good_gals: array indices that fell within an overlapping HEALPixel
+            good_coords: coordinates that fell within an overlapping HEALPixel
         '''
 
         # Do some sanity checking
@@ -97,6 +152,10 @@ class HpMask:
             raise TypeError('Supplied "mask2" is not an instance of hpMask')
 
         nside1 = mask1.NSIDE; nside2 = mask2.NSIDE
+
+        # Get good (non-empty, seen) HEAPixels in masks
+        good_map_hpix1 = mask1.all_nside_hpix[mask1.seen]
+        good_map_hpix2 = mask2.all_nside_hpix[mask2.seen]
 
         ra_icrs = coords.icrs.ra.deg
         dec_icrs = coords.icrs.dec.deg
@@ -121,11 +180,20 @@ class HpMask:
             ipix2 = hp.ang2pix(nside2, ra_icrs, dec_icrs,
                         lonlat=True, nest=False)
 
-        # Initialize lists that will hold coordinates and indices of galaxies
-        selected_coords = []; good_gals = []
+        # Identify whether or not a coordinate lies within the respective
+        # masks' seen HEALPixels. seen1/2 are boolean arrays.
+        seen1 = np.in1d(ipix1, good_map_hpix1)
+        seen2 = np.in1d(ipix2, good_map_hpix2)
 
-        for j, coord, pix1, pix2 in zip(np.arange(len(coords)), coords, ipix1, ipix2):
-            if (mask1.mask[pix1]>0) and (mask2.mask[pix2]>0):
-                good_gals.append(j); selected_coords.append(coord)
+        # This returns a boolean array with True if a coordinate is seen
+        # in both masks, False if its seen in one or neither.
+        # While gal_ind[seen1 == seen2] can also work, it is risky (what if galaxy is False in both?)
 
-        return good_gals, SkyCoord(selected_coords)
+        overlap = (seen1 == True) & (seen2 == True)
+
+        # Create object index array and return good indices
+        gal_ind = np.arange(len(coords))
+        good_gals = gal_ind[overlap]
+
+        # Return indices and coodinates of galaxies in both masks
+        return good_gals
