@@ -1,9 +1,10 @@
 import os
-from astropy.table import Table, join
+from astropy.table import Table, join, hstack
 import numpy as np
 import pdb
 from astropy.io import fits
 from datetime import datetime
+
 
 from . import utils, cat_utils
 
@@ -62,7 +63,6 @@ class CatalogJoiner:
 
         match_kw = self.config['match_kw']
         c1 = self.cat1; c2 = self.cat2
-        # Define an output catalog name based on nicknames
 
         # Join catalogs
         joined_cat = join(c1.data, c2.data,
@@ -119,6 +119,35 @@ class CatalogJoiner:
 
         return joined_cat
 
+
+    def _join_cats_random(self, overwrite=False):
+        '''
+        Again, pretty special-purpose, BUT: drawing random matches from catalog2
+        to assign to catalog1.
+        '''
+
+        c1 = self.cat1; c2 = self.cat2
+
+        if 'seed' in self.config.keys():
+            seed = self.config['seed']
+        else:
+            seed = time.time_ns()
+            print(f'join_cats_random: no seed in config, using time.time_ns()')
+
+        rng = np.random.default_rng(seed)
+        print(f'join_cats_random: set RNG with seed = {seed}\n')
+
+        randind = rng.integers(0, len(c2.data), size=len(c1.data))
+        #randind = rng.integers(0, len(c2.data), 50000)
+
+        # Stack the catalogs
+        joined_cat = hstack([c1.data, c2.data[randind]], \
+                            table_names=[c1.tabname, c2.tabname])
+        print(f'{len(c1.data)} {c1.tabname} objects joined to {c2.tabname} objects')
+
+        return joined_cat
+
+
     def match_catalogs(self, overwrite=False):
         '''
         Test out whether catalogs are being joined by keyword or RA/Dec,
@@ -134,9 +163,13 @@ class CatalogJoiner:
             jc = self._join_cats_kw()
             join_type = f'keyword = {self.config["match_kw"]}'
 
-        else:
+        elif (self.config['match_type'] == 'coordinates'):
             jc = self._join_cats_coord()
             join_type = 'coordinates'
+
+        else:
+            jc = self._join_cats_random()
+            join_type = 'random'
 
         # Add some metadata
         jc.meta['comments'].append(f'{self.cat1.tabname} joined with ' + \

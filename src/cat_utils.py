@@ -18,9 +18,33 @@ def cat_checker(catalog):
         if key not in catalog.__dict__.keys():
             raise KeyError(f'Catalog object is missing attribute {key}')
 
+def mask_config_checker(config):
+    '''
+    Utility method to check for required keys in individual mask config file
+    Not finished -- repeated code, so not ideal practice.
+    '''
+
+    # Required mask keys
+    required_mask_keys = ['path', 'filename', 'coordframe']
+    #optional_mask_keys = ['partial']
+
+    cf_keys = config.keys()
+
+    if 'background_mask' in cf_keys:
+        masks.append(config['background_mask'])
+
+    if 'foreground_mask' in cf_keys:
+        masks.append(config['foreground_mask'])
+
+    for mask in masks:
+        mask_cfg = cat.keys()
+        for key in required_mask_keys:
+            if key not in mask_cfg:
+                raise KeyError(f'mask config is missing required key: {key}')
+
 def cat_config_checker(config):
     '''
-    Utility method to check
+    Utility method to check that required config keys are in place.
     '''
 
     cf_keys = config.keys()
@@ -33,9 +57,7 @@ def cat_config_checker(config):
 
     # Go through and ensure that minimal required keywords are present
     if 'paths' not in cf_keys:
-        raise KeyError('config file is missing "paths" setting')
-    if 'catalog1' not in cf_keys:
-        raise KeyError('config file is missing "catalog1"')
+        raise KeyError('config file is missing required parameter "paths"')
 
     # Make sure there is a path defined
     for sub_cfg in cf_keys:
@@ -47,17 +69,20 @@ def cat_config_checker(config):
                 config[sub_cfg]['output_path'] = config['paths']['output_path']
 
     # For catalog1, catalog2: make sure the coord tags are there
-    catalogs = [config['catalog1']]
+    catalogs = []
     masks = []
 
-    if 'catalog2' in cf_keys:
-        catalogs.append(config['catalog2'])
+    if 'background_catalog' in cf_keys:
+        catalogs.append(config['background_catalog'])
 
-    if 'catalog1_mask' in cf_keys:
-        masks.append(config['catalog1_mask'])
+    if 'foreground_catalog' in cf_keys:
+        catalogs.append(config['foreground_catalog'])
 
-    if 'catalog2_mask' in cf_keys:
-        masks.append(config['catalog2_mask'])
+    if 'background_mask' in cf_keys:
+        masks.append(config['background_mask'])
+
+    if 'foreground_mask' in cf_keys:
+        masks.append(config['foreground_mask'])
 
     for cat in catalogs:
         cat_cfg = cat.keys()
@@ -68,13 +93,14 @@ def cat_config_checker(config):
                 if cat[key] not in ['deg', 'rad']:
                     print(f'The "coord_units" parameter supplied was {key} ' +
                         'but must be either "deg" or "rad"')
-        if ('match' in cat.keys()) & (cat['match'] != None):
-            for mkey in required_match_keys:
-                if mkey not in cat['match']:
-                    raise KeyError(f'match config missing key: {mkey}')
+        if ('match' in cat.keys()):
+            if (cat['match'] != None):
+                for mkey in required_match_keys:
+                    if mkey not in cat['match']:
+                        raise KeyError(f'match config missing key: {mkey}')
 
     for mask in masks:
-        mask_cfg = cat.keys()
+        mask_cfg = mask.keys()
         for key in required_mask_keys:
             if key not in mask_cfg:
                 raise KeyError(f'catalog config is missing required key: {key}')

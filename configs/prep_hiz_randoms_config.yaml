@@ -33,7 +33,7 @@ background_catalog:
   #path:
   filename: 'y3a2_gold2.2.1_redmagic_highlum_highz.fits'
   # nickname for table if we are matching to another catalog
-  tabname: 'redmagic_hiz'
+  tabname: 'redmagic_hiz_randoms'
   # WCS frame
   coordframe: 'icrs'
   # RA/Dec units
@@ -50,9 +50,9 @@ background_catalog:
     # Name of catalog file
     filename: '14741.parquet'
     # Should be 'kw', 'coordinates', or 'random'
-    match_type: 'kw'
-    # If kw matching, specify
-    match_kw: 'coadd_object_id'
+    match_type: 'random'
+    # If random matching, specifiy seed
+    seed: 191477
     # nickname for table
     tabname: 'y3_GOLD'
 

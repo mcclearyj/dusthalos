@@ -7,6 +7,7 @@ import astropy.units as u
 import astropy.coordinates as coord
 from astropy.coordinates import SkyCoord
 from datetime import datetime
+
 # Local imports
 from . import utils, cat_utils
 from .hpmask import HpMask
@@ -116,7 +117,7 @@ class Catalog():
 
     def create_mask_from_config(self, mask_config=None):
         '''
-        Method to create an HpMask object from the supplied configuration file
+        Method to create an HpMask object from the Catalog configuration file
 
         Input
             mask_config: specifies mask basename, absolute/relative path,
@@ -171,8 +172,7 @@ class Catalog():
     def apply_overlapping_masks(self, mask1=None, mask2=None):
         '''
         Runs HpMask.find_overlapping_masks() with mask1 = self.mask
-        and mask2 passed as an argument. --> ChatGPT says that this is
-        the better option
+        and mask2 passed as an argument.
         '''
 
         # Hold original, unmasked catalog data
@@ -228,15 +228,3 @@ class Catalog():
 
         if self.vb is True:
             print('\n Setting self.data to joined catalog \n')
-
-
-class FgRandom(Catalog):
-    '''
-    Extension of Catalog that produces random galaxy catalogs.
-    '''
-    def __init__(self, mask1, config=None):
-        pass
-
-class BgRandom(Catalog):
-    '''
-    '''

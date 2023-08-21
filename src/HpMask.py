@@ -8,7 +8,7 @@ import astropy.units as u
 import astropy.coordinates as coord
 from astropy.coordinates import SkyCoord
 import time
-
+from .cat_utils import mask_config_checker
 ##
 ## TO DO: make a single, inheritable seeded random for making random catalogs
 ## probably using a Mixin class.
@@ -25,6 +25,7 @@ class HpMask:
     '''
 
     def __init__(self, filepath=None, partial=False, coordframe=None):
+
         # Do some sanity checking
         if filepath is None:
             raise ValueError('Missing required parameter "filepath"')
@@ -68,12 +69,10 @@ class HpMask:
         # Incredibly, mask doesn't contain anything like this.
         self.all_nside_hpix = np.arange(hp.nside2npix(self.NSIDE))
 
-        return
-
-
     def apply_mask(self, coords, lonlat=True, vb=True):
         '''
-        Apply mask to a set of coordinates.
+        Apply mask to a set of coordinates. This could probably be made into
+        a static method.
 
         Inputs
             coords: SkyCoords instance to be placed in HEALPIx
@@ -115,7 +114,7 @@ class HpMask:
         gal_ind = np.arange(len(coords))
 
         if vb is True:
-            print('\n\n HpMask.apply_mask: Mask applied to input SkyCoordinates')
+            print('\n\n HpMask.apply_mask: Mask applied to input SkyCoords')
             print(f" {len(gal_ind[overlap])}/{len(gal_ind)} objects " +
                         "overlapped with mask HEALPix")
             print(f"  --> fractional overlap/match rate = " +
@@ -131,7 +130,8 @@ class HpMask:
     def apply_overlapping_masks(coords, mask1, mask2):
         '''
         Return coordinates and indices of objects that lie in the overlap area
-        of two HEALPix masks.
+        of two HEALPix masks. There should probably be an attribute checker
+        of some kind...
 
         Parameters
             coords: SkyCoords instance to be placed in overlapping HEALPixels
@@ -139,17 +139,16 @@ class HpMask:
 
         Returns
             good_gals: array indices that fell within an overlapping HEALPixel
-            good_coords: coordinates that fell within an overlapping HEALPixel
         '''
 
         # Do some sanity checking
         if type(coords) is not SkyCoord:
             raise TypeError('Supplied "coords" is not an instance of ' + \
                             'astropy.coordinates.SkyCoord')
-        if (type(mask1) is not HpMask):
-            raise TypeError('Supplied "mask1" is not an instance of hpMask')
-        if (type(mask2) is not HpMask):
-            raise TypeError('Supplied "mask2" is not an instance of hpMask')
+        #if (type(mask1) is not HpMask):
+        #    raise TypeError('Supplied "mask1" is not an instance of hpMask')
+        #if (type(mask2) is not HpMask):
+        #    raise TypeError('Supplied "mask2" is not an instance of hpMask')
 
         nside1 = mask1.NSIDE; nside2 = mask2.NSIDE
 
@@ -185,10 +184,11 @@ class HpMask:
         seen1 = np.in1d(ipix1, good_map_hpix1)
         seen2 = np.in1d(ipix2, good_map_hpix2)
 
-        # This returns a boolean array with True if a coordinate is seen
-        # in both masks, False if its seen in one or neither.
-        # While gal_ind[seen1 == seen2] can also work, it is risky (what if galaxy is False in both?)
-
+        '''
+        This returns a boolean array with True if a coordinate is seen in both
+        masks, False if its seen in one or neither. NB: gal_ind[seen1 == seen2]
+        can also work, but it is risky (what if galaxy is False in both?)
+        '''
         overlap = (seen1 == True) & (seen2 == True)
 
         # Create object index array and return good indices
