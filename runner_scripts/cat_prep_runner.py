@@ -6,7 +6,7 @@ from src.catalog import Catalog
 from src.hpmask import HpMask
 from src.cat_utils import cat_config_checker
 
-config = utils.read_yaml('../configs/prep_catalog_config.yaml')
+config = utils.read_yaml('configs/prep_catalog_config.yaml')
 #config = utils.read_yaml('configs/prep_hidens_randoms_config.yaml')
 
 overwrite = True
@@ -32,7 +32,7 @@ fg = Catalog(config=config['foreground_catalog'], vb=vb)
 fg.create_mask_from_config(mask_config=config['foreground_mask'])
 
 # Apply mask to foregound catalog & save 
-fg.apply_mask()
+#fg.apply_mask()
 
 # Load background catalog from the configuration file.
 bg_redshift = Catalog(config=config['background_catalog'], vb=vb)

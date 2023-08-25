@@ -30,10 +30,12 @@ class Catalog():
             mask: mask file (path name or HpMask instance) for this catalog
 
             config: sets attributes of catalog class
+
+            memmap: "secret" argument that enables memmap for large fits files -- should really be made a config.
     '''
 
     def __init__(self, config=None, filepath=None, data=None,
-                tabname='tab', mask=None, vb=True):
+                 tabname='tab', mask=None, vb=True, memmap=False):
         self.config = config # configuration file specifying catalog parameters
         self.filepath = filepath # absolute or relative path to catalog file
         self.mask = mask # should be instance of hpMask
@@ -45,7 +47,7 @@ class Catalog():
 
         # If filepath to catalog has been set, load it
         if self.filepath is not None:
-            self._load_cat(self.filepath)
+            self._load_cat(self.filepath, memmap=memmap)
 
     def _load_config(self):
         '''
@@ -59,11 +61,13 @@ class Catalog():
         else:
             pass
 
-    def _load_cat(self, input):
+    def _load_cat(self, input, memmap):
         '''
         Utility to load in a catalog and set attributes of Catalog() object
         then populates self.data and self.tabname
-        input: one of filepath or astropy Table
+        Input 
+            input:  one of filepath or astropy Table
+            memmap: whether or not to use memmap (for large tables)
         '''
 
         # Sanity check
@@ -73,8 +77,12 @@ class Catalog():
         # Load catalog data
         if type(input) == str:
             try:
-                catalog_data = Table.read(input)
+                if memmap == True:
+                    catalog_data = Table.read(input, format='fits', memmap=True)
+                else:
+                    catalog_data = Table.read(input)
                 print(f'Loaded catalog data from {input}')
+            
             except FileNotFoundError as fnf:
                 print('Invalid catalog path supplied: ', fnf)
         else:
@@ -127,10 +135,14 @@ class Catalog():
         '''
 
         mask_filepath = os.path.join(mask_config['path'],
-                        mask_config['filename'])
+                                     mask_config['filename'])
 
-        self.mask = HpMask(mask_filepath,
-                        coordframe=mask_config['coordframe'])
+        kw_args = {'coordframe': mask_config['coordframe']}
+
+        if 'partial' in mask_config.keys():
+            kw_args['partial'] = mask_config['partial']
+
+        self.mask = HpMask(mask_filepath, **kw_args)
 
 
     def apply_mask(self, overwrite=True):

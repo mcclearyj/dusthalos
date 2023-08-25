@@ -91,21 +91,18 @@ class HpMask:
             raise TypeError('Supplied "coords" must be an instance of ' + \
                             'astropy.coordinates.SkyCoord')
 
-        # OH! I need to do the silly range(len) thing because after being
-        # read in by HEALPy,  the mask is just
-        # the mask *value* not the mask HEALPixel. So dumb!
-
         # Identify good mask pixels
         good_map_hpix = self.all_nside_hpix[self.seen]
 
-        # Probably superfluous, but just in case.
-        if lonlat is True:
-            ra = coords.ra.deg; dec = coords.dec.deg
+
+        # Grab coordinates
+        if self.coordframe == 'galactic':
+            lon = coords.l.deg; lat = coords.b.deg
         else:
-            ra = coords.ra.rad; dec = coords.dec.rad
+            lon = coords.ra.rad; lat = coords.dec.rad
 
         # Get HEALPixel for each RA, Dec
-        hpInd = hp.ang2pix(self.NSIDE, ra, dec, lonlat=lonlat)
+        hpInd = hp.ang2pix(self.NSIDE, lon, lat, lonlat=lonlat)
 
         # Identify coordinates that fall into good (unmasked) HEALPixels
         overlap = np.in1d(hpInd, good_map_hpix)
