@@ -326,7 +326,8 @@ class OverlapPlotter(RCParamsMixin):
             self.cat2 = cat2_name
 
 
-    def make_plot(self, outname=None, projection=None):
+    def make_plot(self, outname=None, projection=None, ra_tag1=None, dec_tag1=None, coordframe1=None, 
+                  ra_tag2=None, dec_tag2=None, coordframe2=None):
         '''
         TO DO: need to fix catalog labels, also find a smarter way
         to deal with coordinate systems of the two.
@@ -349,19 +350,27 @@ class OverlapPlotter(RCParamsMixin):
         if cat2 is not None:
             label2 = os.path.basename(self.cat2_name)
 
-        try:
-            gal1 = SkyCoord(cat1['l'], cat1['b'], frame='galactic', unit=u.deg)
+        if (ra_tag1 is not None) & (coordframe1 is not None):
+            gal1 = SkyCoord(cat1[ra_tag1], cat1[dec_tag1], frame=coordframe1, unit=u.deg)
             sky1 = gal1.icrs
-        except KeyError:
-            sky1 = SkyCoord(cat1['ra'], cat1['dec'], frame='icrs', unit=u.deg)
-
-        try:
-            gal2 = SkyCoord(cat2['l'], cat2['b'], frame='galactic', unit=u.deg)
-            sky2 = gal2.icrs
-        except KeyError:
-            sky2 = SkyCoord(cat2['ra'], cat2['dec'], frame='icrs', unit=u.deg)
-        except TypeError:
-            sky2 = None
+        else:
+            try:
+                gal1 = SkyCoord(cat1['l'], cat1['b'], frame='galactic', unit=u.deg)
+                sky1 = gal1.icrs
+            except KeyError:
+                sky1 = SkyCoord(cat1['ra'], cat1['dec'], frame='icrs', unit=u.deg)
+        
+        if (ra_tag2 is not None) & (dec_tag2 is not None) & (coordframe2 is not None):
+            gal2 = SkyCoord(cat2[ra_tag2], cat2[dec_tag2], frame=coordframe2, unit=u.deg)
+            sky2 = gal2.icrs        
+        else:
+            try:
+                gal2 = SkyCoord(cat2['l'], cat2['b'], frame='galactic', unit=u.deg)
+                sky2 = gal2.icrs
+            except KeyError:
+                sky2 = SkyCoord(cat2['ra'], cat2['dec'], frame='icrs', unit=u.deg)
+            except TypeError:
+                sky2 = None
 
         # Create a plot instance (can also use axes class)
         # Note: aitoff projection apparently avoids mollweide's extreme edge distortions
