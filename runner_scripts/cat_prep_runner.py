@@ -1,54 +1,53 @@
 import os
-import pdb
 import time
+import argparse
 import src.utils as utils
 from src.catalog import Catalog
-from src.hpmask import HpMask
 from src.cat_utils import cat_config_checker
 
-config = utils.read_yaml('configs/prep_catalog_config.yaml')
-#config = utils.read_yaml('configs/prep_hidens_randoms_config.yaml')
+def main(args):
+    config_path = args.config_path
+    config = utils.read_yaml(config_path)
 
-overwrite = True
-vb = True
+    overwrite = True
+    vb = True
 
-### TO DO:
-###     - Make this a real script
-###     - Make error checking more robust?
-###     - Specify order of operations in configs?
+    # Checking configuration consistency
+    config = cat_config_checker(config)
 
-# maybe a little shady to do this? Ideally, would happen
-# somewhere inside Catalog.
+    # Create output directory if it doesn't exist
+    if not os.path.isdir(config['paths']['output_path']):
+        os.makedirs(config['paths']['output_path'])
 
-config = cat_config_checker(config)
+    # Load foreground catalog from configuration file
+    fg = Catalog(config=config['foreground_catalog'], vb=vb)
 
-if not os.path.isdir(config['paths']['output_path']):
-    os.system(f'mkdir {config["paths"]["output_path"]}')
+    # Create its mask
+    fg.create_mask_from_config(mask_config=config['foreground_mask'])
 
-# Load foreground catalog from configuration file
-fg = Catalog(config=config['foreground_catalog'], vb=vb)
+    # Apply foreground mask
+    fg.appy_mask()
+    # Load background catalog from the configuration file
+    bg_redshift = Catalog(config=config['background_catalog'], vb=vb)
 
-# Create its mask
-fg.create_mask_from_config(mask_config=config['foreground_mask'])
+    # Load mask from config
+    bg_redshift.create_mask_from_config(mask_config=config['background_mask'])
 
-# Apply mask to foregound catalog & save
-#fg.apply_mask()
+    # Find overlapping masks
+    bg_redshift.apply_overlapping_masks(mask1=bg_redshift.mask, mask2=fg.mask)
 
-# Load background catalog from the configuration file.
-bg_redshift = Catalog(config=config['background_catalog'], vb=vb)
+    start = time.time()
 
-# Load mask from config -- TO DO: add error checking!
-bg_redshift.create_mask_from_config(mask_config=config['background_mask'])
+    # Join if requested
+    if 'match' in config['background_catalog'].keys():
+        match_cat = Catalog(config['background_catalog']['match'], memmap=True)
+        bg_redshift.match_to_catalog(match_cat, overwrite=overwrite)
 
-# Find overlapping masks
-bg_redshift.apply_overlapping_masks(mask1=bg_redshift.mask, mask2=fg.mask)
+    end = time.time()
+    print(f"\n Random matching took {((end-start)/60.):.1f} mins \n")
 
-start = time.time()
-
-# Join if requested
-if 'match' in config['background_catalog'].keys():
-    match_cat = Catalog(config['background_catalog']['match'], memmap=True)
-    bg_redshift.match_to_catalog(match_cat, overwrite=overwrite)
-
-end = time.time()
-print(f"\n Random matching took {((end-start)/60.):.1f} mins \n")
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='Runner script for Catalog operations.')
+    parser.add_argument('--config_path', type=str, help='Path to the configuration file.', required=True)
+    args = parser.parse_args()
+    main(args)
