@@ -31,7 +31,7 @@ fg = Catalog(config=config['foreground_catalog'], vb=vb)
 # Create its mask
 fg.create_mask_from_config(mask_config=config['foreground_mask'])
 
-# Apply mask to foregound catalog & save 
+# Apply mask to foregound catalog & save
 #fg.apply_mask()
 
 # Load background catalog from the configuration file.
@@ -51,4 +51,4 @@ if 'match' in config['background_catalog'].keys():
     bg_redshift.match_to_catalog(match_cat, overwrite=overwrite)
 
 end = time.time()
-print(f"\n Random matching took {(end-start)/1.0e3} s \n")
+print(f"\n Random matching took {((end-start)/60.):.1f} mins \n")
