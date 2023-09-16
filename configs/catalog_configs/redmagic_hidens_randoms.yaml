@@ -1,0 +1,18 @@
+  # Where is it? Leave blank or commented out to use default
+  path: /Users/j.mccleary/Research/dusty_halos/catalogs/prep_cat_output
+  # What is it called?
+  filename: 'redmagic_hidens_randoms_y3_GOLD_JOINED_catalog.fits'
+  # nickname for table if we are matching to another catalog
+  tabname: 'redmagic_hidens_randoms'
+  # WCS frame
+  coordframe: 'icrs'
+  # RA/Dec units
+  coord_units: 'deg'
+  # RA/Dec column names
+  ra_tag: 'ra_redmagic_hidens_randoms'
+  # Dec column name
+  dec_tag: 'dec_redmagic_hidens_randoms'
+  # Redshift column name
+  z_tag: 'z'
+  # optional for redmagic only, basically
+  z_bin_number: 'bin_number'

@@ -1,0 +1,17 @@
+  # Where is it? Leave blank or commented out to use default
+  path: /Users/j.mccleary/Research/dusty_halos/catalogs/prep_cat_output
+  filename: 'redmagic_hidens_y3_GOLD_JOINED_catalog.fits'
+  # nickname for table if we are matching to another catalog
+  tabname: 'redmagic_hidens_y3gold_joined'
+  # WCS frame
+  coordframe: 'icrs'
+  # RA/Dec units
+  coord_units: 'deg'
+  # RA/Dec column names
+  ra_tag: 'ra_redmagic_hidens'
+  # Dec column name
+  dec_tag: 'dec_redmagic_hidens'
+  # Redshift column name
+  z_tag: 'zredmagic'
+  # optional for redmagic only, basically
+  z_bin_number: 'bin_number'

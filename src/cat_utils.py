@@ -42,9 +42,31 @@ def mask_config_checker(config):
             if key not in mask_cfg:
                 raise KeyError(f'mask config is missing required key: {key}')
 
-def cat_config_checker(config):
+def cat_config_checker(cat_config):
     '''
-    Utility method to check that required config keys are in place.
+    Check that keys required for a single configuration catalog are in place
+    '''
+    required_cat_keys = ['filename', 'ra_tag', 'dec_tag',
+                        'coordframe', 'coord_units']
+    required_match_keys = ['filename', 'match_type', 'tabname']
+
+    cat_keys = cat_config.keys()
+    for key in required_cat_keys:
+        if key not in cat_keys:
+            raise KeyError(f'catalog config is missing required key: {key}')
+        if key == 'coord_units':
+            if cat_config[key] not in ['deg', 'rad']:
+                print(f'The "coord_units" parameter supplied was {key} ' +
+                    'but must be either "deg" or "rad"')
+    if ('match' in cat_keys):
+        if (cat_config['match'] != None):
+            for mkey in required_match_keys:
+                if mkey not in cat_config['match']:
+                    raise KeyError(f'match config missing key: {mkey}')
+
+def all_config_checker(config):
+    '''
+    Utility method to check that config for catalog_runner has keys are in place.
     '''
 
     cf_keys = config.keys()
@@ -59,7 +81,7 @@ def cat_config_checker(config):
     if 'paths' not in cf_keys:
         raise KeyError('config file is missing required parameter "paths"')
 
-    # Make sure there is a path defined
+    # Make sure there is a path defined; if not, add one
     for sub_cfg in cf_keys:
         if ('path' not in config[sub_cfg].keys()) or \
             (config[sub_cfg]['path'] is None):

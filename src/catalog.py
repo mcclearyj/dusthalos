@@ -65,7 +65,7 @@ class Catalog():
         '''
         Utility to load in a catalog and set attributes of Catalog() object
         then populates self.data and self.tabname
-        Input 
+        Input
             input:  one of filepath or astropy Table
             memmap: whether or not to use memmap (for large tables)
         '''
@@ -82,7 +82,7 @@ class Catalog():
                 else:
                     catalog_data = Table.read(input)
                 print(f'Loaded catalog data from {input}')
-            
+
             except FileNotFoundError as fnf:
                 print('Invalid catalog path supplied: ', fnf)
         else:
@@ -109,17 +109,16 @@ class Catalog():
         Utility function to return a SkyCoord instance fromt the coordinates
         of galaxies in self.data
         '''
-
         # What format are the catalog's coordinates in?
         if self.config['coord_units'] == 'deg':
-            unit = u.deg; lonlat=True
+            unit = u.deg
         else:
-            unit = u.rad; lonlat=False
+            unit = u.rad
 
         # Create and return SkyCoord instance
-        coords = SkyCoord(self.data[self.config['ra_tag']]*unit,
-                        self.data[self.config['dec_tag']]*unit,
-                        frame=self.config['coordframe'])
+        coords = SkyCoord(self.data[self.config['ra_tag']].data*unit,
+                            self.data[self.config['dec_tag']].data*unit,
+                            frame=self.config['coordframe'])
 
         return coords
 

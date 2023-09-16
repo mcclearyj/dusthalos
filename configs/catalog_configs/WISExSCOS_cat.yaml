@@ -1,0 +1,17 @@
+  # Where is it? Leave blank or commented out to use default
+  #path: /Users/j.mccleary/Research/dusty_halos/catalogs/prep_cat_output
+  #filename: 'DoubleMasked_Masked_wiseScosPhotoz160708_redshift_cut.fits'
+  path: '/Users/j.mccleary/Research/dusty_halos/catalogs/'
+  filename: 'WISExSCOS_SCOSmask_rmzMask_cat.fits'
+  # nickname for table if we are matching to another catalog
+  tabname: 'WISExSCOS_fg_cat'
+  # WCS frame
+  coordframe: 'galactic'
+  # RA/Dec units
+  coord_units: 'deg'
+  # RA/Dec column names
+  ra_tag: 'l'
+  # Dec column name
+  dec_tag: 'b'
+  # Redshift column name
+  z_tag: 'zPhoto_Corr'

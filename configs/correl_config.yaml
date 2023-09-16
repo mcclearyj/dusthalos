@@ -1,0 +1,50 @@
+################################################################################
+#             CONFIGURATION FILE: dust_calc_runner.py                          #
+################################################################################
+# -----------------
+# Input catalogs
+# -----------------
+# cat_config: configuration file defining properties of catalog
+# NOTE: for redshifts, allowable keys are use_bin_numbers, nbins, and min_z
+
+background_catalog:
+  cat_config: 'configs/catalog_configs/redmagic_hidens_y3gold_joined.yaml'
+  redshifts: # How to deal with redshifts
+    use_bin_numbers: True # Basically just for redmagic
+    #nbins: 6
+
+background_randoms:
+  cat_config: 'configs/catalog_configs/redmagic_hidens_randoms.yaml'
+  redshifts: # How to deal with redshifts
+    use_bin_numbers: True # Basically just for redmagic
+    #nbins: 6
+
+foreground_catalog:
+  cat_config: 'configs/catalog_configs/WISExSCOS_cat.yaml'
+
+foreground_randoms:
+  cat_config: 'configs/catalog_configs/WISExSCOS_randoms.yaml'
+
+# -----------------
+# Correlation function parameters:
+# -----------------
+treecorr_params:
+  min_sep: 0.1
+  max_sep: 200.0
+  bin_size: 0.6
+  sep_units: 'arcmin'
+
+# Placeholder for dust model to use
+dust_model:
+# Placeholder for selecting bands; make it a list?
+bands:
+
+# ------------------
+# Output parameters
+# ------------------
+# Where output files and plots will get saved
+output_path: 'output/'
+# basename or prefix for assorted files to save
+output_basename: 'dust_correlation_calz'
+# Name for output figure
+figure_name: 'dust_correlation_calzetti.png'

@@ -120,7 +120,7 @@ class DustPlotter(RCParamsMixin):
         fr = self.fr
         rr = self.rr
 
-        self.rc_params()
+        self.set_rc_params()
 
         # Scale Menard theory relationship to present-day
         # Proper kpc yields answer closest to the "book answer"
@@ -326,7 +326,7 @@ class OverlapPlotter(RCParamsMixin):
             self.cat2 = cat2_name
 
 
-    def make_plot(self, outname=None, projection=None, ra_tag1=None, dec_tag1=None, coordframe1=None, 
+    def make_plot(self, outname=None, projection=None, ra_tag1=None, dec_tag1=None, coordframe1=None,
                   ra_tag2=None, dec_tag2=None, coordframe2=None):
         '''
         TO DO: need to fix catalog labels, also find a smarter way
@@ -359,10 +359,10 @@ class OverlapPlotter(RCParamsMixin):
                 sky1 = gal1.icrs
             except KeyError:
                 sky1 = SkyCoord(cat1['ra'], cat1['dec'], frame='icrs', unit=u.deg)
-        
+
         if (ra_tag2 is not None) & (dec_tag2 is not None) & (coordframe2 is not None):
             gal2 = SkyCoord(cat2[ra_tag2], cat2[dec_tag2], frame=coordframe2, unit=u.deg)
-            sky2 = gal2.icrs        
+            sky2 = gal2.icrs
         else:
             try:
                 gal2 = SkyCoord(cat2['l'], cat2['b'], frame='galactic', unit=u.deg)

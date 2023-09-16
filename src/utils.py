@@ -6,7 +6,7 @@ import healpy as hp
 import pdb
 import fitsio
 from esutil import htm
-import astropy.wcs as wcs
+#import astropy.wcs as wcs
 import yaml
 import re
 import os
