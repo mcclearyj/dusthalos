@@ -151,7 +151,7 @@ class DustPlotter(RCParamsMixin):
 
         fig, ax = plt.subplots(figsize=(10,7), tight_layout=True)
 
-        ax.plot(theory_r,av,label=f'Menard (2010) scaled to z={self.z_fg}', color='tab:red')
+        ax.plot(theory_r,av,label=f'Menard (2010) scaled to z={self.z_fg:.3f}', color='tab:red')
 
 
         ax.errorbar(dk['meanr']*scl, dk['kappa'], yerr=dk['sigma'],
