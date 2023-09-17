@@ -168,7 +168,7 @@ class DustPlotter(RCParamsMixin):
         ax.set_xscale('log')
         ax.set_yscale('log')
         ax.set_xlim(0.05*scl, 200*scl)
-        ax.set_ylim(1E-5, 0.1)
+        ax.set_ylim(1E-5, 1)
         ax.set_xlabel(f'Impact parameter ({xlabel_unit})', fontsize=16)
         ax.set_ylabel(r'$A_v$ (mag)', fontsize=16)
         ax.set_title('SCOS x redMaGiC', fontsize=16)
