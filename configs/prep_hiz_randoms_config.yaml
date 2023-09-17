@@ -31,7 +31,7 @@ paths:
 background_catalog:
   # Where is it? Leave blank or commented out to use default
   #path:
-  filename: 'prep_cat_output/DoubleMasked_y3a2_gold2.2.1_redmagic_highlum_highz.fits'
+  filename: 'y3a2_gold2.2.1_redmagic_highlum_highz_randoms.fits'
   # nickname for table if we are matching to another catalog
   tabname: 'redmagic_hiz_randoms'
   # WCS frame
@@ -73,15 +73,13 @@ foreground_catalog:
   # Where is it?
   #path:
   # What is it called ?
-  filename: 'WISExSCOS_fg_SCOSmask_cat.fits'
-  # Name for filtered (possibly joined) output catalog
-  output_name: 'rmz_highlum_hiz_MOF.fits'
+  filename: 'wiseScosPhotoz160708_redshift_cut.fits'
   # RA, Dec names + units + coordframe
   coordframe: 'galactic'
   ra_tag: 'l'
   dec_tag: 'b'
   coord_units: 'deg'
-  output_path: '/work/mccleary_group/dusty_halos/catalogs'
+  output_path: '/work/mccleary_group/dusty_halos/catalogs/prep_cat_output'
   # Are we matching? Uncomment if matching
   match:
 

@@ -18,14 +18,14 @@ from src.catalog import Catalog
 from src.cat_utils import all_config_checker
 
 def main(args):
-    config_path = args.config_path
-    config = utils.read_yaml(config_path)
+    config_file = args.config_file
+    config = utils.read_yaml(config_file)
 
     overwrite = True
     vb = True
 
     # Checking configuration consistency
-    config = cat_config_checker(config)
+    config = all_config_checker(config)
 
     # Create output directory if it doesn't exist
     if not os.path.isdir(config['paths']['output_path']):
@@ -44,7 +44,7 @@ def main(args):
     bg_redshift.create_mask_from_config(mask_config=config['background_mask'])
 
     # Apply overlapping masks
-    fg.apply_overlapping_masks(mask1=bg_redshift.mask, mask2=fg.mask)
+    #fg.apply_overlapping_masks(mask1=bg_redshift.mask, mask2=fg.mask)
 
     # Find overlapping masks
     bg_redshift.apply_overlapping_masks(mask1=bg_redshift.mask, mask2=fg.mask)
@@ -61,6 +61,6 @@ def main(args):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Runner script for Catalog operations.')
-    parser.add_argument('--config_path', type=str, help='Path to the configuration file.', required=True)
+    parser.add_argument('--config_file', type=str, help='Configuration file.', required=True)
     args = parser.parse_args()
     main(args)

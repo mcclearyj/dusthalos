@@ -45,6 +45,6 @@ bands:
 # Where output files and plots will get saved
 output_path: 'output/'
 # basename or prefix for assorted files to save
-output_basename: 'dust_correlation_calz'
+output_basename: 'dust_correlation_calzetti'
 # Name for output figure
 figure_name: 'dust_correlation_calzetti.png'

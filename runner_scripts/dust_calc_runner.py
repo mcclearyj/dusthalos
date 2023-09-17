@@ -66,8 +66,8 @@ def main(args):
     z_theory = 0.36
 
     # Read in configuration file
-    config_path = args.config_path
-    correl_config = utils.read_yaml(config_path)
+    config_file = args.config_file
+    correl_config = utils.read_yaml(config_file)
 
     # Create output directory if it doesn't exist
     if not os.path.isdir(correl_config['output_path']):
@@ -113,7 +113,7 @@ def main(args):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=\
                 'Runner script for Catalog operations.')
-    parser.add_argument('--config_path', type=str, \
+    parser.add_argument('--config_file', type=str, \
                 help='Path to the configuration file.', required=True)
     args = parser.parse_args()
     main(args)

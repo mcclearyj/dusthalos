@@ -15,10 +15,12 @@
 ###
 
 export CODEDIR='/work/mccleary_group/dusty_halos/dusthalos'
-
+export CONFIGDIR='/work/mccleary_group/dusty_halos/dusthalos/configs'
 export PATH=$PATH:'/work/mccleary_group/Software/texlive-bin/x86_64-linux'
+
 echo $PATH
 echo $PYTHONPATH
+echo $CONFIGDIR
 
 dirname="slurm_outfiles"
 if [ ! -d "$dirname" ]
@@ -44,7 +46,7 @@ conda activate dusthalos
 ### Go!
 ###
 
-python $CODEDIR/runner_scripts/cat_prep_runner.py
+python $CODEDIR/runner_scripts/cat_prep_runner.py --config_path "$CONFIGDIR/prep_hiz_randoms_config.yaml"
 
-mv dust_cat_maker.out "$dirname"
+mv slurm-dust_cat_maker.out "$dirname"
 
