@@ -8,16 +8,16 @@
 # NOTE: for redshifts, allowable keys are use_bin_numbers, nbins, and min_z
 
 background_catalog:
-  cat_config: 'configs/catalog_configs/redmagic_hidens_y3gold_joined.yaml'
+  cat_config: 'configs/catalog_configs/redmagic_hiz_y3gold_joined.yaml'
   redshifts: # How to deal with redshifts
     use_bin_numbers: True # Basically just for redmagic
-    #nbins: 6
+    #nbins: 4
 
 background_randoms:
-  cat_config: 'configs/catalog_configs/redmagic_hidens_randoms.yaml'
+  cat_config: 'configs/catalog_configs/redmagic_hiz_randoms.yaml'
   redshifts: # How to deal with redshifts
     use_bin_numbers: True # Basically just for redmagic
-    #nbins: 6
+    #nbins: 4
 
 foreground_catalog:
   cat_config: 'configs/catalog_configs/WISExSCOS_cat.yaml'
@@ -35,7 +35,8 @@ treecorr_params:
   sep_units: 'arcmin'
 
 # Placeholder for dust model to use
-dust_model:
+# Must be one of 'fitz99', 'calzetti', 'ccm89'
+dust_model: ccm89 
 # Placeholder for selecting bands; make it a list?
 bands:
 
@@ -43,8 +44,8 @@ bands:
 # Output parameters
 # ------------------
 # Where output files and plots will get saved
-output_path: 'output/'
+output_path: 'output/redmagic_hiz'
 # basename or prefix for assorted files to save
-output_basename: 'dust_correlation_calzetti'
+output_basename: 'dust_correlation_ccm89'
 # Name for output figure
-figure_name: 'dust_correlation_calzetti.png'
+figure_name: 'dust_correlation_ccm89.png'

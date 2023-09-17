@@ -1,8 +1,10 @@
 from src.plotter import OverlapPlotter
 import os
 
-cat_dir = '/Users/j.mccleary/Research/dusty_halos/catalogs/prep_cat_output'
-outdir = '/Users/j.mccleary/Research/dusty_halos/catalogs/prep_cat_output'
+#cat_dir = '/Users/j.mccleary/Research/dusty_halos/catalogs/prep_cat_output'
+#outdir = '/Users/j.mccleary/Research/dusty_halos/catalogs/prep_cat_output'
+cat_dir = '/work/mccleary_group/dusty_halos/catalogs/prep_cat_output'                                                                                                      
+outdir = '/work/mccleary_group/dusty_halos/catalogs/prep_cat_output'                                                                                                      
 cat1_basename = 'DoubleMasked_Masked_wiseScosPhotoz160708_redshift_cut.fits'
 cat2_basename = 'redmagic_hiz_y3_GOLD_JOINED_catalog.fits'
 cat3_basename = 'redmagic_hidens_y3_GOLD_JOINED_catalog.fits'

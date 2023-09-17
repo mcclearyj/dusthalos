@@ -1,7 +1,7 @@
   # Where is it? Leave blank or commented out to use default
   path: /work/mccleary_group/dusty_halos/catalogs/prep_cat_output
   # Name of file
-  filename: y3a2_gold2.2.1_redmagic_highlum_highz.fits
+  filename: redmagic_hiz_y3_GOLD_JOINED_catalog.fits
   # nickname for table if we are matching to another catalog
   tabname: 'redmagic_hiz_y3gold_joined'
   # WCS frame

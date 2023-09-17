@@ -98,7 +98,7 @@ class ReddeningCalculator:
         # Cardelli, Clayton & Mathis '89
         ccm89 = np.array([1.12224688, 0.82747095, 0.62680647, 0.47880753])
         
-        dmdp = calz
+        dmdp = ccm89
 
         gmag = np.ma.getdata(catalog['mof_cm_mag_corrected_g'])
         rmag = np.ma.getdata(catalog['mof_cm_mag_corrected_r'])
