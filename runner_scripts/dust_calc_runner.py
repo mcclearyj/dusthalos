@@ -63,6 +63,7 @@ def get_dust(fg, fgr, bg, bgr, names, correl_config):
 
 def main(args):
 
+    # This is the Menard redshift
     z_theory = 0.36
 
     # Read in configuration file
@@ -86,6 +87,7 @@ def main(args):
     bg = Correlator(correl_config, ctype='background_catalog')
     bg.load()
     bg.do_reddening()
+    bg.write_to_file()
 
     # Load background random catalog & calculate dust reddening
     bgr = Correlator(correl_config, ctype='background_randoms')

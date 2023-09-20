@@ -85,7 +85,6 @@ class FgRandoms(HpMask):
             self.rand_coords = coord.SkyCoord(ra=rand_ra * u.deg,
                                     dec=rand_dec * u.deg, frame='icrs')
 
-
         def write_outfile(self, prefix, mask2=None, overwrite=False):
             '''
             Bit ad-hoc, but write to file

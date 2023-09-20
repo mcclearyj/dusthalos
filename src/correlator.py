@@ -114,12 +114,17 @@ class Correlator:
         updated_treecorr_catalog.redshift = \
                     self.Catalog.data[wg][self.cat_config['z_tag']]
 
-        # Write catalog to file
-        outname = os.path.join(self.correl_config['output_path'],
-                  self.correl_config['output_basename'], '_treecorrcat.fits')
-        updated_treecorr_catalog.write(outname)
-
         self.treecorrCatalog = updated_treecorr_catalog
+
+    def write_to_file(self, outname=None):
+        '''
+        Save Treecorr catalog to file
+        '''
+        if outname == None:
+            outname = os.path.join(self.correl_config['output_path'],
+                    self.correl_config['output_basename'], '_treecorrcat.fits')
+        self.treecorrCatalog.write(outname)
+
 
     def load_all_cats(self):
         '''
