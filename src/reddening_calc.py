@@ -143,7 +143,7 @@ class ReddeningCalculator:
         bin_numbers = np.unique(zbin_col)
         for zb in bin_numbers:
             slice = (zbin_col == zb)
-            est, wt = self.optimal_estimator(self.data[slice])
+            this_est, this_wt = self.optimal_estimator(self.data[slice])
             mle[slice] = this_est
             mle_var[slice] = this_wt
 
