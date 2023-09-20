@@ -97,7 +97,7 @@ class ReddeningCalculator:
         calz = np.array([1.13552323, 0.77956032, 0.55082914, 0.39834168])
         # Cardelli, Clayton & Mathis '89
         ccm89 = np.array([1.12224688, 0.82747095, 0.62680647, 0.47880753])
-        
+
         dmdp = ccm89
 
         gmag = np.ma.getdata(catalog['mof_cm_mag_corrected_g'])
@@ -143,9 +143,9 @@ class ReddeningCalculator:
         bin_numbers = np.unique(zbin_col)
         for zb in bin_numbers:
             slice = (zbin_col == zb)
-            this_mle, this_var = self.optimal_estimator(self.data[slice])
-            mle[slice] = this_mle
-            mle_var[slice] = this_var
+            est, wt = self.optimal_estimator(self.data[slice])
+            mle[slice] = this_est
+            mle_var[slice] = this_wt
 
         self.mle = mle
         self.mle_var = mle_var
