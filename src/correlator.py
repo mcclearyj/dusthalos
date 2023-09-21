@@ -122,7 +122,7 @@ class Correlator:
         '''
         if outname == None:
             outname = os.path.join(self.correl_config['output_path'],
-                    self.correl_config['output_basename'], '_treecorrcat.fits')
+                    self.correl_config['output_basename']+'_treecorrcat.fits')
         self.treecorrCatalog.write(outname)
 
 
