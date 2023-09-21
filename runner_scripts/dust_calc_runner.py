@@ -28,7 +28,7 @@ def make_names(correl_config):
              'dr_outfile': os.path.join(outdir, base + '_bg_randoms.fits'),
              'fr_outfile': os.path.join(outdir, base + '_fg_randoms.fits'),
              'rr_outfile': os.path.join(outdir, base + '_fgxbg_randoms.fits'),
-             'fig_output': os.path.join(outdir, correl_config['figure_name'])
+             'fig_output': os.path.join(outdir, base + '_figure.png')
              }
 
     return utils.AttrDict(names)

@@ -1,9 +1,10 @@
 import numpy as np
 import pdb
+from src.extinction_model import ExtinctionModel
 
 class ReddeningCalculator:
 
-    def __init__(self, data, redshift_config=None):
+    def __init__(self, data, redcalc_config=None):
         '''
         Do reddening calculation
         '''
@@ -14,41 +15,33 @@ class ReddeningCalculator:
         self.z_tag = None
         self.use_bin_numbers = False
 
-        self.load_config(redshift_config)
+        self.load_config(redcalc_config)
 
-    def load_config(self, redshift_config=None):
+    def load_config(self, redcalc_config=None):
         '''
         redshift config should have all the parameters keywords
         '''
-
         # Resonable defaults
-        default_config = {'nbins': 7,
+        base_config = {'nbins': 7,
                           'z_tag': 'z',
                           'use_bin_numbers': False,
-                          'dust_model': 'ccm89',
-                          'bandpasses': None
+                          'dust_params': None,
+                          'bandpasses': None,
                           }
 
-        # If you start adding others, they won't do much
-        allowed_keys = default_config.keys()
-
-        # Set default
-        if redshift_config == None:
-            self.config = default_config
-
-        else:
-            config_keys = redshift_config.keys()
-
+        # Overwrite defaults, append non-standard keys b/c who cares.
+        if redcalc_config != None:
+            config_keys = redcalc_config.keys()
             for key in config_keys:
-                # Overwrite defaults, append non-standard keys b/c who cares.
-                if key not in allowed_keys:
-                    print(f'"{key}" is not a standard ReddeningCalculator config key:')
-                    print(f'\t {allowed_keys}')
-                default_config[key] = redshift_config[key]
+                if key not in base_config.keys()s:
+                    print(f'Warning: "{key}" is not a standard ',
+                            'ReddeningCalculator config key:')
+                    print(f'\t {base_config.keys()}')
+                base_config[key] = redcalc_config[key]
 
-            self.config = default_config
+        self.config = base_config
 
-        print(f'Using ReddeningCalculator configuration values:')
+        print(f'\n ReddeningCalculator configuration values:')
         print(f'\t {default_config}')
 
     def preprocess_catalog(self):
@@ -56,7 +49,6 @@ class ReddeningCalculator:
         If there are NaNs or masked values or whatever, clean them out of the
         catalog and be noisy about it.
         '''
-
         # Placeholder bandholder
         bands = ['mof_cm_mag_corrected_g', 'mof_cm_mag_corrected_r',
                 'mof_cm_mag_corrected_i', 'mof_cm_mag_corrected_z']
@@ -68,7 +60,9 @@ class ReddeningCalculator:
         # Pick out only the good entries!
         for band in bands:
             band_mag = np.ma.getdata(self.data[band])
-            band_bool = (band_mag > -9999) & (band_mag != np.nan)
+            band_bool = (band_mag > -9999) & \
+                        (band_mag != np.nan) & \
+                        (band_mag < 30)
             wg *= band_bool
 
         # percent of galaxies that failed
@@ -90,7 +84,6 @@ class ReddeningCalculator:
             - make bandpass names configurable
             - be able to select a specific dust model
         '''
-
         # Fitzpatrick99
         fitz99 = np.array([1.12150099, 0.77164321, 0.57725486, 0.45259124])
         # Calzetti:
@@ -117,7 +110,7 @@ class ReddeningCalculator:
 
         return est, wt
 
-    def calc_reddening(self):
+    def run(self):
         '''
         zmin: minimum redshift of galaxies to consider (default None)
         nbins: number of bins for color estimation
@@ -126,10 +119,10 @@ class ReddeningCalculator:
         print(f'Removing catalog entries with NaN & sentinel values')
         self.preprocess_catalog()
 
-        print(f'Beginning background catalog reddening calculation...')
+        print(f'Make dust extinction model')
 
-        nbins = self.config['nbins']
-        z_tag = self.config['z_tag']
+
+        print(f'Beginning background catalog reddening calculation...')
 
         mle = np.zeros(len(self.data))
         mle_var = np.zeros(len(self.data))
@@ -137,10 +130,14 @@ class ReddeningCalculator:
         if self.config['use_bin_numbers'] == True:
             zbin_col = self.data['bin_number']
         else:
-            z_hist = np.histogram(self.data[z_tag], bins=nbins)
-            zbin_col = np.digitize(self.data[z_tag], bins=z_hist[1])
+            # Make a "bin number" on the fly!
+            z_hist = np.histogram(self.data[self.config['z_tag']],
+                                    bins=self.config['nbins'])
+            zbin_col = np.digitize(self.data[self.config['z_tag']],
+                                    bins=z_hist[1])
 
         bin_numbers = np.unique(zbin_col)
+
         for zb in bin_numbers:
             slice = (zbin_col == zb)
             this_est, this_wt = self.optimal_estimator(self.data[slice])
