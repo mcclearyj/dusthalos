@@ -87,29 +87,35 @@ class Correlator:
         Call ReddeningCalculator, run it
         '''
         ctype = self.ctype
+
         # Additional checker: make sure we have redshift
         if 'redshifts' not in self.correl_config[ctype].keys():
             raise KeyError('correl_config missing parameter group "redshifts"')
         else:
-             z_config = self.correl_config[ctype]['redshifts']
+             rc_config = self.correl_config[ctype]['redshifts']
 
         if 'z_tag' not in self.cat_config.keys():
             raise KeyError('catalog_config missing parameter "z_tag" ')
         else:
-            z_config['z_tag'] = self.cat_config['z_tag']
+            rc_config['z_tag'] = self.cat_config['z_tag']
 
-        # Instantialize ReddeningCalculator
-        redcalc = ReddeningCalculator(self.Catalog.data, redshift_config=z_config)
-        redcalc.calc_reddening()
+        # Grab dust parameters
+        dust_model_config = self.correl_config['dust_params']
+        rc_config['dust_params'] = dust_model_config
+
+        # Instantiate ReddeningCalculator
+        reddening_calc = ReddeningCalculator(self.Catalog.data,
+                                        redcalc_config=rc_config)
+        reddening_calc.run()
 
         # Grab indices with clean photometry
-        wg = redcalc.good_indices
+        wg = reddening_calc.good_indices
 
         # I can't figure out a good way to organize treecorr.Catalog creation
         updated_treecorr_catalog = treecorr.Catalog(ra=self.coords[wg].ra.deg,
                                     dec=self.coords[wg].dec.deg, ra_units='deg',
-                                    dec_units='deg', k=redcalc.mle,
-                                    w=redcalc.mle_var)
+                                    dec_units='deg', k=reddening_calc.mle,
+                                    w=reddening_calc.mle_var)
 
         updated_treecorr_catalog.redshift = \
                     self.Catalog.data[wg][self.cat_config['z_tag']]
