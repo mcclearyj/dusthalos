@@ -69,7 +69,7 @@ class ReddeningCalculator(ExtinctionModel):
             band_mag = np.ma.getdata(self.data[band])
             band_bool = (band_mag > -9999) & \
                         (band_mag != np.nan) & \
-                        (band_mag < 30)
+                        (band_mag < 28)
             wg *= band_bool
 
         # percent of galaxies that failed
@@ -134,16 +134,18 @@ class ReddeningCalculator(ExtinctionModel):
             z_hist = np.histogram(self.data[self.redcalc_config['z_tag']],
                                     bins=self.redcalc_config['nbins'])
             zbin_col = np.digitize(self.data[self.redcalc_config['z_tag']],
-                                    bins=z_hist[1])
+                                    bins=z_hist[1], right=True)
 
         bin_numbers = np.unique(zbin_col)
 
-        for zb in bin_numbers:
-            slice = (zbin_col == zb)
-            this_est, this_wt = self.optimal_estimator(self.data[slice])
-            mle[slice] = this_est
-            mle_var[slice] = this_wt
-
+        try:
+            for zb in bin_numbers:
+                slice = (zbin_col == zb)
+                this_est, this_wt = self.optimal_estimator(self.data[slice])
+                mle[slice] = this_est
+                mle_var[slice] = this_wt
+        except:
+            pdb.set_trace()
         self.mle = mle
         self.mle_var = mle_var
 
