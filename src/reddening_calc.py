@@ -2,7 +2,7 @@ import numpy as np
 import pdb
 from src.extinction_model import ExtinctionModel
 
-class ReddeningCalculator:
+class ReddeningCalculator(ExtinctionModel):
 
     def __init__(self, data, redcalc_config=None):
         '''
@@ -15,13 +15,20 @@ class ReddeningCalculator:
         self.z_tag = None
         self.use_bin_numbers = False
 
+        # dust config should be in here now too
         self.load_config(redcalc_config)
 
-    def load_config(self, redcalc_config=None):
+        super().__init__(dmconfig = redcalc_config['dust_params'])
+
+    def load_config(self, redcalc_config):
         '''
         redshift config should have all the parameters keywords
         '''
-        # Resonable defaults
+        # Resonable redshift defaults, not sure about dust params
+        #default_dust_pars = {'model': 'calzetti00', 'R': 3.1, 'A_V': 1,
+        #                    'wavelengths': [4808.49, 6417.65, 7814.58, 9168.85]}
+        # No, it should fail loudly.
+
         base_config = {'nbins': 7,
                           'z_tag': 'z',
                           'use_bin_numbers': False,
@@ -33,16 +40,16 @@ class ReddeningCalculator:
         if redcalc_config != None:
             config_keys = redcalc_config.keys()
             for key in config_keys:
-                if key not in base_config.keys()s:
+                if key not in base_config.keys():
                     print(f'Warning: "{key}" is not a standard ',
                             'ReddeningCalculator config key:')
                     print(f'\t {base_config.keys()}')
                 base_config[key] = redcalc_config[key]
 
-        self.config = base_config
+        self.redcalc_config = base_config
 
         print(f'\n ReddeningCalculator configuration values:')
-        print(f'\t {default_config}')
+        print(f'\t {base_config}')
 
     def preprocess_catalog(self):
         '''
@@ -69,9 +76,9 @@ class ReddeningCalculator:
         pfail = 100-(np.count_nonzero(wg) / catlen * 100)
 
         # How many failed?
-        print(f'RedshiftCalc: {np.count_nonzero(wg)}/{catlen} galaxies',
+        print(f'ReddeningCalc: {np.count_nonzero(wg)}/{catlen} galaxies',
               f'({100-pfail:.1f}%) have good photometry')
-        print(f'RedshiftCalc: removing {pfail:.1f}% of galaxies from data')
+        print(f'ReddeningCalc: removing {pfail:.1f}% of galaxies from data')
         print('')
 
         self.data = self.data[wg]
@@ -84,14 +91,7 @@ class ReddeningCalculator:
             - make bandpass names configurable
             - be able to select a specific dust model
         '''
-        # Fitzpatrick99
-        fitz99 = np.array([1.12150099, 0.77164321, 0.57725486, 0.45259124])
-        # Calzetti:
-        calz = np.array([1.13552323, 0.77956032, 0.55082914, 0.39834168])
-        # Cardelli, Clayton & Mathis '89
-        ccm89 = np.array([1.12224688, 0.82747095, 0.62680647, 0.47880753])
-
-        dmdp = ccm89
+        dmdp = self.dmdp
 
         gmag = np.ma.getdata(catalog['mof_cm_mag_corrected_g'])
         rmag = np.ma.getdata(catalog['mof_cm_mag_corrected_r'])
@@ -120,20 +120,20 @@ class ReddeningCalculator:
         self.preprocess_catalog()
 
         print(f'Make dust extinction model')
-
+        self.get_dust_model()
 
         print(f'Beginning background catalog reddening calculation...')
 
         mle = np.zeros(len(self.data))
         mle_var = np.zeros(len(self.data))
 
-        if self.config['use_bin_numbers'] == True:
+        if self.redcalc_config['use_bin_numbers'] == True:
             zbin_col = self.data['bin_number']
         else:
             # Make a "bin number" on the fly!
-            z_hist = np.histogram(self.data[self.config['z_tag']],
-                                    bins=self.config['nbins'])
-            zbin_col = np.digitize(self.data[self.config['z_tag']],
+            z_hist = np.histogram(self.data[self.redcalc_config['z_tag']],
+                                    bins=self.redcalc_config['nbins'])
+            zbin_col = np.digitize(self.data[self.redcalc_config['z_tag']],
                                     bins=z_hist[1])
 
         bin_numbers = np.unique(zbin_col)
@@ -151,7 +151,7 @@ class ReddeningCalculator:
         '''
         Placeholder for function that can return a treecorr object with k, w if desired!
         '''
-        self.tccat = treecorr.Catalog(ra=self.coords.ra.deg,
+        self.treecorr_cat = treecorr.Catalog(ra=self.coords.ra.deg,
                             dec=self.coords.dec.deg, ra_units='deg',
                             dec_units='deg', k=redcalc.mle,
                             w=redcalc.mle_var)
