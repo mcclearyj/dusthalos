@@ -316,12 +316,12 @@ class OverlapPlotter(RCParamsMixin):
 
 
         if type(cat1_name)==str:
-            self.cat1 = Table.read(cat1_name, memmap=False)
+            self.cat1 = Table.read(cat1_name, memmap=True)
         else:
             self.cat1 = cat1_name
 
         if type(cat2_name)==str:
-            self.cat2 = Table.read(cat2_name, memmap=False)
+            self.cat2 = Table.read(cat2_name, memmap=True)
         else:
             self.cat2 = cat2_name
 
