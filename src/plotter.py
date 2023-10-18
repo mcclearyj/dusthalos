@@ -316,12 +316,12 @@ class OverlapPlotter(RCParamsMixin):
 
 
         if type(cat1_name)==str:
-            self.cat1 = Table.read(cat1_name)
+            self.cat1 = Table.read(cat1_name, memmap=False)
         else:
             self.cat1 = cat1_name
 
         if type(cat2_name)==str:
-            self.cat2 = Table.read(cat2_name)
+            self.cat2 = Table.read(cat2_name, memmap=False)
         else:
             self.cat2 = cat2_name
 
@@ -385,8 +385,12 @@ class OverlapPlotter(RCParamsMixin):
 
         # Create a plot instance (can also use axes class)
         # Note: aitoff projection apparently avoids mollweide's extreme edge distortions
+        if projection == 'mollweide':
+            figsize=(11.5, 6)
+        else:
+            figsize=(11.5, 8)
 
-        fig, ax = plt.subplots(1,1, figsize=(11.5, 8), tight_layout=True, \
+        fig, ax = plt.subplots(1,1, figsize=figsize, tight_layout=True, \
                         subplot_kw=dict(projection=projection))
         ax.grid(True)
         ax.set_xlabel('RA', fontsize=14); ax.set_ylabel('Dec', fontsize=14)
