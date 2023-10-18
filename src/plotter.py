@@ -385,15 +385,15 @@ class OverlapPlotter(RCParamsMixin):
 
         # Create a plot instance (can also use axes class)
         # Note: aitoff projection apparently avoids mollweide's extreme edge distortions
-        if projection == 'mollweide':
+        if projection in ['mollweide', 'aitoff']:
             figsize=(11.5, 6)
         else:
-            figsize=(11.5, 8)
+            figsize=(10, 7)
 
         fig, ax = plt.subplots(1,1, figsize=figsize, tight_layout=True, \
                         subplot_kw=dict(projection=projection))
         ax.grid(True)
-        ax.set_xlabel('RA', fontsize=14); ax.set_ylabel('Dec', fontsize=14)
+        ax.set_xlabel('RA'); ax.set_ylabel('Dec')
 
         # Plot the points - it takes a long time for them all to show up!
         ax.plot(sky1.ra.wrap_at('180d').radian, sky1.dec.radian, '.',
@@ -401,7 +401,7 @@ class OverlapPlotter(RCParamsMixin):
         if (sky2 is not None):
             ax.plot(sky2.ra.wrap_at('180d').radian, sky2.dec.radian, '.',
                         markersize=0.02, label=label2, color='xkcd:neon red')
-        ax.legend(markerscale=400, loc='upper right', fontsize=14)
+        ax.legend(markerscale=400, loc='upper right')
         fig.tight_layout()
 
         fig.savefig(outname)
