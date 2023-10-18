@@ -396,7 +396,7 @@ class OverlapPlotter(RCParamsMixin):
                     markersize=0.02, label=label1, color='xkcd:bluegrey')
         if (sky2 is not None):
             ax.plot(sky2.ra.wrap_at('180d').radian, sky2.dec.radian, '.',
-                        markersize=0.02, label=label2, color='xkcd:hot pink')
+                        markersize=0.02, label=label2, color='xkcd:neon red')
         ax.legend(markerscale=400, loc='upper right', fontsize=14)
         fig.tight_layout()
 
