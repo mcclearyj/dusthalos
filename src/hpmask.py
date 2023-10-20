@@ -97,9 +97,9 @@ class HpMask:
 
         # Grab coordinates
         if self.coordframe == 'galactic':
-            lon = coords.l.deg; lat = coords.b.deg
+            lon = coords.galactic.l.deg; lat = coords.galactic.b.deg
         else:
-            lon = coords.ra.rad; lat = coords.dec.rad
+            lon = coords.icrs.ra.rad; lat = coords.icrs.dec.rad
 
         # Get HEALPixel for each RA, Dec
         hpInd = hp.ang2pix(self.NSIDE, lon, lat, lonlat=lonlat)

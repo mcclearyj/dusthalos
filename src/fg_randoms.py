@@ -83,7 +83,7 @@ class FgRandoms(HpMask):
                                     lonlat=True, nest=False)
 
             self.rand_coords = coord.SkyCoord(ra=rand_ra * u.deg,
-                                    dec=rand_dec * u.deg, frame='icrs')
+                                         dec=rand_dec * u.deg, frame='icrs')
 
         def write_outfile(self, prefix, mask2=None, overwrite=False):
             '''
@@ -127,6 +127,10 @@ class FgRandoms(HpMask):
 
             # Generate random coodinates with ~appx. the right number of galaxies
             self._grab_random_coords(nrand=nrand)
+
+            # Apply own mask!
+            seen = self.apply_mask(coords=self.rand_coords)
+            self.rand_coords = self.rand_coords[seen]
 
             # Then write to file
             self.write_outfile(prefix='FgMask_randoms_', overwrite=True)
