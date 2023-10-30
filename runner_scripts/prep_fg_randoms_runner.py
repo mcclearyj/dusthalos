@@ -17,7 +17,7 @@ config = all_config_checker(config)
 fgr = FgRandoms(config=config['foreground_mask'])
 
 # Make randoms on the sphere
-fgr.make_fg_randoms(nrand=3e7)
+fgr.make_fg_randoms(nrand=1e6)
 
 # Instatiate background mask
 filepath =  os.path.join(config['background_mask']['path'], \
