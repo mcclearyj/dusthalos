@@ -144,8 +144,10 @@ class ReddeningCalculator(ExtinctionModel):
                 this_est, this_wt = self.optimal_estimator(self.data[slice])
                 mle[slice] = this_est
                 mle_var[slice] = this_wt
-        except:
-            pdb.set_trace()
+        except np.linalg.LinAlgError:
+            # Probably too few galaxies ended up in that bin
+            mle[slice] = 0
+            mle_var[slice] = 1
         self.mle = mle
         self.mle_var = mle_var
 
