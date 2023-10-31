@@ -128,13 +128,15 @@ class ReddeningCalculator(ExtinctionModel):
         mle_var = np.zeros(len(self.data))
 
         if self.redcalc_config['use_bin_numbers'] == True:
+            print("using bin numbers for redshifts")
             zbin_col = self.data['bin_number']
         else:
             # Make a "bin number" on the fly!
+            print("Making redshift bins")
             z_hist = np.histogram(self.data[self.redcalc_config['z_tag']],
                                     bins=self.redcalc_config['nbins'])
             zbin_col = np.digitize(self.data[self.redcalc_config['z_tag']],
-                                    bins=z_hist[1], right=True)
+                                    bins=z_hist[1], right=False)
 
         bin_numbers = np.unique(zbin_col)
 
@@ -146,8 +148,9 @@ class ReddeningCalculator(ExtinctionModel):
                 mle_var[slice] = this_wt
         except np.linalg.LinAlgError:
             # Probably too few galaxies ended up in that bin
-            mle[slice] = 0
-            mle_var[slice] = 1
+            error = f'Too few galaxies in bin {zb}: {np.count_nonzero(slice)}'
+            raise BaseException(error)
+            
         self.mle = mle
         self.mle_var = mle_var
 
