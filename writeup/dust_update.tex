@@ -6,7 +6,8 @@
 \usepackage{graphicx}				% Use pdf, png, jpg, or eps§ with pdflatex; use eps in DVI mode
 								% TeX will automatically convert eps --> pdf in pdflatex		
 \usepackage{amssymb}
-
+\usepackage{hyperref}
+\usepackage{comment}
 %SetFonts
 
 %SetFonts
@@ -18,62 +19,305 @@
 
 \begin{document}
 \maketitle
-\section{Overview}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%
+%%% SECTION: Overview
+%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Executive Summary}
 
 Never one to give up completely, I have been pushing on this project as much as I can. Over the last year or so, here is what I have been able to do: 
 \begin{enumerate}
-\item Significantly refactor analysis code repository, making it more modular and robust. 
-\item Weed out a few bugs in the 
-\end{enumerate}
-The following remains my 
-
-\section{Code flow}
-As stated above, I have endeavored to make \texttt{dusthalos} more useable and robust than it was before, incorporating use of configuration files (not hardcoded numbers) nterfacing with code via configs, separating runner scripts from class definitions, etc. Also, when creating catalogs, 
-
-\subsection{Background catalog creation}
-The basic workflow is: 
-\begin{enumerate}
-\item Load in the HEALpix masks of foreground and background catalogs. 
-\item Keep only those objects that lie in the intersection of both HEALPix masks. 
-\item If needed, join the background redshift catalog with a photometric catalog.
-\item If needed, create a foreground random catalog. 
-\item Save both to file.
-
+\item Significantly refactor the analysis code repository, making it more modular and robust. The lion's share of my efforts were spent here but this also proving to be a worthwhile investment. 
+\item Weed out numerous bugs in the original calculation, such as incorrectly scaling the M\'{e}nard (2010) $A_V$ curve when creating output plots and improper handling of survey masks defined in galactic coordinates. 
+\item Calculate the extended reddening signal using DES Y3 GOLD and redMaGiC catalogs; my first results were based on DES Y1. Rest assured, our extended reddening signal hasn't disappeared.
+\item Start setting up a calculation using the Y3 DES MAGLIM catalog. 
+\item Identify some interesting literature results that support our findings. 
+\item Submitted an abstract to an Aspen Center for Physics Winter Conference on dust \url{https://astro.ufl.edu/aspendust2024/}. It was accepted and I am giving a talk :)  
 \end{enumerate}
 
-\subsubsection{Mask handling}
+The new extended reddening profiles, computed using the SuperCOSMOSxWISE as a foreground catalog and the two redMaGiC catalogs for backgrounds, are shown in Figures \ref{fig:scos_rmz_hidens} and \ref{fig:scos_rmz_hiz}. The signal is very much still there, which is great, and does not appear to change with the choice of dust model (Figure XXX). However, the amplitude shifts depending on the number of redshift bins into which the background galaxy catalog is divided; this is consistent with what I noticed in our first iteration (Figure \ref{fig:old}). The shift is puzzling but may not be as significant as it appears; the error bars on the correlations are based on the default treecorr variances, which the code documentation states are underestimated.
+
+Having established some encouraging initial results, I have set out to 
+
+In the rest of this little report, I will present some more detail on this points which you may 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%
+%%% SECTION: ALGORITHM OVERVIEW
+%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Reminder: optimal estimator and correlation calculation}
+
+In Eric's original idea, a vector to calculate excess (non-cosmological) reddening was derived ... For a given dust model, e.g., \href{https://extinction.readthedocs.io/en/latest/api/extinction.fitzpatrick99.html}, there are predictions for extinction 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%
+%%% SECTION: CODE FLOW
+%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Code flow}\label{sec:code}
+
+As stated above, I have tried to make \texttt{dusthalos} more useable and robust than it was before, interfacing with code using configuration files, eliminating hardcoded numbers and column names, separating runner scripts from class definitions, etc. Relatedly, the code now handles input galaxy catalogs much more reasonably: preprocessing is now handled separately from reddening and correlation calculations (rather than one giant mess to do it all), and any processing steps are recorded and timestamped in the headers of output catalogs. The idea here was to simplify switching in different foreground-background catalogs rather than having to change the dust calculation code each time (!!).   
+
+
+\subsection{Catalog processing}\label{sec:code:catalogs}
+The high-level workflow is: 
+
+ \begin{itemize}
+    \item Load in the foreground and background catalogs and their 
+    respective HEALpix survey masks.
+    \item Apply survey masks to the catalogs, keeping only those galaxies that 
+    lie in the intersection of both HEALPix masks. 
+    \item If needed, create a random galaxy catalog. 
+    \item If needed, join the background redshift catalog to a photometry catalog.
+    \item Save to file.
+ \end{itemize}
+
+\subsubsection{Mask handling}\label{sec:code:masks}
+
+Survey masks are manipulated with the HpMask class defined in \texttt{hp\_mask.py}. 
+
+ \begin{figure}
+    \begin{center}
+    \includegraphics[width=0.65\textwidth]{figures/full_scos_hilum_hiz_overlap_mollweide_v2.png}\\
+    \vspace{1ex}
+    \includegraphics[width=0.65\textwidth]{figures/masked_scos_hilum_hiz_overlap_mollweide_v2.png}
+    \caption{Sky coverage of two catalogs used in this analysis: WISExSuperCOSMOS
+     (foreground, grey points) and the high-luminosity high-redshift redMaGiC 
+     galaxy catalog (background, red points). The top row shows the overlap 
+     between the full WISExSuperCOSMOS catalog and the redMaGiC catalog; the 
+     bottom row shows the overlap of the two catalogs after masking.}
+    \label{fig:overlap1}
+    \end{center}
+ \end{figure}
+
+ \begin{figure}
+    \begin{center}
+    \includegraphics[width=0.49\textwidth]{figures/full_scos_hilum_hiz_overlap_rectilin.png} 
+    \includegraphics[width=0.49\textwidth]{figures/masked_scos_hilum_hiz_overlap_rectilin.png}
+    \caption{Same as Figure \ref{fig:overlap1}, but in rectilinear projection.}
+    \label{fig:overlap2}
+    \end{center}
+ \end{figure}
+
+
+ \begin{figure}
+    \begin{center}
+    \includegraphics[width=0.65\textwidth]{figures/full_scos_randoms_aitoff.png}\\
+    \includegraphics[width=0.65\textwidth]{figures/masked_scos_randoms_aitoff.png}
+    \caption{Sky coverage of the WISExSuperCOSMOS random galaxy catalog generated 
+    following the procedure in Section \ref{sec:code:randoms}. The top panel shows 
+    the randoms after applying the WISExSuperCOSMOS survey mask; the bottom row 
+    shows the points remaining after applying the redMaGiC mask.}
+    \label{fig:overlap3}
+    \end{center}
+ \end{figure}
+
+\subsubsection{Creating random catalogs}\label{sec:code:randoms}
+
+Any analysis that uses two-point correlation functions needs to distinguishing random correlations from the real signal of interest; this is usually accomplished with random catalogs (as you both know better than I). In cases where random catalogs are not available, I developed a script to generate random points using the survey HEALPix mask. 
+
+\subsubsection{Adding photometry to background galaxy catalogs}\label{sec:code:photom}
+The redMaGiC catalogs (both real and random) have positions and redshifts, but not magnitudes. To obtain 
+colors, I join them with their counterparts in the Y3 GOLD catalog on the 
+\texttt{COADD\_OBJECT\_ID} parameter. The random galaxy catalog obviously doesn't 
+have a corresponding entry in the GOLD catalog, so instead I match randomly. This might be a bad call, because there is (obviously) a color gradient with redshift (see Figure \ref{fig:colorredshift}). \textbf{This is on my to-do list for randoms.}
 
 \begin{figure}
 \begin{center}
-\includegraphics[width=0.65\textwidth]{figures/full_scos_hilum_hiz_overlap_mollweide_v2.png}\\
-\vspace{1ex}
-\includegraphics[width=0.65\textwidth]{figures/masked_scos_hilum_hiz_overlap_mollweide_v2.png}
-\caption{Sky coverage of two catalogs used in this analysis: WISExSuperCOSMOS (foreground, grey points) and the high-luminosity high-redshift redMaGiC galaxy catalog (background, red points). The top row shows the overlap between the full WISExSuperCOSMOS catalog and the redMaGiC catalog; the bottom row shows the overlap of the two catalogs after masking.}
-\label{fig:overlap1}
+\includegraphics[width=0.75\textwidth]{figures/color_redshift_redmagic.png}
+\caption{Color-redshift relation for the two redMaGiC catalogs (high density and high-luminosity high-redshift).}
+\label{fig:colorredshift}
 \end{center}
 \end{figure}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%
+%%% SECTION: CALCULATION FLOW
+%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Extinction and correlation calculation}
+
+Below, you may find some additional details about the actual calculations. 
+
+\subsubsection{Extinction models}
+Made it easier to toggle between dust (extinction) models and number of redshift bins in which to calculate $A_V$. 
+
+Models are generated using this package (extinction)
+
+All extinction models require wavelengths at which to compute the extinction. The Virtual Observatory's Filter Profile Service (a thousand blessings be upon them) provide reference wavelengths for the DECam filter set shown in Table \ref{tab:filters}. I chose to calculate the extinction at the reference wavelength $\lambda_{\rm ref}$ for each filter, as it splits the difference between the other two measures. The \texttt{extinction} extinction models also require values of $R_V$ and/or $A_V$ to be set. The values of $R_V$ in the literature fluctuate significantly from galaxy to galaxy (possibly redshift as well), and different $R_V$s will produce different extinction profiles. In the absence of a compelling reason to do otherwise, I kept the default values of $R_V = 3.1$ (Milky Way-type dust) and $A_V = 1$. 
+
+The resulting extinctions in the DECam bandpasses are reproduced below: 
+
+\begin{verbatim}
+
+wavelengths = np.array([3814.33, 4808.49, 6417.65, 7814.58, 9168.85]
+
+# Calzetti 
+extinction.calzetti00(wavelengths, 1, 3.1)
+array([1.54676056, 1.19281617, 0.79717052, 0.54869537, 0.38008871])
+
+# FM07
+extinction.fm07(wavelengths, 1)
+array([1.48101852, 1.19140088, 0.79964378, 0.57071627, 0.42573283])
+
+# O'Donnell 1994
+extinction.odonnell94(wavelengths, 1, 3.1)
+array([1.47801728, 1.19824809, 0.83241072, 0.63597929, 0.46457349])
+
+# CCM 89
+extinction.ccm89(wavelengths, 1, 3.1)
+array([1.51762325, 1.18103986, 0.8402129 , 0.62463243, 0.46457349])
+
+\end{verbatim}
+
+\begin{comment}
+keep = (cat['mof_flags']==0) & (cat[`flags_badregion']==0) & \
+	(cat[`mof_flux_g']>0) & (cat[`mof_flux_r']>0) & \
+	(cat[`mof_flux_i']>0) & (cat[`mof_flux_z']>0) & \
+          (bg_rmz['ZREDMAGIC']>zmin)
+
+\end{comment}
+
+\begin{table}
+    \centering
+    \begin{tabular}{|c|c|c|c|}
+        \hline
+        Filter & $\lambda_{\rm ref}$ & $\lambda_{\rm mean}$ & $\lambda_{\rm eff}$ \\
+        \hline
+        u & 3814.33 & 3821.68 & 3856.88 \\
+        \hline
+        g & 4808.49 & 4862.24 & 4769.90 \\
+        \hline
+        r & 6417.65 & 6460.63 & 6370.44 \\
+        \hline
+        i & 7814.58 & 7850.77 & 7774.30 \\
+        \hline
+        z & 9168.85 & 9199.28 & 9154.88 \\
+        \hline
+    \end{tabular}
+    \caption{Reference wavelengths for the DECam filters used in this analysis. The $u$ filter is included for reference only, as the Y3GOLD catalog does not provide $u$-band magnitudes.}
+    \label{tab:filters}
+\end{table}
+
+
+\subsubsection{Additional quality cuts}
+
+Besides the Y3\_GOLD query reproduced above, the following selections are imposed on the data before the calculation proceeds:
+
+\section{Catalogs} 
+The results presented here are made using the WISExSCOS photometric redshift catalog\footnote{\href{http://ssa.roe.ac.uk/WISExSCOS.html}} as a foreground and the Dark redMaGiC catalogs as backgrounds. The redMaGiC galaxy catalogs are divided into two samples: th
+\begin{verbatim}
+flags_footprint = 1 AND flags_foreground = 0 AND (flags_gold & 1111110) = 0 AND (flags_ badregions& 110) = 0 and extended_class_mash_mof = 3 AND MOF_CM_MAG_CORRECTED_I = [18,22.5] 
+\end{verbatim}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%
+%%% SECTION: INITIAL RESULTS
+%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Initial results}
+
+\subsection{Extinction estimator histograms}
+
+Following the example of our the ADAP proposal, Figure \ref{fig:avhist} shows extinction estimator values for the two redMaGiC galaxy 
+catalogs; accompanying summary statistics for the distributions are shown in Table \ref{tab:avstats}.  
 
 \begin{figure}
 \begin{center}
-\includegraphics[width=0.49\textwidth]{figures/full_scos_hilum_hiz_overlap_rectilin.png} 
-\includegraphics[width=0.49\textwidth]{figures/masked_scos_hilum_hiz_overlap_rectilin.png}
-\caption{Same as Figure \ref{fig:overlap1}, but in rectilinear projection.}
-\label{fig:overlap2}
+\includegraphics[width=0.47\textwidth]{figures/hilum_hiz_Av_hist_CCM89.png}
+\includegraphics[width=0.47\textwidth]{figures/hidens_Av_hist.png}
+\caption{Histogram of $A_V$ (the optimal estimator) for the redMaGiC catalogs. Estimator values for the high-luminosity high-redshift sample (calculated in two and four redshift bins) are on the left; the distribution of the estimator values for the high-density sample (calculated with 3 and 8 redshift bins) are on the right. The dotted black lines mark $A_V = 0$.}
+\label{fig:avhist} 
 \end{center}
 \end{figure}
 
+In both cases ... 
 
-\begin{figure}
-\begin{center}
-\includegraphics[width=0.65\textwidth]{figures/overlap_random_rectilin.png}
-\caption{Sky coverage of the WISExSuperCOSMOS random galaxy catalog generated following used in this analysis: WISExSuperCOSMOS (foreground, grey points) and the high-luminosity high-redshift redMaGiC galaxy catalog (background, red points). The top row shows the overlap between the full WISExSuperCOSMOS catalog and the redMaGiC catalog with Mollweide (left) and rectilinear (right) projections; the bottom row shows the overlap of the two catalogs after masking.}
-\label{fig:overlap3}
-\end{center}
+\begin{table}\label{tab:avstats}
+    \centering
+    \begin{tabular}{|l|c|c|c|c|c|c|}
+        \hline
+        Sample & $n_{\rm obs}$ & Mean ($\times 10^{-2}$) & Median ($\times 10^{-2}$) & Std. Dev. & Skewness & Kurtosis \\
+        \hline
+        hilum\_hiz 2 & 811668 & $2.1 \times 10^{-2}$ & $-5.0 \times 10^{-2}$ & 0.88 & 0.25 & -0.31 \\
+        \hline
+        hilum\_hiz 4 & 811905 & $5.6 \times 10^{-2}$ & $-1.9 \times 10^{-2}$ & 0.86 & 0.08 & -0.32 \\
+        \hline
+        hidens 3 & 1763885 & $-3.7 \times 10^{-2}$ & $-1.8 \times 10^{-2}$ & 0.81 & 0.14 & -0.19 \\
+        \hline
+        hidens 8 & 1764435 & $-1.1 \times 10^{-2}$ & $-1.6 \times 10^{-2}$ & 0.78 & 0.10 & -0.36 \\
+        \hline
+    \end{tabular}
+    \caption{Summary statistics for the $A_V$ histograms shown in Figure \ref{fig:avhist}, which were obtained with the two redMaGiC catalogs and calculated using two separate redshift binning schemes.}
+    \label{tab:stats}
+\end{table}
+
+\begin{comment}
+For the sake of comparison, the first version of the $A_V$ histogram, calculated with Y1 data and XXX older magnitudes XXX, is shown in Figure \ref{fig:avold}. My old notes indicate that the variance on the plot isn't really a variance of the plotted $A_V$, but rather the mean value of the Cramer-Rao weight of the maximum likelihood estimator defined in Equation \ref{eq:crb} (sorry, I don't know what that was about). 
+\end{comment}
+
+%\begin{figure}
+%   \centering
+%   \includegraphics[width=0.5\textwidth]{/Users/j.mccleary/Research/dusty\_halos/dusthalos/outputs/AvSpread\_10zbins/av\_redmagicAll.png}
+%   \caption{Histogram of $A_V$ (the optimal estimator) as calculated in 2018 with the DES Y1 redMaGiC galaxy catalog. The ``variance'' shown is actually the average value of the maximum likelihood estimator weight (sorry).}
+%   \label{fig:avold}
+%\end{figure}
+
+\begin{figure} %  figure placement: here, top, bottom, or page
+   \centering
+   \includegraphics[width=0.8\textwidth]{figures/num_redshift_bins_comparision.png} 
+   \caption{RedMaGiC galaxy extinction profiles obtained by calculating $A_V$ in the default DES redshift binning scheme (blue points) versus a greater number of bins (purple points). The red line shows the dust profile published in M\'{e}nard et al.~(2010), rescaled to the mean redshift of the WISExSuperCOSMOS foreground galaxy sample.}
+   \label{fig:profile_zbins}
 \end{figure}
 
+\subsection{Extinction profiles}
+RedMaGiC galaxy extinction profiles with $A_V$ calculated in the default DES redshift bins (i.e., those used in DES Y3 cosmology analyses. 
 
-\subsubsection{Creating background catalogs}
-The redMaGiC catalog has positions and redshifts, but not magnitudes. To obtain colors, I join them with their counterparts in the Y3 GOLD catalog on the \texttt{COADD\_OBJECT\_ID} parameter. The random galaxy catalog obviously doesn't have a corresponding entry in the GOLD catalog, so instead I match randomly.
+I explored the use of the different dust models available in the extinction library and found no significant difference (within error bars) between the available models. $A_V$ profiles based on three different dust models for redMaGiC high-redshift galaxies are shown in Figure \ref{fig:profile_dustmodels}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%
+%%% SECTION: NEXT STEPS
+%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%
+%%% SECTION: RELEVANT LITERATURE RESULTS
+%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Literature Results}
+
+The paper that got me the most excited was this one: 
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%
+%%% SECTION: Conference Abstract
+%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Conference abstract}\label{sec:abstract}
+
+I will be presenting a talk at ``The Physics and Impact of Astrophysical Dust: from Star Formation through Cosmology,'' an Aspen Center for Physics Winter Conference from March 3--8th. 
+
+\textbf{Title}: 
+New Evidence for Megaparsec-scale Dust Using Maximum Likelihood Estimation
+
+\textbf{Abstract}: 
+One of the more surprising astrophysical discoveries of the last decade has been an anomalous reddening of quasars consistent with dust halos (and associated large-scale structure) at cosmological scales. While this finding of extended dust halos has been confirmed several times, I will present a test of this result from a new angle: the use of maximum-likelihood formalism to construct an "optimal estimator" for reddening of galaxy colors by dust grains. By correlating the presence of a foreground galaxy with the excess (non-cosmological) reddening of a background galaxy, I find fresh evidence for the existence of megaparsec-scale dust, transitioning from the one- to two-halo regime at scales of 100-300 kpc. While the initial analysis used the redMaGiC catalog of luminous red galaxies -- notable for its tight dispersion in color and its well-constrained photometric redshifts -- as a background sample, the result appears robust to multiple foreground-background galaxy catalog combinations. I will present an overview of our findings and outline our plans to search for sub-millimeter emission from the extended dust halos in our galaxy sample. 
+
 
 
 

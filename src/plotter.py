@@ -151,7 +151,8 @@ class DustPlotter(RCParamsMixin):
 
         fig, ax = plt.subplots(figsize=(10,7), tight_layout=True)
 
-        ax.plot(theory_r,av,label=f'Menard (2010) scaled to z={self.z_fg:.3f}', color='tab:red')
+        ax.plot(theory_r, av, color='tab:red',
+                label=f'Menard (2010) scaled to z={self.z_fg:.3f}')
 
 
         ax.errorbar(dk['meanr']*scl, dk['kappa'], yerr=dk['sigma'],
@@ -396,11 +397,11 @@ class OverlapPlotter(RCParamsMixin):
         ax.set_xlabel('RA'); ax.set_ylabel('Dec')
 
         # Plot the points - it takes a long time for them all to show up!
-        ax.plot(sky1.ra.wrap_at('180d').radian, sky1.dec.radian, 'o',
-                    markersize=0.03, label=label1, color='xkcd:marine')
+        ax.plot(sky1.ra.wrap_at('180d').radian, sky1.dec.radian, ',',
+                    label=label1, color='xkcd:marine')
         if (sky2 is not None):
-            ax.plot(sky2.ra.wrap_at('180d').radian, sky2.dec.radian, 'o',
-                        markersize=0.03, label=label2, color='xkcd:neon red')
+            ax.plot(sky2.ra.wrap_at('180d').radian, sky2.dec.radian, ',',
+                        label=label2, color='xkcd:neon red')
         ax.legend(markerscale=400, loc='upper right')
         fig.tight_layout()
 
