@@ -27,13 +27,6 @@ class Correlator:
     '''
 
     def __init__(self, correl_config=None, ctype=None):
-        '''
-        self.fg = None # will be instance of treecorr
-        self.fgr = None
-        self.bg = None
-        self.bgr = None
-        ctype: catalog type (background_catalog/random, foreground_catalog/random)
-        '''
         self.correl_config = correl_config
         self.Catalog = None
         self.treecorrCatalog = None
