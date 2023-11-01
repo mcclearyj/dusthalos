@@ -149,7 +149,8 @@ class ReddeningCalculator(ExtinctionModel):
         except np.linalg.LinAlgError:
             # Probably too few galaxies ended up in that bin
             error = f'Too few galaxies in bin {zb}: {np.count_nonzero(slice)}'
-            raise TypeError(error)
+            mle[slice] = np.nan
+            mle_var[slice] = np.nan
             
         self.mle = mle
         self.mle_var = mle_var
