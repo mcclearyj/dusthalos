@@ -126,6 +126,6 @@ def match_coords(cat1, cat2, ratag1=None, dectag1=None,
                                                   radius=radius/3600.
                                                   )
 
-    print(f'{len(dist)}/{len(cat1)} gals matched to truth')
+    print(f'\n {len(dist)}/{len(cat1)} gals matched to truth \n')
 
     return cat1[cat1_ind], cat2[cat2_ind]

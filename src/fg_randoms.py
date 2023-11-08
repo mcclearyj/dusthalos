@@ -65,8 +65,6 @@ class FgRandoms(HpMask):
             '''
             Method to draw random points on the sphere
             '''
-            # Did someone set a mask?
-
             if nrand == None:
                 nrand = self.nrand
 
