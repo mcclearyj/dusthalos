@@ -17,15 +17,15 @@
 \providecommand\HyField@AuxAddToFields[1]{}
 \providecommand\HyField@AuxAddToCoFields[2]{}
 \@writefile{toc}{\contentsline {section}{\numberline {1}Executive Summary}{1}{section.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {2}Reminder: optimal estimation and cross-correlation calculation}{2}{section.2}\protected@file@percent }
-\newlabel{sec:theory}{{2}{2}{Reminder: optimal estimation and cross-correlation calculation}{section.2}{}}
-\newlabel{eqn:likelihood}{{1}{2}{Reminder: optimal estimation and cross-correlation calculation}{equation.2.1}{}}
-\newlabel{eqn:data_vector}{{2}{2}{Reminder: optimal estimation and cross-correlation calculation}{equation.2.2}{}}
-\newlabel{model}{{3}{2}{Reminder: optimal estimation and cross-correlation calculation}{equation.2.3}{}}
-\newlabel{eqn:estimator}{{4}{3}{Reminder: optimal estimation and cross-correlation calculation}{equation.2.4}{}}
-\newlabel{eqn:RCO}{{5}{3}{Reminder: optimal estimation and cross-correlation calculation}{equation.2.5}{}}
-\newlabel{eqn:correl}{{6}{3}{Reminder: optimal estimation and cross-correlation calculation}{equation.2.6}{}}
-\newlabel{eqn:xi_estimator}{{7}{3}{Reminder: optimal estimation and cross-correlation calculation}{equation.2.7}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {2}Refresher: optimal estimator for dust extinction and cross-correlation calculation}{2}{section.2}\protected@file@percent }
+\newlabel{sec:theory}{{2}{2}{Refresher: optimal estimator for dust extinction and cross-correlation calculation}{section.2}{}}
+\newlabel{eqn:likelihood}{{1}{2}{Refresher: optimal estimator for dust extinction and cross-correlation calculation}{equation.2.1}{}}
+\newlabel{eqn:data_vector}{{2}{2}{Refresher: optimal estimator for dust extinction and cross-correlation calculation}{equation.2.2}{}}
+\newlabel{model}{{3}{2}{Refresher: optimal estimator for dust extinction and cross-correlation calculation}{equation.2.3}{}}
+\newlabel{eqn:estimator}{{4}{3}{Refresher: optimal estimator for dust extinction and cross-correlation calculation}{equation.2.4}{}}
+\newlabel{eqn:RCO}{{5}{3}{Refresher: optimal estimator for dust extinction and cross-correlation calculation}{equation.2.5}{}}
+\newlabel{eqn:correl}{{6}{3}{Refresher: optimal estimator for dust extinction and cross-correlation calculation}{equation.2.6}{}}
+\newlabel{eqn:xi_estimator}{{7}{3}{Refresher: optimal estimator for dust extinction and cross-correlation calculation}{equation.2.7}{}}
 \@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces ``Mg II rest equivalent width, the sum of Mg II $\lambda $2796 and $\lambda 2803$ lines, as a function of impact parameter $r_P$. The gas profiles of emission line galaxies and luminous red galaxies are shown with blue and red data points, respectively. The pink open circles show the LRG measurements from Zhu et al. (2014).'' (Caption taken from Lan \& Mo 2018).}}{4}{figure.1}\protected@file@percent }
 \newlabel{fig:literature}{{1}{4}{``Mg II rest equivalent width, the sum of Mg II $\lambda $2796 and $\lambda 2803$ lines, as a function of impact parameter $r_P$. The gas profiles of emission line galaxies and luminous red galaxies are shown with blue and red data points, respectively. The pink open circles show the LRG measurements from Zhu et al. (2014).'' (Caption taken from Lan \& Mo 2018)}{figure.1}{}}
 \@writefile{toc}{\contentsline {section}{\numberline {3}Literature Results}{4}{section.3}\protected@file@percent }
@@ -69,13 +69,13 @@
 \newlabel{fig:profile_zbins}{{9}{14}{RedMaGiC galaxy extinction profiles obtained by calculating $A_V$ in the default DES redshift binning scheme (blue points) versus a greater number of bins (purple points). The red line shows the dust profile published in M\'{e}nard et al.~(2010), rescaled to the mean redshift of the WISExSCOS foreground galaxy sample}{figure.9}{}}
 \@writefile{lof}{\contentsline {figure}{\numberline {10}{\ignorespaces First-generation extinction profile based on DES Y1 redMaGiC catalogs and my terrible 2018 code. From left to right: background galaxy extinction profiles calculated in 2, 10, and 20 redshift bins. As the number of redshift bins increases, the slope of the extinction profile appears to get steeper. The raw signal is shown in orange, while the random-corrected signal is shown in blue. The green line shows an incorrectly scaled version of the M\'{e}nard 2010 extinction profile.}}{15}{figure.10}\protected@file@percent }
 \newlabel{fig:old}{{10}{15}{First-generation extinction profile based on DES Y1 redMaGiC catalogs and my terrible 2018 code. From left to right: background galaxy extinction profiles calculated in 2, 10, and 20 redshift bins. As the number of redshift bins increases, the slope of the extinction profile appears to get steeper. The raw signal is shown in orange, while the random-corrected signal is shown in blue. The green line shows an incorrectly scaled version of the M\'{e}nard 2010 extinction profile}{figure.10}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {11}{\ignorespaces Extinction profile of luminous red galaxies with $z<0.45$ selected from the redMaGiC high-density sample. The redMaGiC high-luminosity high-redshift sample is used as a background.}}{15}{figure.11}\protected@file@percent }
-\newlabel{fig:lrg_halo}{{11}{15}{Extinction profile of luminous red galaxies with $z<0.45$ selected from the redMaGiC high-density sample. The redMaGiC high-luminosity high-redshift sample is used as a background}{figure.11}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {12}{\ignorespaces RedMaGiC high-redshift galaxy extinction profiles with $A_V$\nobreakspace  {}calculated in four redshift bins and with three different extinction models: \texttt  {calzetti00} (light blue), \texttt  {ccm89} (purple), and \texttt  {fm07} (teal). }}{16}{figure.12}\protected@file@percent }
-\newlabel{fig:profile_dustmodels}{{12}{16}{RedMaGiC high-redshift galaxy extinction profiles with \av calculated in four redshift bins and with three different extinction models: \texttt {calzetti00} (light blue), \texttt {ccm89} (purple), and \texttt {fm07} (teal)}{figure.12}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {6.2}Easy sanity checks and tests}{16}{subsection.6.2}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {13}{\ignorespaces Systematics test: extinction profile resulting from cross-correlating redMaGiC hi-z galaxies with extra extinction of galaxies with $z<0.45$ from the high-density sample. Excess at 200-odd kpc and at 10 Mpc are noticeable, but otherwise, the curve is consistent with zero.}}{17}{figure.13}\protected@file@percent }
-\newlabel{fig:null_profile}{{13}{17}{Systematics test: extinction profile resulting from cross-correlating redMaGiC hi-z galaxies with extra extinction of galaxies with $z<0.45$ from the high-density sample. Excess at 200-odd kpc and at 10 Mpc are noticeable, but otherwise, the curve is consistent with zero}{figure.13}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {11}{\ignorespaces Extinction profile of luminous red galaxies, selected from the redMaGiC high-density sample, with $z<0.45$. The redMaGiC high-luminosity high-redshift sample is used as a background catalog.}}{15}{figure.11}\protected@file@percent }
+\newlabel{fig:lrg_halo}{{11}{15}{Extinction profile of luminous red galaxies, selected from the redMaGiC high-density sample, with $z<0.45$. The redMaGiC high-luminosity high-redshift sample is used as a background catalog}{figure.11}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {12}{\ignorespaces RedMaGiC high-redshift sample extinction profiles with $A_V$\nobreakspace  {}calculated in four redshift bins and with three different extinction models: \texttt  {calzetti00} (light blue), \texttt  {ccm89} (purple), and \texttt  {fm07} (teal).}}{16}{figure.12}\protected@file@percent }
+\newlabel{fig:profile_dustmodels}{{12}{16}{RedMaGiC high-redshift sample extinction profiles with \av calculated in four redshift bins and with three different extinction models: \texttt {calzetti00} (light blue), \texttt {ccm89} (purple), and \texttt {fm07} (teal)}{figure.12}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.2}Sanity checks and tests}{16}{subsection.6.2}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {13}{\ignorespaces Null test: extinction profile resulting from cross-correlating a ``foreground'' sample of redMaGiC hi-z galaxies ($z > 0.65$) with reddening of actual foreground galaxies with $z<0.45$ taken from the high-density sample. Excess around 200 kpc and at $r > 10 Mpc$ are noticeable; otherwise, the curve is consistent with zero.}}{17}{figure.13}\protected@file@percent }
+\newlabel{fig:null_profile}{{13}{17}{Null test: extinction profile resulting from cross-correlating a ``foreground'' sample of redMaGiC hi-z galaxies ($z > 0.65$) with reddening of actual foreground galaxies with $z<0.45$ taken from the high-density sample. Excess around 200 kpc and at $r > 10 Mpc$ are noticeable; otherwise, the curve is consistent with zero}{figure.13}{}}
 \@writefile{lof}{\contentsline {figure}{\numberline {14}{\ignorespaces Extinction profiles, with and without subtraction of the random-foreground real-background cross-correlation signal. The fully random-subtracted galaxy-$A_V$\nobreakspace  {}correlations are shown in teal; the correlation without foreground random subtractions are shown in blue. An extinction profile calculated with a modified $A_V$ estimator is shown in dark blue in the left panel.}}{17}{figure.14}\protected@file@percent }
 \newlabel{fig:fgr_vs_not}{{14}{17}{Extinction profiles, with and without subtraction of the random-foreground real-background cross-correlation signal. The fully random-subtracted galaxy-\av correlations are shown in teal; the correlation without foreground random subtractions are shown in blue. An extinction profile calculated with a modified $A_V$ estimator is shown in dark blue in the left panel}{figure.14}{}}
 \@writefile{lof}{\contentsline {figure}{\numberline {15}{\ignorespaces Histogram of $A_V$ (the optimal estimator) for the redMaGiC catalogs. Estimator values for the high-luminosity high-redshift sample (calculated in 2, 5 and 9 redshift bins) are on the left; the distribution of the estimator values for the high-density sample (calculated with 3, 8, and 17 redshift bins) are on the right. The dotted black lines mark $A_V = 0$.}}{18}{figure.15}\protected@file@percent }
@@ -88,12 +88,12 @@
 \@writefile{toc}{\contentsline {section}{\numberline {7}Next steps and open questions}{19}{section.7}\protected@file@percent }
 \newlabel{sec:next_steps}{{7}{19}{Next steps and open questions}{section.7}{}}
 \newlabel{item:a}{{3}{19}{Next steps and open questions}{Item.19}{}}
-\newlabel{item:b}{{4}{20}{Next steps and open questions}{Item.20}{}}
+\newlabel{item:b}{{4}{19}{Next steps and open questions}{Item.20}{}}
 \newlabel{item:c}{{5}{20}{Next steps and open questions}{Item.21}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {8}Conference abstract}{20}{section.8}\protected@file@percent }
-\newlabel{sec:abstract}{{8}{20}{Conference abstract}{section.8}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {8}Conference abstract}{21}{section.8}\protected@file@percent }
+\newlabel{sec:abstract}{{8}{21}{Conference abstract}{section.8}{}}
 \@writefile{toc}{\contentsline {section}{\numberline {A}Catalog prep configuration file}{21}{appendix.A}\protected@file@percent }
 \newlabel{appdx:cat_config}{{A}{21}{Catalog prep configuration file}{appendix.A}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {B}Correlation/Dust Calculation Configuration File}{22}{appendix.B}\protected@file@percent }
-\newlabel{appdx:dust_config}{{B}{22}{Correlation/Dust Calculation Configuration File}{appendix.B}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {B}Correlation/Dust Calculation Configuration File}{23}{appendix.B}\protected@file@percent }
+\newlabel{appdx:dust_config}{{B}{23}{Correlation/Dust Calculation Configuration File}{appendix.B}{}}
 \gdef \@abspage@last{23}
