@@ -5,3 +5,4 @@ Dusty, dusty halos
 python runner_scripts/cat_prep_runner.py --config configs/prep_catalog_config.yaml
 
 ## Run reddening calculation
+python 
