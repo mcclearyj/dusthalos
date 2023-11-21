@@ -11,13 +11,13 @@ background_catalog:
   cat_config: 'configs/catalog_configs/redmagic_hidens_y3gold_joined.yaml'
   redshifts: # How to deal with redshifts
     #use_bin_numbers: True # Basically just for redmagic
-    nbins: 8
+    nbins: 15
 
 background_randoms:
   cat_config: 'configs/catalog_configs/redmagic_hidens_randoms.yaml'
   redshifts: # How to deal with redshifts
     #use_bin_numbers: True # Basically just for redmagic
-    nbins: 8
+    nbins: 15
 
 foreground_catalog:
   cat_config: 'configs/catalog_configs/WISExSCOS_cat.yaml'
@@ -54,4 +54,4 @@ bands:
 # Where output files and plots will get saved
 output_path: 'output/redmagic_hidens'
 # basename or prefix for assorted files to save
-output_basename: 'dust_correlation_calzetti00_8zbins'
+output_basename: 'dust_correlation_calzetti00_15zbins'
