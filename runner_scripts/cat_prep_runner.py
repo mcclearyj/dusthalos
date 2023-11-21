@@ -44,7 +44,7 @@ def main(args):
     bg_redshift.create_mask_from_config(mask_config=config['background_mask'])
 
     # Apply overlapping masks
-    #fg.apply_overlapping_masks(mask1=bg_redshift.mask, mask2=fg.mask)
+    fg.apply_overlapping_masks(mask1=bg_redshift.mask, mask2=fg.mask)
 
     # Find overlapping masks
     bg_redshift.apply_overlapping_masks(mask1=bg_redshift.mask, mask2=fg.mask)
@@ -54,10 +54,10 @@ def main(args):
     # Join if requested
     if 'match' in config['background_catalog'].keys():
         match_cat = Catalog(config['background_catalog']['match'], memmap=True)
-        bg_redshift.match_to_catalog(match_cat, overwrite=overwrite)
+    bg_redshift.match_to_catalog(match_cat, overwrite=overwrite)
 
     end = time.time()
-    print(f"\n Random matching took {((end-start)/60.):.1f} mins \n")
+    #print(f"\n Random matching took {((end-start)/60.):.1f} mins \n")
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Runner script for Catalog operations.')
