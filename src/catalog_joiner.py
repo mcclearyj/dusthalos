@@ -4,7 +4,7 @@ import numpy as np
 import pdb
 from astropy.io import fits
 from datetime import datetime
-
+import time
 
 from . import utils, cat_utils
 
@@ -137,13 +137,57 @@ class CatalogJoiner:
         rng = np.random.default_rng(seed)
         print(f'join_cats_random: set RNG with seed = {seed}\n')
 
-        randind = rng.integers(0, len(c2.data), size=len(c1.data))
-        #randind = rng.integers(0, len(c2.data), 50000)
+        # OK, first we need to bin catalog 1 by redshift. This should be made
+        # a configurable value ASAP
+
+        n_zbins = 17;
+        # USE A VARIANT OF THIS SOON, i.e., make configurable:
+        # z_tag_c1 = self.config['z_tag']
+
+        zcol_c1 = 'z'
+        zcol_c2 = 'dnf_zmc_mof'
+
+        """
+        z_hist = np.histogram(self.data[self.redcalc_config['z_tag']],
+                                bins=self.redcalc_config['nbins'])
+        zbin_col = np.digitize(self.data[self.redcalc_config['z_tag']],
+                                bins=z_hist[1], right=False)
+        """
+        # OK, here, we are creating the redshift bins of catalog c1
+        c1_zhist, c1_zbins = np.histogram(c1.data[zcol_c1], bins=n_zbins)
+
+        # digitize the catalogs to be matched into c1's redshift bins
+        c1_zbin_values = np.digitize(c1.data[zcol_c1], bins=c1_zbins, right=False)
+        c2_zbin_values = np.digitize(c2.data[zcol_c2], bins=c1_zbins, right=False)
+
+        # Set the number of bins
+        bin_numbers = np.unique(c1_zbin_values)
+
+        # c2 indices (for ease of use)
+        full_c2_index = np.arange(len(c2.data))
+        c2_index_holder = []
+
+        # Loop over all redshift bins specified in bin_numbers
+        for zb in bin_numbers:
+
+            # select only galaxies in the current redshift bin
+            c2_slice = (c2_zbin_values == zb)
+            c1_slice = (c1_zbin_values == zb)
+
+            # Help yourself to some random indices
+            randind = rng.integers(0, len(c2.data[c2_slice]),
+                                   size=len(c1.data[c1_slice])
+                                   )
+            # This holds the indices of matched table (too many hstacks)
+            c2_index_holder.extend(full_c2_index[c2_slice][randind])
 
         # Stack the catalogs
-        joined_cat = hstack([c1.data, c2.data[randind]], \
-                            table_names=[c1.tabname, c2.tabname])
-        print(f'{len(c1.data)} {c1.tabname} objects joined to {c2.tabname} objects')
+        joined_cat = hstack([c1.data,
+                            c2.data[np.array(c2_index_holder).reshape(-1)]],
+                            table_names=[c1.tabname, c2.tabname]
+                            )
+        print(f'{len(c1.data)} {c1.tabname} objects joined to',
+              f'{c2.tabname} objects')
 
         return joined_cat
 
