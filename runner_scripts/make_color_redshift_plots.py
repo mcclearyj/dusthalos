@@ -81,24 +81,24 @@ def main():
 
 
     fig, axs = plt.subplots(1, 2, figsize=(12,6), tight_layout=True)
-    axs[0].plot(hidens['zredmagic'], 
+    axs[0].plot(hidens['z'], 
             (hidens['mof_cm_mag_corrected_g'] - hidens['mof_cm_mag_corrected_r']), 
-            '.', markersize=0.5, color='xkcd:tomato red', label='hilum_hiz rand')
+            ',', color='xkcd:tomato red', label='hilum_hiz rand')
     axs[0].plot(hiz['zredmagic'], 
             (hiz['mof_cm_mag_corrected_g'] - hiz['mof_cm_mag_corrected_r']), 
              '.', markersize=0.5, color='xkcd:deep red', label='hilum_hiz')
-    axs[0].set_ylim(-1,6)
+    #axs[0].set_ylim(-1,6)
     axs[0].legend(markerscale=15, loc='upper left')
     axs[0].set_xlabel('Redshift')
     axs[0].set_ylabel(r'$g$ - $r$')
 
-    axs[1].plot(hidens['zredmagic'], 
+    axs[1].plot(hidens['z'], 
                 (hidens['mof_cm_mag_corrected_i'] - hidens['mof_cm_mag_corrected_z']), 
-                '.', markersize=0.5, color='xkcd:tomato red', label='hilum_hiz rand')
+                ',', color='xkcd:tomato red', label='hilum_hiz rand')
     axs[1].plot(hiz['zredmagic'], 
                 (hiz['mof_cm_mag_corrected_i'] - hiz['mof_cm_mag_corrected_z']), 
                  '.', markersize=0.5, color='xkcd:deep red', label='hilum_hiz')
-    axs[1].set_ylim(-0.5,1.5)
+   # axs[1].set_ylim(-0.5,1.5)
     axs[1].legend(markerscale=15, loc='upper left')
     axs[1].set_xlabel('Redshift')
     axs[1].set_ylabel(r'$i$ - $z$')
