@@ -407,3 +407,52 @@ class OverlapPlotter(RCParamsMixin):
 
         fig.savefig(outname)
         fig.savefig(outname.replace('pdf', 'png'))
+
+
+    def make_Av_map(self, outname=None, projection=None, label1=None):
+        '''
+        The input should be a treecorrcat;
+        Note: default "projection" is rectilinear; other options include
+        "mollweide", "aitoff", and "hammer" (time).
+        '''
+
+        self.set_rc_params(fontsize=16)
+
+        # Sanity check
+        #if ['ra', 'dec', 'k'] not in self.cat1.__dict__.keys():
+        #    print("Supplied catalog is missing one of: 'ra', 'dec', 'k'")
+
+        if outname is None:
+            outname = self.outname
+
+        if (os.path.dirname(outname)==''):
+            outname=os.path.join(self.outdir, outname)
+
+        # Labels
+        if label1 == None:
+            label1 = os.path.basename(self.cat1_name)
+
+        # Create SkyCoord object to hold RA, Dec of catalogs
+        sky1 = SkyCoord(self.cat1['ra'], self.cat1['dec'],
+                        frame='icrs', unit=u.deg)
+
+        # Create a plot instance (can also use axes class). Note that aitoff
+        # projection apparently avoids mollweide's extreme edge distortions
+        if projection in ['mollweide', 'aitoff']:
+            figsize=(11.5, 6)
+        else:
+            figsize=(10, 7)
+
+        fig, ax = plt.subplots(1,1, figsize=figsize, tight_layout=True, \
+                        subplot_kw=dict(projection=projection))
+        ax.grid(True)
+        ax.set_xlabel('RA'); ax.set_ylabel('Dec')
+
+        # Plot the points - it takes a long time for them all to show up!
+        ax.scatter(sky1.ra.wrap_at('180d').radian, sky1.dec.radian, ',',
+                    label=label1, c=self.cat1['k'].data)
+        ax.legend(markerscale=400, loc='upper right')
+        fig.tight_layout()
+
+        fig.savefig(outname)
+        fig.savefig(outname.replace('pdf', 'png'))

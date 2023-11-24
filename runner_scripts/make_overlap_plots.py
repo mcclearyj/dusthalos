@@ -1,8 +1,8 @@
 from src.plotter import OverlapPlotter
 import os
 
-cat_dir = '/Users/j.mccleary/Research/dusty_halos/catalogs/prep_cat_output'
-outdir = '/Users/j.mccleary/Research/dusty_halos/catalogs/prep_cat_output'
+cat_dir = '/Users/j.mccleary/Research/dusty_halos/dcatalogs/prep_cat_output'
+out_dir = '/Users/j.mccleary/Research/dusty_halos/catalogs/prep_cat_output'
 #cat_dir = '/work/mccleary_group/dusty_halos/prep_cat_output'
 #cat_dir = '/work/mccleary_group/dusty_halos/prep_cat_output'
 
@@ -21,18 +21,18 @@ cat3 = os.path.join(cat_dir, cat3_basename)
 op = OverlapPlotter(cat1_name=cat1)
 op2 = OverlapPlotter(cat1_name=cat2)
 
-outname = os.path.join(outdir, 'full_scos_randoms_rectilin.png')
+outname = os.path.join(out_dir, 'full_scos_randoms_rectilin.png')
 op.make_plot(outname=outname, label1=cat1_label, coordframe1='icrs')
 
-outname = os.path.join(outdir, 'full_scos_hilum_hiz_overlap_aitoff.png')
+outname = os.path.join(out_dir, 'full_scos_hilum_hiz_overlap_aitoff.png')
 op.make_plot(outname=outname, projection='aitoff', label1=cat1_label,
              coordframe1='icrs')
 
 
-outname2 = os.path.join(outdir, 'masked_scos_randoms_rectilin.pdf')
+outname2 = os.path.join(out_dir, 'masked_scos_randoms_rectilin.pdf')
 op2.make_plot(outname=outname2, coordframe2='icrs',
               label1=cat2_label)
 
-outname2 = os.path.join(outdir, 'masked_scos_randoms_aitoff.pdf')
+outname2 = os.path.join(out_dir, 'masked_scos_randoms_aitoff.pdf')
 op2.make_plot(outname=outname2, projection='aitoff',
              coordframe1='icrs', label1=cat2_label)
