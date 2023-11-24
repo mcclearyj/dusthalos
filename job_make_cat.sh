@@ -1,7 +1,7 @@
 #!/bin/sh
-#SBATCH -t 6:00:00
+#SBATCH -t 23:59:59
 #SBATCH -N 1
-#SBATCH --mem=50G
+#SBATCH --mem=60G
 #SBATCH --partition=short
 #SBATCH -J dust_cat_maker
 #SBATCH -v
@@ -46,7 +46,7 @@ conda activate dustyhalos
 ### Go!
 ###
 
-#python $CODEDIR/runner_scripts/cat_prep_runner.py --config_path "$CONFIGDIR/prep_fg_randoms_config.yaml"
-python $CODEDIR/runner_scripts/prep_fg_randoms_runner.py --config_path "$CONFIGDIR/prep_fg_randoms_config.yaml" 
+python $CODEDIR/runner_scripts/cat_prep_runner.py --config $CONFIGDIR/prep_hiz_randoms_config.yaml
+#python $CODEDIR/runner_scripts/prep_fg_randoms_runner.py --config_path "$CONFIGDIR/prep_fg_randoms_config.yaml" 
 mv slurm-dust_cat_maker.out "$dirname"
 

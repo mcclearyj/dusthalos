@@ -41,14 +41,12 @@ background_catalog:
   # RA/Dec column names
   ra_tag: 'ra'
   dec_tag: 'dec'
-  # Name for filtered (possibly joined) output catalog
-  output_name: 'rmz_hilum_hiz+Y3GOLD.fits'
   # Are we matching? Uncomment fields below if true!
   match:
     # Set the path to catalog to be matched
     path: '/work/mccleary_group/dusty_halos/catalogs'
     # Name of catalog file
-    filename: '12818.fits'
+    filename: 'des_y3_gold_MOF_highpurity_gals.fits'
     # Should be 'kw', 'coordinates', or 'random'
     match_type: 'random'
     # If random matching, specifiy seed
@@ -62,7 +60,6 @@ background_mask:
   path: '/work/mccleary_group/dusty_halos/catalogs'
   # What is it called?
   filename: 'y3_gold_2.2.1_RING_joint_redmagic_v0.5.1_wide_maglim_v2.2_mask.fits'
-  #filename: 'y1/DES_Y1A1_3x2pt_redMaGiC_MASK_HPIX4096RING.fits'
   # IMPORTANT!!! GET COORDINATE FRAME CORRECT OR MASKING WILL FAIL!
   coordframe: 'icrs'
   # Is mask partial?

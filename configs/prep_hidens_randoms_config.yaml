@@ -42,14 +42,12 @@ background_catalog:
   # RA/Dec column names
   ra_tag: 'ra'
   dec_tag: 'dec'
-  # Name for filtered (possibly joined) output catalog
-  output_name: 'rmz_highdens+Y3GOLD.fits'
   # Are we matching? Uncomment fields below if true!
   match:
     # Set the path to catalog to be matched
     path: /work/mccleary_group/dusty_halos/catalogs
     # Name of catalog file
-    filename: '12818.fits'
+    filename: 'des_y3_gold_MOF_highpurity_gals.fits'
     # Should be 'kw', 'coordinates', or 'random'
     match_type: 'random'
     # If random matching, specifiy seed
