@@ -147,12 +147,6 @@ class CatalogJoiner:
         zcol_c1 = 'z'
         zcol_c2 = 'dnf_zmc_mof'
 
-        """
-        z_hist = np.histogram(self.data[self.redcalc_config['z_tag']],
-                                bins=self.redcalc_config['nbins'])
-        zbin_col = np.digitize(self.data[self.redcalc_config['z_tag']],
-                                bins=z_hist[1], right=False)
-        """
         # OK, here, we are creating the redshift bins of catalog c1
         c1_zhist, c1_zbins = np.histogram(c1.data[zcol_c1], bins=n_zbins)
 
@@ -169,7 +163,9 @@ class CatalogJoiner:
 
         # Loop over all redshift bins specified in bin_numbers
         for zb in bin_numbers:
-
+            
+            print(f'random matching: Working on bin {zb}')
+            
             # select only galaxies in the current redshift bin
             c2_slice = (c2_zbin_values == zb)
             c1_slice = (c1_zbin_values == zb)
@@ -180,6 +176,8 @@ class CatalogJoiner:
                                    )
             # This holds the indices of matched table (too many hstacks)
             c2_index_holder.extend(full_c2_index[c2_slice][randind])
+
+        print("random matching: got to data stacking")
 
         # Stack the catalogs
         joined_cat = hstack([c1.data,

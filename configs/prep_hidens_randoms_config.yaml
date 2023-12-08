@@ -31,9 +31,8 @@ paths:
 background_catalog:
   # Where is it? Leave blank or commented out to use default
   #path:
-  #filename: 'y3a2_gold2.2.1_redmagic_highdens_randoms.fits'
-  filename: 'prep_cat_output/DoubleMasked_y3a2_gold2.2.1_redmagic_highdens_randoms.fits'
-  # nickname for table if we are matching to another catalog
+  filename: 'y3a2_gold2.2.1_redmagic_highdens_randoms.fits'
+  # table nickname for naming outputs and duplicate columns (if joining)
   tabname: 'redmagic_hidens_randoms'
   # WCS frame
   coordframe: 'icrs'
@@ -52,7 +51,7 @@ background_catalog:
     match_type: 'random'
     # If random matching, specifiy seed
     seed: 191478
-    # nickname for table
+    # nickname for table, used to name outputs
     tabname: 'y3_GOLD'
 
 # background mask
@@ -61,7 +60,6 @@ background_mask:
   path: '/work/mccleary_group/dusty_halos/catalogs'
   # What is it called?
   filename: 'y3_gold_2.2.1_RING_joint_redmagic_v0.5.1_wide_maglim_v2.2_mask.fits'
-  #filename: 'y1/DES_Y1A1_3x2pt_redMaGiC_MASK_HPIX4096RING.fits'
   # IMPORTANT!!! GET COORDINATE FRAME CORRECT OR MASKING WILL FAIL!
   coordframe: 'icrs'
   # Is mask partial?
@@ -72,7 +70,7 @@ foreground_catalog:
   # Where is it?
   #path:
   # What is it called ?
-  filename: 'WISExSCOS_fg_SCOSmask_cat.fits'
+  filename: 'wiseScosPhotoz160708_redshift_cut.fits'
   # Name for filtered (possibly joined) output catalog
   # RA, Dec names + units + coordframe
   coordframe: 'galactic'

@@ -5,7 +5,8 @@ from astropy.io import fits
 import os
 from astropy.table import Table
 from scipy import stats
-
+import numpy as np
+import pdb
 
 def set_rc_params(fontsize=None):
 
@@ -63,56 +64,104 @@ def remove_outliers(data, bands):
 
     return wg
 
+def bin_the_redshifts(rmz_rand, n_zbins=10):
+    ## Create colors
+    gmr = rmz_rand['mof_cm_mag_corrected_g'] - rmz_rand['mof_cm_mag_corrected_r']
+    imz = rmz_rand['mof_cm_mag_corrected_i'] - rmz_rand['mof_cm_mag_corrected_z']
+
+    ## This is kinda like the algorithm I use elsewhere
+    zhist, zbins = np.histogram(rmz_rand['z'], bins=n_zbins)
+    # Hold redshift bins
+    zbin_values = np.digitize(rmz_rand['z'], bins=zbins, right=False)
+    # Set the number of bins
+    bin_numbers = np.unique(zbin_values)
+    # Hold median color values & redshift
+    gmr_values = []; imz_values = []; z_bin_median = []
+
+    # Loop over all redshift bins specified in bin_numbers
+    for zb in bin_numbers:
+        # select only galaxies in the current redshift bin
+        c_slice = (zbin_values == zb)
+        this_gmr_bin = gmr[c_slice]
+        this_imz_bin = imz[c_slice]
+        this_z_bin = rmz_rand['z'][c_slice]
+
+        gmr_values.append((np.mean(this_gmr_bin),
+                           np.std(this_gmr_bin)
+                           ))
+        imz_values.append((np.mean(this_imz_bin),
+                           np.std(this_imz_bin)
+                           ))
+        z_bin_median.append(np.mean(this_z_bin))
+
+    tab = Table([z_bin_median,
+                 np.array(gmr_values)[:,0], np.array(gmr_values)[:,1],
+                 np.array(imz_values)[:,0], np.array(imz_values)[:,1]],
+                 names=['z_median', 'gmr_median', 'gmr_std',
+                 'imz_median', 'imz_std'])
+
+    tab.write('binned_table.txt', format='ascii.csv', overwrite=True)
+
+    return tab
 
 def main():
-    catalog_path = '/Users/j.mccleary/Research/dusty_halos/catalogs/prep_cat_output'
-    hiz = Table.read(os.path.join(catalog_path, 'redmagic_hiz_y3_GOLD_JOINED_catalog.fits'), memmap=True)
-    #hidens = Table.read(os.path.join(catalog_path,'redmagic_hidens_y3_GOLD_JOINED_catalog.fits'))
-    hidens = Table.read(os.path.join(catalog_path,'redmagic_hiz_randoms_y3_GOLD_JOINED_catalog.fits'), memmap=True)
+    catalog_path = '/work/mccleary_group/dusty_halos/catalogs/prep_cat_output'
+    rmz_cat = Table.read(os.path.join(catalog_path,
+                     'z_lt_045_redmagic_hidens_y3_GOLD_JOINED_catalog.fits'),
+                     memmap=True)
+    rmz_rand_f = fits.open(os.path.join(catalog_path,
+                         'z_lt_045_redmagic_hidens_randoms_y3_GOLD_JOINED_catalog.fits'))
+    rmz_rand=rmz_rand_f[1].data[0:int(2e6)]
 
     bands = ['mof_cm_mag_corrected_g', 'mof_cm_mag_corrected_r',
-        'mof_cm_mag_corrected_i', 'mof_cm_mag_corrected_z']
+             'mof_cm_mag_corrected_i', 'mof_cm_mag_corrected_z']
 
+    wg_rmz_cat = remove_outliers(rmz_cat, bands)
+    rmz_cat = rmz_cat[wg_rmz_cat]
+    wg_rmz_rand = remove_outliers(rmz_rand, bands)
+    rmz_rand = rmz_rand[wg_rmz_rand]
 
-    wg_hiz = remove_outliers(hiz, bands)
-    hiz = hiz[wg_hiz]
-    wg_hidens = remove_outliers(hidens, bands)
-    hidens = hidens[wg_hidens]
-
+    binned_randoms = bin_the_redshifts(rmz_rand)
 
     fig, axs = plt.subplots(1, 2, figsize=(12,6), tight_layout=True)
-    axs[0].plot(hidens['z'], 
-            (hidens['mof_cm_mag_corrected_g'] - hidens['mof_cm_mag_corrected_r']), 
-            ',', color='xkcd:tomato red', label='hilum_hiz rand')
-    axs[0].plot(hiz['zredmagic'], 
-            (hiz['mof_cm_mag_corrected_g'] - hiz['mof_cm_mag_corrected_r']), 
-             '.', markersize=0.5, color='xkcd:deep red', label='hilum_hiz')
-    #axs[0].set_ylim(-1,6)
-    axs[0].legend(markerscale=15, loc='upper left')
+
+    axs[0].plot(rmz_cat['zredmagic'],
+                (rmz_cat['mof_cm_mag_corrected_g'] - rmz_cat['mof_cm_mag_corrected_r']),
+                '.', markersize=0.5, color='xkcd:deep red', label='hidens')
+
+    axs[0].errorbar(binned_randoms['z_median'], binned_randoms['gmr_median'],
+                    yerr=binned_randoms['gmr_std'], fmt='o-',
+                    color='xkcd:tomato red', label='hidens randoms',
+                    capsize=5)
+    
+    axs[0].set_ylim(-1,4)
+    axs[0].legend(loc='upper left')
     axs[0].set_xlabel('Redshift')
     axs[0].set_ylabel(r'$g$ - $r$')
 
-    axs[1].plot(hidens['z'], 
-                (hidens['mof_cm_mag_corrected_i'] - hidens['mof_cm_mag_corrected_z']), 
-                ',', color='xkcd:tomato red', label='hilum_hiz rand')
-    axs[1].plot(hiz['zredmagic'], 
-                (hiz['mof_cm_mag_corrected_i'] - hiz['mof_cm_mag_corrected_z']), 
-                 '.', markersize=0.5, color='xkcd:deep red', label='hilum_hiz')
-   # axs[1].set_ylim(-0.5,1.5)
-    axs[1].legend(markerscale=15, loc='upper left')
+    axs[1].plot(rmz_cat['zredmagic'],
+                (rmz_cat['mof_cm_mag_corrected_i'] - rmz_cat['mof_cm_mag_corrected_z']),
+                '.', markersize=0.5, color='xkcd:deep red', label='hidens')
+
+    axs[1].errorbar(binned_randoms['z_median'], binned_randoms['imz_median'],
+                    yerr=binned_randoms['imz_std'], fmt='o-',
+                    color='xkcd:tomato red', label='hidens randoms',
+                    capsize=5)
+
+    axs[1].set_ylim(-1,2)
+    axs[1].legend(loc='upper left')
     axs[1].set_xlabel('Redshift')
     axs[1].set_ylabel(r'$i$ - $z$')
 
-    fig.savefig('color_redshift_redmagic_hiz_rand.png')
+    fig.savefig('color_redshift_redmagic_z_lt_045_hidens_rand_binned.png')
 
-    return 0 
+    return 0
 
 if __name__ == '__main__':
-    
+
     rc = main()
 
     if rc == 0:
         print("color redshift plots have been successfully completed")
     else:
         print(f'get_jwst_psfs.py has failed w/ rc={rc}')
-    
