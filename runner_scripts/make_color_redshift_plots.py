@@ -156,7 +156,7 @@ def main():
                     color='xkcd:tomato red', label='hidens $z < 0.45$ randoms',
                     capsize=5)
 
-    axs[1].set_ylim(-1,2)
+    axs[1].set_ylim(-0.5, 1)
     axs[1].legend(loc='upper left')
     axs[1].set_xlabel('Redshift')
     axs[1].set_ylabel(r'$i$ - $z$')
