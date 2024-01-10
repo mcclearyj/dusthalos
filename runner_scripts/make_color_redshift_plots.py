@@ -86,15 +86,16 @@ def bin_the_redshifts(rmz_rand, n_zbins=10):
         
         # select only galaxies in the current redshift bin
         c_slice = (zbin_values == zb)
+        sq_ngals = np.sqrt(np.count_nonzero(c_slice))
         this_gmr_bin = gmr[c_slice]
         this_imz_bin = imz[c_slice]
         this_z_bin = rmz_rand['z'][c_slice]
 
-        gmr_values.append((np.mean(this_gmr_bin),
-                           np.std(this_gmr_bin)
+        gmr_values.append((np.median(this_gmr_bin),
+                           np.std(this_gmr_bin)/sq_ngals
                            ))
-        imz_values.append((np.mean(this_imz_bin),
-                           np.std(this_imz_bin)
+        imz_values.append((np.median(this_imz_bin),
+                           np.std(this_imz_bin)/sq_ngals
                            ))
         z_bin_median.append(np.mean(this_z_bin))
 
@@ -142,7 +143,7 @@ def main():
                     color='xkcd:tomato red', label='hidens $z < 0.45$ randoms',
                     capsize=5)
     
-    axs[0].set_ylim(-1,4)
+    axs[0].set_ylim(-1, 4)
     axs[0].legend(loc='upper left')
     axs[0].set_xlabel('Redshift')
     axs[0].set_ylabel(r'$g$ - $r$')
