@@ -4,37 +4,26 @@
 # -----------------
 # Input catalogs
 # -----------------
-
-# cat_config: path to configuration file specifying catalog properties
-# NOTE: allowed keys for "redshifts" are: use_bin_numbers, nbins, and min_z
+# cat_config: configuration file defining properties of catalog
+# NOTE: for redshifts, allowable keys are use_bin_numbers, nbins, and min_z
 
 background_catalog:
   cat_config: 'configs/catalog_configs/redmagic_hiz_y3gold_joined.yaml'
   redshifts: # How to deal with redshifts
     #use_bin_numbers: True # Basically just for redmagic
-    nbins: 5
+    nbins: 4
 
 background_randoms:
   cat_config: 'configs/catalog_configs/redmagic_hiz_randoms.yaml'
   redshifts: # How to deal with redshifts
     #use_bin_numbers: True # Basically just for redmagic
-    nbins: 5
+    nbins: 4
 
 foreground_catalog:
   cat_config: 'configs/catalog_configs/WISExSCOS_cat.yaml'
 
 foreground_randoms:
   cat_config: 'configs/catalog_configs/WISExSCOS_randoms.yaml'
-
-# ------------------
-# Output parameters
-# ------------------
-
-# Where output files and plots will get saved
-output_path: 'output/redmagic_hiz'
-# basename or prefix for assorted files to save
-output_basename: 'dust_correlation_calzetti00_5zbins'
-
 
 # -----------------
 # Correlation function parameters:
@@ -48,7 +37,7 @@ treecorr_params:
 # Parameters for dust model
 dust_params:
   # Must be one of 'fm07', 'calzetti00', 'ccm89', 'odonnell94', 'fitzpatrick99'
-  model: 'calzetti00'
+  model: 'fitzpatrick99'
   # Ratio of selective to total extinction
   R: 3.1
   # Extinction in V band
@@ -59,3 +48,10 @@ dust_params:
 # Placeholder for selecting bands; make it a list?
 bands:
 
+# ------------------
+# Output parameters
+# ------------------
+# Where output files and plots will get saved
+output_path: 'output/redmagic_hiz'
+# basename or prefix for assorted files to save
+output_basename: 'dust_correlation_fitz99_4zbins'

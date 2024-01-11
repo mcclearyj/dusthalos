@@ -122,12 +122,16 @@ class CatalogJoiner:
 
     def _join_cats_random(self, overwrite=False):
         '''
-        Again, pretty special-purpose, BUT: drawing random matches from catalog2
-        to assign to catalog1.
+        Special-purpose function to draw random galaxies from catalog 2 ("c2") 
+        that like within some redshift bin "zb" and assign their properties, 
+        viz., colors, to corresponding galaxies in catalog 1 ("c1"). Useful for 
+        assigning colors to redMaGiC random catalogs!
         '''
 
         c1 = self.cat1; c2 = self.cat2
-
+        gmr = c2.data['mof_cm_mag_corrected_g'] - c2.data['mof_cm_mag_corrected_r']
+        imz = c2.data['mof_cm_mag_corrected_i'] - c2.data['mof_cm_mag_corrected_z']
+        
         if 'seed' in self.config.keys():
             seed = self.config['seed']
         else:
@@ -157,30 +161,45 @@ class CatalogJoiner:
         # Set the number of bins
         bin_numbers = np.unique(c1_zbin_values)
 
-        # c2 indices (for ease of use)
+        # c1, c2 indices (for easier stacking)
+        full_c1_index = np.arange(len(c1.data))
         full_c2_index = np.arange(len(c2.data))
+        c1_index_holder = []
         c2_index_holder = []
 
         # Loop over all redshift bins specified in bin_numbers
         for zb in bin_numbers:
             
-            print(f'random matching: Working on bin {zb}')
-            
             # select only galaxies in the current redshift bin
             c2_slice = (c2_zbin_values == zb)
             c1_slice = (c1_zbin_values == zb)
+
+            print(f'random matching: Working on bin {zb}: z={np.median(c2.data[zcol_c2][c2_slice])}')
 
             # Help yourself to some random indices
             randind = rng.integers(0, len(c2.data[c2_slice]),
                                    size=len(c1.data[c1_slice])
                                    )
-            # This holds the indices of matched table (too many hstacks)
+
+            this_set = full_c2_index[c2_slice] 
+            this_subset = full_c2_index[c2_slice][randind]
+            print(f"\t There are {np.count_nonzero(c1_slice)} c1 galaxies and {np.count_nonzero(c2_slice)} c2 galaxies in bin")
+            print(f"\t Median g-r in bin is {np.median(gmr[this_set])}")
+            print(f"\t Median g-r in subset is {np.median(gmr[this_subset])}")
+            print("")
+            print(f"\t Median i-z in bin is {np.median(imz[this_set])}")
+            print(f"\t Median i-z in subset is {np.median(imz[this_subset])}")
+            print("")
+
+            
+            # This holds the indices of matched table (too many hstacks otherwise)
+            c1_index_holder.extend(full_c1_index[c1_slice])
             c2_index_holder.extend(full_c2_index[c2_slice][randind])
 
         print("random matching: got to data stacking")
 
         # Stack the catalogs
-        joined_cat = hstack([c1.data,
+        joined_cat = hstack([c1.data[np.array(c1_index_holder).reshape(-1)],
                             c2.data[np.array(c2_index_holder).reshape(-1)]],
                             table_names=[c1.tabname, c2.tabname]
                             )

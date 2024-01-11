@@ -9,9 +9,9 @@
   # RA/Dec units
   coord_units: 'deg'
   # RA/Dec column names
-  ra_tag: 'ra_redmagic_hidens'
+  ra_tag: 'ra_redmagic_hiz'
   # Dec column name
-  dec_tag: 'dec_redmagic_hidens'
+  dec_tag: 'dec_redmagic_hiz'
   # Redshift column name
   z_tag: 'zredmagic'
   # optional for redmagic only, basically

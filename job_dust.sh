@@ -3,11 +3,11 @@
 #SBATCH -N 1
 #SBATCH --mem=50G
 #SBATCH --partition=express
-#SBATCH -J dust_cat_maker
+#SBATCH -J dust_calc
 #SBATCH -v
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=jmac.ftw@gmail.com
-#SBATCH -o slurm-dust_cat_maker.out
+#SBATCH -o slurm-dust_calc.out
 
 
 ###
@@ -46,7 +46,7 @@ conda activate dustyhalos
 ### Go!
 ###
 
-python $CODEDIR/runner_scripts/dust_calc_runner.py --config_file $CONFIGDIR/dust_calc_config_lowz_hidens.yaml
+python $CODEDIR/runner_scripts/dust_calc_runner.py --config_file $CONFIGDIR/dust_calc_config_hidens.yaml
 
 
 #mv slurm-dust_cat_maker.out "$dirname"

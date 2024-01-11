@@ -4,9 +4,8 @@
 # -----------------
 # Input catalogs
 # -----------------
-
-# cat_config: path to configuration file specifying catalog properties
-# NOTE: allowed keys for "redshifts" are: use_bin_numbers, nbins, and min_z
+# cat_config: configuration file defining properties of catalog
+# NOTE: for redshifts, allowable keys are use_bin_numbers, nbins, and min_z
 
 background_catalog:
   cat_config: 'configs/catalog_configs/redmagic_hiz_y3gold_joined.yaml'
@@ -21,20 +20,10 @@ background_randoms:
     nbins: 5
 
 foreground_catalog:
-  cat_config: 'configs/catalog_configs/WISExSCOS_cat.yaml'
+  cat_config: 'configs/catalog_configs/lowz_redmagic_hidens_y3gold_joined.yaml'
 
 foreground_randoms:
-  cat_config: 'configs/catalog_configs/WISExSCOS_randoms.yaml'
-
-# ------------------
-# Output parameters
-# ------------------
-
-# Where output files and plots will get saved
-output_path: 'output/redmagic_hiz'
-# basename or prefix for assorted files to save
-output_basename: 'dust_correlation_calzetti00_5zbins'
-
+  cat_config: 'configs/catalog_configs/lowz_redmagic_hidens_randoms.yaml'
 
 # -----------------
 # Correlation function parameters:
@@ -59,3 +48,10 @@ dust_params:
 # Placeholder for selecting bands; make it a list?
 bands:
 
+# ------------------
+# Output parameters
+# ------------------
+# Where output files and plots will get saved
+output_path: 'output/hidens_fg_X_hiz_bg'
+# basename or prefix for assorted files to save
+output_basename: 'dust_correlation_calzetti00_5zbins'

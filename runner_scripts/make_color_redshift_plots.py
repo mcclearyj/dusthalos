@@ -50,7 +50,7 @@ def remove_outliers(data, bands):
     # Pick out only the good entries!
     for band in bands:
         band_mag = np.ma.getdata(data[band])
-        band_bool = (band_mag > -9999) & (band_mag != np.nan) #& (band_mag < 27)
+        band_bool = (band_mag > -9999) & (band_mag != np.nan) & (band_mag < 27)
         wg *= band_bool
 
     # percent of galaxies that failed
@@ -91,11 +91,11 @@ def bin_the_redshifts(rmz_rand, n_zbins=10):
         this_imz_bin = imz[c_slice]
         this_z_bin = rmz_rand['z'][c_slice]
 
-        gmr_values.append((np.median(this_gmr_bin),
-                           np.std(this_gmr_bin)/sq_ngals
+        gmr_values.append((np.mean(this_gmr_bin),
+                           np.std(this_gmr_bin)
                            ))
-        imz_values.append((np.median(this_imz_bin),
-                           np.std(this_imz_bin)/sq_ngals
+        imz_values.append((np.mean(this_imz_bin),
+                           np.std(this_imz_bin)
                            ))
         z_bin_median.append(np.mean(this_z_bin))
 
@@ -110,13 +110,13 @@ def bin_the_redshifts(rmz_rand, n_zbins=10):
     return tab
 
 def main():
-    #catalog_path = '/work/mccleary_group/dusty_halos/catalogs/prep_cat_output'
-    catalog_path = '/Users/j.mccleary/Research/dusty_halos/catalogs/prep_cat_output'
+    catalog_path = '/work/mccleary_group/dusty_halos/catalogs/prep_cat_output'
+    #catalog_path = '/Users/j.mccleary/Research/dusty_halos/catalogs/prep_cat_output'
     rmz_cat = Table.read(os.path.join(catalog_path,
-                     'z_lt_045_redmagic_hidens_y3_GOLD_JOINED_catalog.fits'),
+                     'redmagic_hidens_y3_GOLD_JOINED_catalog.fits'),
                      memmap=True)
     rmz_rand_f = fits.open(os.path.join(catalog_path,
-                         'z_lt_045_redmagic_hidens_randoms_y3_GOLD_JOINED_catalog.fits'))
+                         'redmagic_hidens_randoms_y3_GOLD_JOINED_catalog.fits'))
     
     rng = np.random.default_rng()
     rint = rng.integers(0, high=len(rmz_rand_f[1].data), size=int(2e6), dtype=np.int64)
@@ -136,11 +136,11 @@ def main():
 
     axs[0].plot(rmz_cat['zredmagic'],
                 (rmz_cat['mof_cm_mag_corrected_g'] - rmz_cat['mof_cm_mag_corrected_r']),
-                '.', markersize=0.5, color='xkcd:deep red', label='hidens $z < 0.45$')
+                '.', markersize=0.5, color='xkcd:deep red', label='hidens')
 
     axs[0].errorbar(binned_randoms['z_median'], binned_randoms['gmr_median'],
                     yerr=binned_randoms['gmr_std'], fmt='o-',
-                    color='xkcd:tomato red', label='hidens $z < 0.45$ randoms',
+                    color='xkcd:tomato red', label='hidens randoms',
                     capsize=5)
     
     axs[0].set_ylim(-1, 4)
@@ -150,11 +150,11 @@ def main():
 
     axs[1].plot(rmz_cat['zredmagic'],
                 (rmz_cat['mof_cm_mag_corrected_i'] - rmz_cat['mof_cm_mag_corrected_z']),
-                '.', markersize=0.5, color='xkcd:deep red', label='hidens $z < 0.45$')
+                '.', markersize=0.5, color='xkcd:deep red', label='hidens')
 
     axs[1].errorbar(binned_randoms['z_median'], binned_randoms['imz_median'],
                     yerr=binned_randoms['imz_std'], fmt='o-',
-                    color='xkcd:tomato red', label='hidens $z < 0.45$ randoms',
+                    color='xkcd:tomato red', label='hidens randoms',
                     capsize=5)
 
     axs[1].set_ylim(-0.5, 1)
@@ -162,8 +162,8 @@ def main():
     axs[1].set_xlabel('Redshift')
     axs[1].set_ylabel(r'$i$ - $z$')
 
-    fig.suptitle('Redmagic z $<$ 0.45 resampled') 
-    fig.savefig('color_redshift_redmagic_z_lt_045_hidens_resamp.png')
+    fig.suptitle('Redmagic hi-dens resampled') 
+    fig.savefig('color_redshift_redmagic_hidens_resamp.png')
 
     return 0
 

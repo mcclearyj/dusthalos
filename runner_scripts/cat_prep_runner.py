@@ -49,15 +49,16 @@ def main(args):
     # Find overlapping masks
     bg_redshift.apply_overlapping_masks(mask1=bg_redshift.mask, mask2=fg.mask)
 
-    start = time.time()
-
     # Join if requested
     if 'match' in config['background_catalog'].keys():
+        start = time.time()
+        
         match_cat = Catalog(config['background_catalog']['match'], memmap=True)
-    bg_redshift.match_to_catalog(match_cat, overwrite=overwrite)
+        bg_redshift.match_to_catalog(match_cat, overwrite=overwrite)
 
-    end = time.time()
-    #print(f"\n Random matching took {((end-start)/60.):.1f} mins \n")
+        end = time.time()
+    
+        print(f"\n Random matching took {((end-start)/60.):.1f} mins \n")
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Runner script for Catalog operations.')

@@ -9,3 +9,7 @@ src/__pycache__/
 src_v1/optimal_estimator.py
 writeup/.ipynb_checkpoints/
 writeup/misc_dust_plots\ -\ Jupyter Notebook_files/
+color*.png 
+./*.out 
+runner_scripts/slurm_outfiles/
+slurm_outfiles/

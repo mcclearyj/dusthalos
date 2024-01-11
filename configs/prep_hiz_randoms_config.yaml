@@ -15,7 +15,7 @@
 # catalog_path: generic location for catalogs
 # output_path: where to save files
 
-# Set some defaults because I am lazy
+# Set some defaults
 paths:
   # general path for catalogs
   catalog_path: '/work/mccleary_group/dusty_halos/catalogs'
@@ -31,7 +31,8 @@ paths:
 background_catalog:
   # Where is it? Leave blank or commented out to use default
   #path:
-  filename: 'y3a2_gold2.2.1_redmagic_highlum_highz_randoms.fits'
+  #filename: 'y3a2_gold2.2.1_redmagic_highlum_highz_randoms.fits'
+  filename: 'prep_cat_output/DoubleMasked_y3a2_gold2.2.1_redmagic_highlum_highz_randoms.fits'
   # nickname for table if we are matching to another catalog
   tabname: 'redmagic_hiz_randoms'
   # WCS frame
@@ -46,7 +47,8 @@ background_catalog:
     # Set the path to catalog to be matched
     path: '/work/mccleary_group/dusty_halos/catalogs'
     # Name of catalog file
-    filename: 'des_y3_gold_MOF_highpurity_gals.fits'
+    #filename: 'des_y3_gold_MOF_highpurity_gals.fits'
+    filename: 'prep_cat_output/redmagic_hiz_y3_GOLD_JOINED_catalog.fits'
     # Should be 'kw', 'coordinates', or 'random'
     match_type: 'random'
     # If random matching, specifiy seed
