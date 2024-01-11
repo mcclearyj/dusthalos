@@ -72,6 +72,11 @@ class FgRandoms(HpMask):
             fcover = np.sum(self.mask > 0)*1./self.mask.size
             ndraw = np.ceil((nrand/fcover)*1.2).astype(int)
 
+            '''
+            This doesn't work! If NSIDE is too small, and the healpixels are
+            correspondingly large, you end up with large gaps in coordinate
+            space (fix garbled language later)
+
             # Generate random pixel indices for the highest resolution
             random_hmap_pixels = self.rng.integers(0,
                                     hp.nside2npix(self.NSIDE), 2*ndraw)
@@ -79,9 +84,16 @@ class FgRandoms(HpMask):
             # Get the RA and Dec coordinates of the random pixels for NSIDE
             rand_ra, rand_dec = hp.pix2ang(self.NSIDE, random_hmap_pixels,
                                     lonlat=True, nest=False)
+            '''
 
-            self.rand_coords = coord.SkyCoord(ra=rand_ra * u.deg,
-                                         dec=rand_dec * u.deg, frame='icrs')
+            rand_ras = self.rng.uniform(0, 2*np.pi, size=ndraw)
+            rand_sindecs = self.rng.uniform(np.sin(-np.pi/2),
+                                            np.sin(np.pi/2),
+                                            size=ndraw)
+            rand_decs = np.arcsin(rand_sindecs)
+
+            self.rand_coords = coord.SkyCoord(ra=rand_ras * u.rad,
+                                         dec=rand_dec * u.rad, frame='icrs')
 
         def write_outfile(self, prefix, mask2=None, overwrite=False):
             '''
