@@ -4,7 +4,7 @@
 
 # Description:
 # This configuration file allows you to customize the settings for
-# cat_prep_runner.py
+# prep_fg_randoms_runner.py
 
 # Note:
 # - Do not change the variable names (the text before the equal sign).
@@ -15,7 +15,7 @@
 # catalog_path: generic location for catalogs
 # output_path: where to save files
 
-# Set some defaults because I am lazy
+# Set some defaults
 paths:
   # general path for catalogs
   catalog_path: '/work/mccleary_group/dusty_halos/catalogs'
@@ -34,10 +34,11 @@ background_mask:
 
 # probably foreground mask
 foreground_mask:
-  # Where is it?
-  #path:
+  # Where is it? If blank, assumes general catalog_path
+  path:
   # What is it called?
   filename: 'WISExSCOSmask.fits'
   # IMPORTANT!!! GET COORDINATE FRAME CORRECT OR MASKING WILL FAIL!
   coordframe: 'galactic'
-  # Is mask partial? When in doubt, do not pass this argument. Code will figure it out
+  # Is mask partial? When in doubt, do not pass this argument; code will figure it out.
+  partial: 

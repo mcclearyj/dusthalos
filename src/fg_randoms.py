@@ -9,6 +9,7 @@ import astropy.coordinates as coord
 from astropy.coordinates import SkyCoord
 from datetime import datetime
 import time
+import matplotlib.pyplot as plt
 
 # Local imports
 from . import utils
@@ -91,9 +92,68 @@ class FgRandoms(HpMask):
                                             np.sin(np.pi/2),
                                             size=ndraw)
             rand_decs = np.arcsin(rand_sindecs)
+            rand_ras = np.rad2deg(rand_ras); rand_decs = np.rad2deg(rand_decs)
 
-            self.rand_coords = coord.SkyCoord(ra=rand_ras * u.rad,
-                                         dec=rand_dec * u.rad, frame='icrs')
+            self.rand_coords = coord.SkyCoord(ra=rand_ras * u.deg,
+                                         dec=rand_decs * u.deg, frame='icrs')
+
+        def _plot_radec(self, plotname='fgr_radec_distrib.png', 
+                        catalog_for_comparison=None, 
+                        comparison_ra_key='ra', comparison_dec_key='dec'):
+            """ FOR DEBUGGING PURPOSES: plot RA/Dec distributions """
+            
+            if catalog_for_comparison != None:
+                # We are comparing to another, outside catalog
+                comparison_cat = Table.read(catalog_for_comparison, memmap=True)
+                rand_ras = comparison_cat[comparison_ra_key]
+                rand_decs = comparison_cat[comparison_dec_key]
+                
+            else:
+                # Make uniformly distributed random ras, decs
+                # Declinations should be uniform in sin(dec), not uniform in dec
+                # Use degrees b/c easier to interpret
+                rand_ras = self.rng.uniform(0, 2*np.pi, size=int(self.nrand))
+                rand_ras = np.rad2deg(rand_ras)
+                rand_sindecs = self.rng.uniform(
+                               np.sin(-np.pi/2), np.sin(np.pi/2),
+                               size=int(self.nrand)
+                               )
+                rand_decs = np.rad2deg(
+                            np.arcsin(rand_sindecs)
+                            )
+            
+            # Create bins for histogram plots; use degrees b/c easier to understand
+            nn, ra_bins = np.histogram(self.rand_coords.ra.deg, bins=200)
+            nn, dec_bins = np.histogram(self.rand_coords.dec.deg, bins=200)
+            
+            # Now plot
+            fig, axs = plt.subplots(1, 2, figsize=(14,6), tight_layout=True)
+            
+            # First, RA
+            axs[0].hist(rand_ras, bins=ra_bins, 
+                        alpha=0.7, histtype='stepfilled', 
+                        density=True, label='uniform distrib')
+                        
+            axs[0].hist(self.rand_coords.ra.deg, bins=ra_bins, 
+                        alpha=0.8, histtype='stepfilled', 
+                        density=True, label='fg random cat')
+                        
+            axs[0].set_xlabel('RA'); axs[0].set_ylabel('Probability Density')
+            axs[0].legend(loc='lower right')
+ 
+            # Now, Dec
+            axs[1].hist(rand_decs, bins=dec_bins, 
+                        alpha=0.7, histtype='stepfilled', 
+                        density=True, label='uniform distrib')
+                        
+            axs[1].hist(self.rand_coords.dec.deg, bins=dec_bins, 
+                        alpha=0.8, histtype='stepfilled', 
+                        density=True, label='fg random cat')
+                        
+            axs[1].set_xlabel('Dec'); axs[0].set_ylabel('Probability Density')
+            axs[1].legend(loc='lower right')
+            
+            fig.savefig(os.path.join(self.config['path'], plotname))
 
         def write_outfile(self, prefix, mask2=None, overwrite=False):
             '''
@@ -137,6 +197,9 @@ class FgRandoms(HpMask):
 
             # Generate random coodinates with ~appx. the right number of galaxies
             self._grab_random_coords(nrand=nrand)
+            
+            # FOR DEBUGGING PURPOSES: plot RA/Dec distributions
+            self._plot_radec(plotname='fg_randoms_RADEC_distrib.png')
 
             # Apply own mask!
             seen = self.apply_mask(coords=self.rand_coords)
@@ -154,10 +217,20 @@ class FgRandoms(HpMask):
 
             # Get indicies of intersecting coordinates
             good_gals = self.apply_overlapping_masks(coords=self.rand_coords,
-                            mask1=self, mask2=mask2)
+                        mask1=self, mask2=mask2)
 
             # Filter own coordinates
             self.rand_coords = self.rand_coords[good_gals]
+            
+            # FOR DEBUGGING PURPOSES: plot RA/Dec distributions
+            catalog_for_comparison = os.path.join(self.config['path'], 
+            'prep_cat_output/redmagic_hiz_randoms_y3_GOLD_JOINED_catalog.fits'
+            )
+            
+            self._plot_radec(plotname='masked_fg_randoms_RADEC_distrib.png',
+                             catalog_for_comparison=catalog_for_comparison, 
+                             comparison_ra_key='ra', comparison_dec_key='dec'
+                             )
 
             # Write masked to file
             self.write_outfile(prefix='Bg+FgMask_randoms_', mask2=mask2,
