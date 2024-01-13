@@ -47,7 +47,7 @@ conda activate dustyhalos
 ###
 
 python $CODEDIR/runner_scripts/dust_calc_runner.py --config_file $CONFIGDIR/dust_calc_config_hidens.yaml
-
+python $CODEDIR/runner_scripts/dust_calc_runner.py --config_file $CONFIGDIR/dust_calc_config.yaml
 
 #mv slurm-dust_cat_maker.out "$dirname"
 
