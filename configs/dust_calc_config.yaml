@@ -6,10 +6,13 @@
 # -----------------
 
 # cat_config: path to configuration file specifying catalog properties
-# NOTE: allowed keys for "redshifts" are: use_bin_numbers, nbins, and min_z
+# NOTES:
+#  - allowed keys for "redshifts" are: use_bin_numbers, nbins, and min_z
+#  - "treecorr_npatch" sets the number of sky patches used in treecorr
 
 background_catalog:
   cat_config: 'configs/catalog_configs/redmagic_hiz_y3gold_joined.yaml'
+  treecorr_npatch: 3   # Set number of treecorr patches
   redshifts: # How to deal with redshifts
     #use_bin_numbers: True # Basically just for redmagic
     nbins: 5
@@ -34,7 +37,8 @@ foreground_randoms:
 output_path: 'output/redmagic_hiz'
 # basename or prefix for assorted files to save
 output_basename: 'dust_correlation_calzetti00_5zbins'
-
+# Plot output dust profile in kiloparsecs (True) or arcminutes (False)
+use_kpc: False
 
 # -----------------
 # Correlation function parameters:
@@ -44,6 +48,7 @@ treecorr_params:
   max_sep: 200.0
   bin_size: 0.6
   sep_units: 'arcmin'
+  var_method: 'sample'
 
 # Parameters for dust model
 dust_params:
@@ -58,4 +63,3 @@ dust_params:
 
 # Placeholder for selecting bands; make it a list?
 bands:
-

@@ -42,7 +42,7 @@ class Correlator:
         else:
             pass
 
-    def _load(self):
+    def _load(self, treecorr_npatch, treecorr_patch_centers):
         '''
         Parameter
             cat_config: a Catalog-format config file and create Catalog object
@@ -52,33 +52,50 @@ class Correlator:
         this_cat = Catalog(config=self.cat_config)
         coords = this_cat.grab_coords().icrs # Returns SkyCoord instance
         self.coords = coords
-        tc_cat = treecorr.Catalog(ra=coords.ra.deg, dec=coords.dec.deg,
-                                ra_units='deg',dec_units='deg')
+
+        kwargs = {
+            'patch_centers': treecorr_patch_centers,
+            'ra_units': 'deg',
+            'dec_units': 'deg'
+        }
+
+        if treecorr_npatch != None:
+            kwargs['npatch'] = int(treecorr_npatch)
+
+        tc_cat = treecorr.Catalog(ra=coords.ra.deg,
+                                  dec=coords.dec.deg, **kwargs
+                                  )
+
         return this_cat, tc_cat
 
-    def load(self):
+    def load(self, treecorr_npatch=None, treecorr_patch_centers=None):
         '''
-        Parameter
-            cat_config: a Catalog-format config file and create Catalog object
-        Returns:
-            treecorr_cat: standard treecorr.Catalog object, no extra frink
+        Populate dusthalos-type Catalog attribute (self.catalog) based on
+        config values after checking it is one of background, background_random,
+        foreground, foreground_random. Also populates the treecorr-type Catalog
+        attribute (self.treecorrCatalog).
         '''
-        # Can't run in the catalog type or whatever isn't in correl_config
+        # Can't load a dusthalo-catalog type not specified in correl_config
         ctype = self.ctype
         assert self.ctype in self.correl_config.keys()
 
-        # Error checking
+        # Check configuration values for errors
         cat_config_path = self.correl_config[ctype]['cat_config']
         self.cat_config = utils.read_yaml(cat_config_path)
         cat_config_checker(self.cat_config)
 
-        # Set Catalog and treecorrCatalog objects
-        self.Catalog, self.treecorrCatalog = self._load()
+        # If a treecorr_npatch argument isn't passed, look for one in config
+        # If there isn't one, returns "None"
+        if (treecorr_npatch == None):
+            treecorr_npatch = self.correl_config[ctype].get('treecorr_npatch')
+
+        # Set Catalog and treecorrCatalog attributes
+        self.Catalog, self.treecorrCatalog = \
+            self._load(treecorr_npatch, treecorr_patch_centers)
 
     def do_reddening(self):
-        '''
-        Call ReddeningCalculator, run it
-        '''
+        ''' Call ReddeningCalculator, run it '''
+
         ctype = self.ctype
 
         # Additional checker: make sure we have redshift
@@ -104,11 +121,16 @@ class Correlator:
         # Grab indices with clean photometry
         wg = reddening_calc.good_indices
 
+        # Grab patch centers from OG catalog
+        patch_centers = self.treecorrCatalog.patch_centers
+
         # I can't figure out a good way to organize treecorr.Catalog creation
         updated_treecorr_catalog = treecorr.Catalog(ra=self.coords[wg].ra.deg,
                                     dec=self.coords[wg].dec.deg, ra_units='deg',
                                     dec_units='deg', k=reddening_calc.mle,
-                                    w=reddening_calc.mle_var)
+                                    w=reddening_calc.mle_var,
+                                    patch_centers = patch_centers
+                                    )
 
         updated_treecorr_catalog.redshift = \
                     self.Catalog.data[wg][self.cat_config['z_tag']]
