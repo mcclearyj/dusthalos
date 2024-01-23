@@ -57,7 +57,7 @@ class RCParamsMixin:
 class DustPlotter(RCParamsMixin):
 
     def __init__(self, dk_file=None, dr_file=None, fr_file=None,
-                    rr_file=None, z_fg=None, z_theory=None):
+                    rr_file=None, ck_file=None, z_fg=None, z_theory=None):
         '''
         cat_files: str
             Filename for correlation functions.
@@ -67,42 +67,31 @@ class DustPlotter(RCParamsMixin):
             Mean redshift of background galaxies
         '''
 
-        self.dk = dk_file
-        self.dr = dr_file
-        self.fr = fr_file
-        self.rr = rr_file
+        self.dk = None
+        self.dr = None
+        self.fr = None
+        self.rr = None
+        self.ck = None  # Compensated signal
         self.z_fg = z_fg
         self.z_theory = z_theory
 
-        self._load_catalogs(dk_file, dr_file, fr_file, rr_file)
+        self._load_catalogs(dk_file, dr_file, fr_file, rr_file, ck_file)
 
-        return
-
-
-    def _load_catalogs(self, dk_file, dr_file, fr_file, rr_file):
+    def _load_catalogs(self, dk_file, dr_file, fr_file, rr_file, ck_file):
         '''
         dk_file : the signal (foreground x background galaxies correlation)
         dr_file : foreground x random background
         fr_file : random foreground x background
         rr_file : random foreground x random background
+        ck_file : compensated foreground x background signal
         '''
-
-        if dk_file is None:
-            dk_file = 'dust_correlation_signal.fits'
-        if dr_file is None:
-            dr_file = 'dust_correlation_bg_randoms.fits'
-        if fr_file is None:
-            fr_file = 'dust_correlation_fg_randoms.fits'
-        if rr_file is None:
-            rr_file = 'dust_correlation_fgxbg_randoms.fits'
-
-        self.dk = fitsio.read(dk_file)
-        self.dr = fitsio.read(dr_file)
-        self.fr = fitsio.read(fr_file)
-        self.rr = fitsio.read(rr_file)
-
-        return
-
+        
+        self.dk = Table.read(dk_file, format='ascii', header_start=1)
+        self.dr = Table.read(dr_file, format='ascii', header_start=1)
+        self.fr = Table.read(fr_file, format='ascii', header_start=1)
+        self.rr = Table.read(rr_file, format='ascii', header_start=1)
+        if ck_file != None:
+            self.ck = Table.read(ck_file, format='ascii', header_start=1)
 
     def _plot_res(self, outplotn, kpc):
         '''
@@ -111,17 +100,19 @@ class DustPlotter(RCParamsMixin):
         dr : fg x random
         fr : random fg x bg
         rr : fg random x bg random
+        dk_corr: corrected correlation function
         kpc : if true, plot x-axis in kpc units not arcmin (default false)
         outplotn : name for file to plot
         '''
-
+        
         dk = self.dk
         dr = self.dr
         fr = self.fr
         rr = self.rr
+        dk_corr = self.ck
 
         self.set_rc_params()
-
+ 
         # Scale Menard theory relationship to present-day
         # Proper kpc yields answer closest to the "book answer"
         theory_kpc = cosmo.kpc_proper_per_arcmin(self.z_theory)
@@ -136,9 +127,9 @@ class DustPlotter(RCParamsMixin):
         else:
             # Keep plot in arcminutes
             scl = 1.0
-            theory_scl  = (fg_gal_kpc/theory_kpc).value
+            #theory_scl  = (fg_gal_kpc/theory_kpc).value
+            theory_scl = theory_kpc.value
             xlabel_unit = 'arcmin'
-
 
         # Not sure this is right, trying to go from arcmin at z=0.36 to
         # equivalent arcmin at z=0.11
@@ -153,17 +144,15 @@ class DustPlotter(RCParamsMixin):
 
         ax.plot(theory_r, av, color='tab:red',
                 label=f'Menard (2010) scaled to z={self.z_fg:.3f}')
-
-
         ax.errorbar(dk['meanr']*scl, dk['kappa'], yerr=dk['sigma'],
-                    fmt='-.o',capsize=5, color='tab:orange',
+                    fmt='-.o', capsize=5, color='tab:orange',
                     label='raw signal')
         ax.errorbar(dk['meanr']*scl, dk['kappa']-fr['kappa'],
-                    yerr=dk['sigma'], fmt='-',capsize=5,
+                    yerr=dk['sigma'], fmt='-o', capsize=5,
                     color='tab:green', label='signal - fg_random')
         ax.errorbar(dk['meanr']*scl,
                     dk['kappa']-fr['kappa']-dr['kappa']+rr['kappa'],
-                    yerr=dk['sigma'],fmt='-o',capsize=5, color='tab:blue',
+                    yerr=dk['sigma'], fmt='-o', capsize=5, color='tab:blue',
                     label='signal - all_randoms')
 
         ax.set_xscale('log')
@@ -171,110 +160,44 @@ class DustPlotter(RCParamsMixin):
         ax.set_xlim(0.05*scl, 200*scl)
         ax.set_ylim(1E-5, 1)
         ax.set_xlabel(f'Impact parameter ({xlabel_unit})', fontsize=16)
-        ax.set_ylabel(r'$A_v$ (mag)', fontsize=16)
+        ax.set_ylabel(r'$A_{\rm V}$ (mag)', fontsize=16)
         ax.set_title('SCOS x redMaGiC', fontsize=16)
         ax.legend(fontsize=14)
 
         fig.savefig(outplotn)
-
-
-        return
-
-
-    def _plot_res_subsample(self):
-        '''
-        Special purpose plotting code for the report, saved b/c fancy error bar
-
-        dk : fg x bg correlation
-        dr : fg x random
-        fr : random fg x bg
-        rr : fg random x bg random
-        outplotn : name for file to plot
-        '''
-
-        dk = self.dk
-        dr = self.dr
-        fr = self.fr
-        rr = self.rr
-
-        low_dk = dk[0:3]
-        hi_dk = dk[3:]
-        mean_lo_dk = np.mean(low_dk['kappa'])
-        mean_lo_r = np.mean(low_dk['meanr'])
-        mean_lo_var = low_dk['sigma'][-1]
-
-        kmr = dk['kappa']-fr['kappa']-dr['kappa']+rr['kappa']
-        low_kmr = kmr[0:3]
-        mean_lo_kmr = np.mean(low_kmr)
-
-
-        fake_r = [mean_lo_r]; fake_r.extend(dk['meanr'][3:])
-        fake_dk = [mean_lo_dk+mean_lo_var]; fake_dk.extend(dk['kappa'][3:5]+dk['sigma'][3:5]); fake_dk.extend(dk['kappa'][5:])
-        #fake_kmr = [mean_lo_kmr+mean_lo_var]; fake_kmr.extend(kmr['kappa'][3:5]+kmr['sigma'][3:5]); fake_kmr.extend(dk['kappa'][5:])
-        fake_kmr = [mean_lo_kmr+mean_lo_var]; fake_kmr.extend(kmr[3:6]+dk['sigma'][3:6]);fake_kmr.extend(kmr[6:])
-        fake_sig = [low_dk['sigma'][-1]]; fake_sig.extend(dk['sigma'][3:])
-        fake_dk1 = [mean_lo_dk+mean_lo_var]; fake_dk1.extend(dk['kappa'][3:])
-
-        fake_r = np.array(fake_r)
-        dk = np.array(dk)
-        scl = 2.017*60 / 1000
-        #dk['meanr']*=scl
-        #fake_r*=scl
-
-        fig = plt.figure(figsize=(10,7), tight_layout=True)
-        ax=fig.add_subplot(111)
-        ax.set_xscale('log')
-        ax.set_yscale('log')
-        ax.plot(fake_r[0:6]*scl, fake_dk1[0:6], ':o', lw=1.2, color='tab:orange',  label=None)
-        ax.plot(fake_r[0:6]*scl, fake_kmr[0:6], ':o', lw=1.2, color='tab:blue',  label=None)
-        ax.plot(fake_r[5:]*scl, fake_dk1[5:], '-o', lw=1., color='tab:orange',  label='raw signal')
-        ax.plot(fake_r[5:]*scl, fake_kmr[5:], '-o', lw=1., color='tab:blue',  label='signal -  randoms')
-
-
-        err0, caps, bars = ax.errorbar(mean_lo_r*scl,mean_lo_dk+mean_lo_var, yerr=mean_lo_var, color='tab:orange',  capsize=5, uplims=True,label=None)
-        caps[1].set_marker(',')
-        err3, caps, bars = ax.errorbar(dk['meanr'][3]*scl, dk['kappa'][3], yerr=dk['sigma'][3]*0.65, capsize=5,color='tab:orange', uplims=True,label=None)
-        caps[1].set_marker(',')
-
-        err4 = ax.errorbar(dk['meanr'][4]*scl, dk['kappa'][4], yerr=dk['sigma'][4], capsize=5,color='tab:orange',label=None)
-        err5,caps,bar = ax.errorbar(dk['meanr'][5]*scl, dk['kappa'][5], yerr=dk['sigma'][5], lolims=True, capsize=5,color='tab:orange', label=None)
-        caps[1].set_marker(',')
-
-        err6 = ax.errorbar(dk['meanr'][6:]*scl, dk['kappa'][6:], yerr=dk['sigma'][6:], fmt='o', capsize=5,color='tab:orange', label=None)
-
-        err0,caps,bars = ax.errorbar(mean_lo_r*scl,mean_lo_kmr+mean_lo_var, yerr=mean_lo_var, color='tab:blue',  capsize=5, uplims=True,label=None)
-        caps[1].set_marker(',')
-
-        err3,caps,bars = ax.errorbar(dk['meanr'][3]*scl, kmr[3]+dk['sigma'][3], yerr=dk['sigma'][3], capsize=5,color='tab:blue',uplims=True, label=None)
-        caps[1].set_marker(',')
-
-        err4,caps,bars = ax.errorbar(dk['meanr'][4]*scl, kmr[4]+dk['sigma'][4], yerr=dk['sigma'][4]*0.9, capsize=5,color='tab:blue',uplims=True, label=None); caps[1].set_marker(',')
-        err5,caps,bars = ax.errorbar(dk['meanr'][5]*scl, kmr[5]+dk['sigma'][5], yerr=dk['sigma'][5]*0.6, capsize=5,color='tab:blue',uplims=True, label=None);caps[1].set_marker(',')
-        err6=ax.errorbar(dk['meanr'][6:]*scl, kmr[6:], yerr=dk['sigma'][6:], capsize=5,color='tab:blue', label=None)
-
-        #ax.plot(dk['meanr'],dk['kappa'],'o' , color='tab:orange', label='raw signal')
-        #ax.plot(dk['meanr'],kmr,'o', color='tab:blue', label='signal - randoms')
-
-        #ax.errorbar
-        #ax.errorbar(dk['meanr'][4:], dk['kappa'][4:], yerr=dk['sigma'][4:], fmt='o',linestyle=':', capsize=5,color='tab:orange', label='raw signal')
-        #ax.errorbar(dk['meanr'][4:], kmr[4:], yerr=dk['sigma'][4:],fmt='o', linestyle='-', color='tab:blue',capsize=5, label='signal - randoms')
-
-        ax.set_ylim(1e-4,0.4)
-        ax.set_xlim(0.026,25)
-        r = np.logspace(-2,2.7,10)*scl
-        av = 2.4e-3 * (r/2.227)**(-0.84)
-        avplot = ax.plot(r,av,label='Menard+ 2010 (scaled)',color='tab:red')
-        ax.set_xlabel('Impact parameter (kpc)',fontsize=16)
-        ax.set_ylabel(r'$A_v$ (mag)',fontsize=16)
-        ax.set_title(r'SCOS $\times$ redMaGiC', fontsize=16)
-        ax.legend(fontsize=14)
-
-        fig.tight_layout()
-        fig.savefig(outplotn)
-
-        return
-
-
+        
+        try:
+            fig, ax = plt.subplots(figsize=(10,7), tight_layout=True)
+            
+            ax.plot(theory_r, av, color='tab:red',
+                    label=f'Menard (2010) scaled to z={self.z_fg:.3f}')
+            ax.errorbar(dk_corr['meanr']*scl, dk_corr['kappa'],
+                        yerr=dk_corr['sigma'], fmt='--o', capsize=5, 
+                        color='tab:orange', label='compensated signal')
+            ax.errorbar(dk_corr['meanr']*scl,
+                        dk_corr['kappa']-dr['kappa']+rr['kappa'],
+                        yerr=dk_corr['sigma'],
+                        fmt='-o', capsize=5, color='tab:blue', 
+                        label='compensated signal - all randoms')
+            ax.set_xscale('log')
+            ax.set_yscale('log')
+            ax.set_xlim(0.05*scl, 200*scl)
+            ax.set_ylim(1E-5, 1)
+            ax.set_xlabel(f'Impact parameter ({xlabel_unit})', fontsize=16)
+            ax.set_ylabel(r'$A_{\rm V}$ (mag)', fontsize=16)
+            ax.set_title('SCOS x redMaGiC', fontsize=16)
+            ax.legend(fontsize=14)
+            
+            # Assuming we have gotten thus far, let's make a new file name
+            basename = os.path.basename(outplotn)
+            dirname  = os.path.dirname(outplotn)
+            comp_fig_name = 'compensated_' + basename
+            print(f"compensated figure name is {os.path.join(dirname, comp_fig_name)}")
+            fig.savefig(os.path.join(dirname, comp_fig_name))
+            
+        except:
+            raise "problem with correlplot"
+                    
     def plot_res(self, outplotn='dust_correlation_plot.png',
                     kpc=False, subsample=False):
         '''
@@ -282,16 +205,14 @@ class DustPlotter(RCParamsMixin):
         kpc : if true, plot x-axis in kpc units (default)
         subsample : use special-purpose plotting software
         '''
-
+        
         if subsample == True:
-            self._plot_res_subsample()
-
+            raise AttributeError('subsample plot is deprecated')
+            #self._plot_corr_res(outplotn, kpc)
         else:
             print(f'saving correlation plot figure to {outplotn}')
             self._plot_res(outplotn, kpc)
-
-        return
-
+        
 
 class OverlapPlotter(RCParamsMixin):
 
@@ -397,11 +318,11 @@ class OverlapPlotter(RCParamsMixin):
         ax.set_xlabel('RA'); ax.set_ylabel('Dec')
 
         # Plot the points - it takes a long time for them all to show up!
-        ax.plot(sky1.ra.wrap_at('180d').radian, sky1.dec.radian, ',',
-                    label=label1, color='xkcd:marine')
+        ax.plot(sky1.ra.wrap_at('180d').radian, sky1.dec.radian, '.',
+                label=label1, color='xkcd:marine', markersize=0.025)
         if (sky2 is not None):
-            ax.plot(sky2.ra.wrap_at('180d').radian, sky2.dec.radian, ',',
-                        label=label2, color='xkcd:neon red')
+            ax.plot(sky2.ra.wrap_at('180d').radian, sky2.dec.radian, '.',
+                    label=label2, color='xkcd:neon red', markersize=0.025)
         ax.legend(markerscale=400, loc='upper right')
         fig.tight_layout()
 
