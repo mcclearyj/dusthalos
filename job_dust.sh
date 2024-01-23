@@ -1,8 +1,8 @@
 #!/bin/sh
-#SBATCH -t 00:59:59
+#SBATCH -t 12:59:59
 #SBATCH -N 1
-#SBATCH --mem=50G
-#SBATCH --partition=express
+#SBATCH --mem=60G
+#SBATCH --partition=short
 #SBATCH -J dust_calc
 #SBATCH -v
 #SBATCH --mail-type=ALL
@@ -46,8 +46,10 @@ conda activate dustyhalos
 ### Go!
 ###
 
-python $CODEDIR/runner_scripts/dust_calc_runner.py --config_file $CONFIGDIR/dust_calc_config_hidens.yaml
-python $CODEDIR/runner_scripts/dust_calc_runner.py --config_file $CONFIGDIR/dust_calc_config.yaml
+#python $CODEDIR/runner_scripts/dust_calc_runner.py --config_file $CONFIGDIR/dust_calc_config.yaml
+#python $CODEDIR/runner_scripts/dust_calc_runner.py --config_file $CONFIGDIR/dust_calc_config_hidens.yaml
+
+python $CODEDIR/runner_scripts/dust_calc_runner.py --config_file $CONFIGDIR/dust_calc_config_systematics_test.yaml
 
 #mv slurm-dust_cat_maker.out "$dirname"
 

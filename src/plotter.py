@@ -57,7 +57,7 @@ class RCParamsMixin:
 class DustPlotter(RCParamsMixin):
 
     def __init__(self, dk_file=None, dr_file=None, fr_file=None,
-                    rr_file=None, z_fg=None, z_theory=None):
+                    rr_file=None, ck_file=None, z_fg=None, z_theory=None):
         '''
         cat_files: str
             Filename for correlation functions.
@@ -67,42 +67,31 @@ class DustPlotter(RCParamsMixin):
             Mean redshift of background galaxies
         '''
 
-        self.dk = dk_file
-        self.dr = dr_file
-        self.fr = fr_file
-        self.rr = rr_file
+        self.dk = None
+        self.dr = None
+        self.fr = None
+        self.rr = None
+        self.ck = None  # Compensated signal
         self.z_fg = z_fg
         self.z_theory = z_theory
 
-        self._load_catalogs(dk_file, dr_file, fr_file, rr_file)
+        self._load_catalogs(dk_file, dr_file, fr_file, rr_file, ck_file)
 
-        return
-
-
-    def _load_catalogs(self, dk_file, dr_file, fr_file, rr_file):
+    def _load_catalogs(self, dk_file, dr_file, fr_file, rr_file, ck_file):
         '''
         dk_file : the signal (foreground x background galaxies correlation)
         dr_file : foreground x random background
         fr_file : random foreground x background
         rr_file : random foreground x random background
+        ck_file : compensated foreground x background signal
         '''
-
-        if dk_file is None:
-            dk_file = 'dust_correlation_signal.fits'
-        if dr_file is None:
-            dr_file = 'dust_correlation_bg_randoms.fits'
-        if fr_file is None:
-            fr_file = 'dust_correlation_fg_randoms.fits'
-        if rr_file is None:
-            rr_file = 'dust_correlation_fgxbg_randoms.fits'
-
-        self.dk = fitsio.read(dk_file)
-        self.dr = fitsio.read(dr_file)
-        self.fr = fitsio.read(fr_file)
-        self.rr = fitsio.read(rr_file)
-
-        return
-
+        
+        self.dk = Table.read(dk_file, format='ascii', header_start=1)
+        self.dr = Table.read(dr_file, format='ascii', header_start=1)
+        self.fr = Table.read(fr_file, format='ascii', header_start=1)
+        self.rr = Table.read(rr_file, format='ascii', header_start=1)
+        if ck_file != None:
+            self.ck = Table.read(ck_file, format='ascii', header_start=1)
 
     def _plot_res(self, outplotn, kpc):
         '''
@@ -111,17 +100,19 @@ class DustPlotter(RCParamsMixin):
         dr : fg x random
         fr : random fg x bg
         rr : fg random x bg random
+        dk_corr: corrected correlation function
         kpc : if true, plot x-axis in kpc units not arcmin (default false)
         outplotn : name for file to plot
         '''
-
+        
         dk = self.dk
         dr = self.dr
         fr = self.fr
         rr = self.rr
+        dk_corr = self.ck
 
         self.set_rc_params()
-
+ 
         # Scale Menard theory relationship to present-day
         # Proper kpc yields answer closest to the "book answer"
         theory_kpc = cosmo.kpc_proper_per_arcmin(self.z_theory)
@@ -136,9 +127,9 @@ class DustPlotter(RCParamsMixin):
         else:
             # Keep plot in arcminutes
             scl = 1.0
-            theory_scl  = (fg_gal_kpc/theory_kpc).value
+            #theory_scl  = (fg_gal_kpc/theory_kpc).value
+            theory_scl = theory_kpc.value
             xlabel_unit = 'arcmin'
-
 
         # Not sure this is right, trying to go from arcmin at z=0.36 to
         # equivalent arcmin at z=0.11
@@ -154,14 +145,14 @@ class DustPlotter(RCParamsMixin):
         ax.plot(theory_r, av, color='tab:red',
                 label=f'Menard (2010) scaled to z={self.z_fg:.3f}')
         ax.errorbar(dk['meanr']*scl, dk['kappa'], yerr=dk['sigma'],
-                    fmt='-.o',capsize=5, color='tab:orange',
+                    fmt='-.o', capsize=5, color='tab:orange',
                     label='raw signal')
         ax.errorbar(dk['meanr']*scl, dk['kappa']-fr['kappa'],
-                    yerr=dk['sigma'], fmt='-o',capsize=5,
+                    yerr=dk['sigma'], fmt='-o', capsize=5,
                     color='tab:green', label='signal - fg_random')
         ax.errorbar(dk['meanr']*scl,
                     dk['kappa']-fr['kappa']-dr['kappa']+rr['kappa'],
-                    yerr=dk['sigma'],fmt='-o',capsize=5, color='tab:blue',
+                    yerr=dk['sigma'], fmt='-o', capsize=5, color='tab:blue',
                     label='signal - all_randoms')
 
         ax.set_xscale('log')
@@ -169,15 +160,44 @@ class DustPlotter(RCParamsMixin):
         ax.set_xlim(0.05*scl, 200*scl)
         ax.set_ylim(1E-5, 1)
         ax.set_xlabel(f'Impact parameter ({xlabel_unit})', fontsize=16)
-        ax.set_ylabel(r'$A_v$ (mag)', fontsize=16)
+        ax.set_ylabel(r'$A_{\rm V}$ (mag)', fontsize=16)
         ax.set_title('SCOS x redMaGiC', fontsize=16)
         ax.legend(fontsize=14)
 
         fig.savefig(outplotn)
-
-
-        return
-
+        
+        try:
+            fig, ax = plt.subplots(figsize=(10,7), tight_layout=True)
+            
+            ax.plot(theory_r, av, color='tab:red',
+                    label=f'Menard (2010) scaled to z={self.z_fg:.3f}')
+            ax.errorbar(dk_corr['meanr']*scl, dk_corr['kappa'],
+                        yerr=dk_corr['sigma'], fmt='--o', capsize=5, 
+                        color='tab:orange', label='compensated signal')
+            ax.errorbar(dk_corr['meanr']*scl,
+                        dk_corr['kappa']-dr['kappa']+rr['kappa'],
+                        yerr=dk_corr['sigma'],
+                        fmt='-o', capsize=5, color='tab:blue', 
+                        label='compensated signal - all randoms')
+            ax.set_xscale('log')
+            ax.set_yscale('log')
+            ax.set_xlim(0.05*scl, 200*scl)
+            ax.set_ylim(1E-5, 1)
+            ax.set_xlabel(f'Impact parameter ({xlabel_unit})', fontsize=16)
+            ax.set_ylabel(r'$A_{\rm V}$ (mag)', fontsize=16)
+            ax.set_title('SCOS x redMaGiC', fontsize=16)
+            ax.legend(fontsize=14)
+            
+            # Assuming we have gotten thus far, let's make a new file name
+            basename = os.path.basename(outplotn)
+            dirname  = os.path.dirname(outplotn)
+            comp_fig_name = 'compensated_' + basename
+            print(f"compensated figure name is {os.path.join(dirname, comp_fig_name)}")
+            fig.savefig(os.path.join(dirname, comp_fig_name))
+            
+        except:
+            raise "problem with correlplot"
+                    
     def plot_res(self, outplotn='dust_correlation_plot.png',
                     kpc=False, subsample=False):
         '''
@@ -185,17 +205,14 @@ class DustPlotter(RCParamsMixin):
         kpc : if true, plot x-axis in kpc units (default)
         subsample : use special-purpose plotting software
         '''
-
+        
         if subsample == True:
-            #self._plot_res_subsample()
-            raise ValueError("Plotter no longer supports subsample dust plot")
-
+            raise AttributeError('subsample plot is deprecated')
+            #self._plot_corr_res(outplotn, kpc)
         else:
             print(f'saving correlation plot figure to {outplotn}')
             self._plot_res(outplotn, kpc)
-
-        return
-
+        
 
 class OverlapPlotter(RCParamsMixin):
 
@@ -301,11 +318,11 @@ class OverlapPlotter(RCParamsMixin):
         ax.set_xlabel('RA'); ax.set_ylabel('Dec')
 
         # Plot the points - it takes a long time for them all to show up!
-        ax.plot(sky1.ra.wrap_at('180d').radian, sky1.dec.radian, ',',
-                    label=label1, color='xkcd:marine')
+        ax.plot(sky1.ra.wrap_at('180d').radian, sky1.dec.radian, '.',
+                label=label1, color='xkcd:marine', markersize=0.025)
         if (sky2 is not None):
-            ax.plot(sky2.ra.wrap_at('180d').radian, sky2.dec.radian, ',',
-                        label=label2, color='xkcd:neon red')
+            ax.plot(sky2.ra.wrap_at('180d').radian, sky2.dec.radian, '.',
+                    label=label2, color='xkcd:neon red', markersize=0.025)
         ax.legend(markerscale=400, loc='upper right')
         fig.tight_layout()
 

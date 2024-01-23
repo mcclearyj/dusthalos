@@ -7,7 +7,7 @@
 #SBATCH -v
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=jmac.ftw@gmail.com
-#SBATCH -o slurm-dus_cat_maker.out
+#SBATCH -o slurm-dust_cat_maker.out
 
 
 ###
@@ -48,5 +48,5 @@ conda activate dustyhalos
 
 #python $CODEDIR/runner_scripts/cat_prep_runner.py --config $CONFIGDIR/prep_hidens_randoms_config.yaml
 #python $CODEDIR/runner_scripts/make_color_redshift_plots.py 
-python $CODEDIR/runner_scripts/prep_fg_randoms_runner.py --config_path "$CONFIGDIR/prep_fg_randoms_config.yaml" 
+python $CODEDIR/runner_scripts/prep_fg_randoms_runner.py --config_file "$CONFIGDIR/prep_fg_randoms_config.yaml" 
 mv slurm-dust_cat_maker.out "$dirname"
