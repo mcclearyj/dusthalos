@@ -37,18 +37,15 @@ then
 ###
 ### Activate Conda
 ### 
+
 source /work/mccleary_group/miniconda3/etc/profile.d/conda.sh
-
 conda activate dustyhalos
-
 
 ###
 ### Go!
 ###
 
-#python $CODEDIR/runner_scripts/dust_calc_runner.py --config_file $CONFIGDIR/dust_calc_config.yaml
-#python $CODEDIR/runner_scripts/dust_calc_runner.py --config_file $CONFIGDIR/dust_calc_config_hidens.yaml
-
+#python $CODEDIR/runner_scripts/dust_calc_runner.py --config_file $CONFIGDIR/dust_calc_config_hidens_fitz99.yaml
 python $CODEDIR/runner_scripts/dust_calc_runner.py --config_file $CONFIGDIR/dust_calc_config_systematics_test.yaml
 
 #mv slurm-dust_cat_maker.out "$dirname"

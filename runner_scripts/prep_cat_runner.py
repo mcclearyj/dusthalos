@@ -32,7 +32,7 @@ def main(args):
         os.makedirs(config['paths']['output_path'])
 
     # Load foreground catalog from configuration file
-    fg = Catalog(config=config['foreground_catalog'], vb=vb)
+    fg = Catalog(config=config['foreground_catalog'], vb=vb, memmap=True)
 
     # Create foreground catalog mask from configuration file
     fg.create_mask_from_config(mask_config=config['foreground_mask'])
