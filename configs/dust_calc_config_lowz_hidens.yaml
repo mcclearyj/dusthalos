@@ -9,6 +9,7 @@
 
 background_catalog:
   cat_config: 'configs/catalog_configs/redmagic_hiz_y3gold_joined.yaml'
+  treecorr_npatch: 10   # Set number of treecorr patches
   redshifts: # How to deal with redshifts
     #use_bin_numbers: True # Basically just for redmagic
     nbins: 5
@@ -25,6 +26,16 @@ foreground_catalog:
 foreground_randoms:
   cat_config: 'configs/catalog_configs/lowz_redmagic_hidens_randoms.yaml'
 
+# ------------------
+# Output parameters
+# ------------------
+# Where output files and plots will get saved
+output_path: 'output/lowz_hidens_fg_X_hiz_bg'
+# basename or prefix for assorted files to save
+output_basename: 'LRG_dust_correlation_calzetti00_5zbins'
+# Plot output dust profile in kiloparsecs (True) or arcminutes (False)
+use_kpc: True
+
 # -----------------
 # Correlation function parameters:
 # -----------------
@@ -33,7 +44,8 @@ treecorr_params:
   max_sep: 200.0
   bin_size: 0.6
   sep_units: 'arcmin'
-
+  var_method: 'sample'
+  
 # Parameters for dust model
 dust_params:
   # Must be one of 'fm07', 'calzetti00', 'ccm89', 'odonnell94', 'fitzpatrick99'
@@ -48,10 +60,3 @@ dust_params:
 # Placeholder for selecting bands; make it a list?
 bands:
 
-# ------------------
-# Output parameters
-# ------------------
-# Where output files and plots will get saved
-output_path: 'output/hidens_fg_X_hiz_bg'
-# basename or prefix for assorted files to save
-output_basename: 'dust_correlation_calzetti00_5zbins'

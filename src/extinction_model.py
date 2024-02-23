@@ -51,8 +51,11 @@ class ExtinctionModel:
         elif model == 'calzetti00':
             self.dmdp = extinction.calzetti00(**kwargs, r_v=r_v)
         else:
+            model = 'fm07'
             self.dmdp = extinction.fm07(**kwargs)
-
+        
+        print(f"Using extinction model {model}") # Comfort display
+        
     def get_dust_model(self):
         '''
         Get a dust model based on configuration file parameters

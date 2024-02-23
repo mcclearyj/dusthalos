@@ -1,6 +1,7 @@
 from src.plotter import OverlapPlotter
 import os
 
+
 cat_dir = '/Users/j.mccleary/Research/dusty_halos/catalogs'
 out_dir = '/Users/j.mccleary/Research/dusty_halos/catalogs/prep_cat_output'
 #cat_dir = '/work/mccleary_group/dusty_halos/prep_cat_output'

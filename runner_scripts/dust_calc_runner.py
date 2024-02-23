@@ -24,10 +24,11 @@ def make_names(correl_config):
     outdir = correl_config['output_path']
     base = correl_config['output_basename']
 
-    names = {'dk_outfile': os.path.join(outdir, base + '_raw_signal.fits'),
-             'dr_outfile': os.path.join(outdir, base + '_bg_randoms.fits'),
-             'fr_outfile': os.path.join(outdir, base + '_fg_randoms.fits'),
-             'rr_outfile': os.path.join(outdir, base + '_fgxbg_randoms.fits'),
+    names = {'dk_outfile': os.path.join(outdir, base + '_raw_signal.txt'),
+             'dr_outfile': os.path.join(outdir, base + '_bg_randoms.txt'),
+             'fr_outfile': os.path.join(outdir, base + '_fg_randoms.txt'),
+             'rr_outfile': os.path.join(outdir, base + '_fgxbg_randoms.txt'),
+             'ck_outfile': os.path.join(outdir, base + '_compensated_signal.txt'),
              'cov_output': os.path.join(outdir, base + '_covariance.txt'),
              'fig_output': os.path.join(outdir, base + '_figure.png')
              }
@@ -47,25 +48,21 @@ def get_dust(fg, fgr, bg, bgr, names, correl_config):
     print('Correlating fg_rand x bg...\n')
     FR = treecorr.NKCorrelation(**correl_config['treecorr_params'])
     FR.process(fgr.treecorrCatalog, bg.treecorrCatalog)
-    FR.calculateXi()
     FR.write(names.fr_outfile)
 
     print('Correlating fg x bg_rand...\n')
     RK = treecorr.NKCorrelation(**correl_config['treecorr_params'])
     RK.process(fg.treecorrCatalog, bgr.treecorrCatalog)
-    RK.calculateXi()
     RK.write(names.dr_outfile)
 
     print('Correlating fg_rand x bg_rand...\n')
     RR = treecorr.NKCorrelation(**correl_config['treecorr_params'])
     RR.process(fgr.treecorrCatalog, bgr.treecorrCatalog)
-    RR.calculateXi()
     RR.write(names.rr_outfile)
 
     print('Calculating corrected signal...\n')
-    DK.calculateXi(rk=FR)
-    corrected_xi = DK.xi - RK.xi + RR.xi
-    DK.write(names.dk_outfile.replace('raw', 'corrected'))
+    corr_xi, corr_varxi = DK.calculateXi(rk=FR)
+    DK.write(rk=FR, file_name=names.ck_outfile)
 
     print('Calculating fg/fgr/bg/bgr covariance...\n')
     jointcov = treecorr.estimate_multi_cov([DK, RK, RR], 'sample')
@@ -119,6 +116,7 @@ def main(args):
                        dr_file = names.dr_outfile,
                        fr_file = names.fr_outfile,
                        rr_file = names.rr_outfile,
+                       ck_file = names.ck_outfile, 
                        z_fg = mean_fg_z,
                        z_theory = z_theory
                        )
