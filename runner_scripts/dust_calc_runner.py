@@ -111,7 +111,7 @@ def main(args):
     names = make_names(correl_config)
 
     # Do calculation
-    get_dust(fg=fg, fgr=fgr, bg=bg, bgr=None,
+    get_dust(fg=fg, fgr=fgr, bg=bg, bgr=bgr,
                 names=names, correl_config=correl_config)
 
     print('Plotting output figure...\n')

@@ -301,10 +301,12 @@ class OverlapPlotter(RCParamsMixin):
         ax.set_xlabel('RA'); ax.set_ylabel('Dec')
 
         # Plot the points - it takes a long time for them all to show up!
-        ax.plot(sky1.ra.wrap_at('180d').radian, sky1.dec.radian, ',',
+        ax.plot(sky1.ra.wrap_at('180d').radian, sky1.dec.radian, '.',
+                    markersize=0.02,
                     label=label1, color='xkcd:marine')
         if (sky2 is not None):
-            ax.plot(sky2.ra.wrap_at('180d').radian, sky2.dec.radian, ',',
+            ax.plot(sky2.ra.wrap_at('180d').radian, sky2.dec.radian, '.',
+                        markersize=0.2,
                         label=label2, color='xkcd:neon red')
         ax.legend(markerscale=400, loc='upper right')
         fig.tight_layout()

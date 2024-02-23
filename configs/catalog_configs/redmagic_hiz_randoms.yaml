@@ -1,6 +1,6 @@
   # Where is it? Leave blank or commented out to use default
-  path: /work/mccleary_group/dusty_halos/catalogs/prep_cat_output
-  #path: '/Users/j.mccleary/Research/dusty_halos/catalogs/prep_cat_output'
+  #path: /work/mccleary_group/dusty_halos/catalogs/prep_cat_output
+  path: '/Users/j.mccleary/Research/dusty_halos/catalogs/prep_cat_output'
   # What is it called?
   filename: redmagic_hiz_randoms_y3_GOLD_JOINED_catalog.fits
   # nickname for table if we are matching to another catalog
