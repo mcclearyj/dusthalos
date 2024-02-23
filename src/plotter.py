@@ -323,6 +323,7 @@ class OverlapPlotter(RCParamsMixin):
         if (sky2 is not None):
             ax.plot(sky2.ra.wrap_at('180d').radian, sky2.dec.radian, '.',
                     label=label2, color='xkcd:neon red', markersize=0.025)
+
         ax.legend(markerscale=400, loc='upper right')
         fig.tight_layout()
 
