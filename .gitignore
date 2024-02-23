@@ -1,0 +1,15 @@
+writeup/.DS_Store
+.DS_Store
+build/
+dist/
+dusthalos.egg-info/
+output/
+runner_scripts/dust_calc_tester.py
+src/__pycache__/
+src_v1/optimal_estimator.py
+writeup/.ipynb_checkpoints/
+writeup/misc_dust_plots\ -\ Jupyter Notebook_files/
+color*.png 
+./*.out 
+runner_scripts/slurm_outfiles/
+slurm_outfiles/

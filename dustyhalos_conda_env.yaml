@@ -1,0 +1,15 @@
+name: dustyhalos
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - healpy
+  - matplotlib
+  - treecorr
+  - ipython
+  - jupyter
+  - astropy-healpix
+  - pyarrow
+  - esutil
+  - extinction
+prefix: /Users/j.mccleary/Software/miniconda3/envs/dustyhalos

@@ -51,7 +51,7 @@ If this excess dust is real, it has serious implications for all cluster cosmolo
 
 \section{Methods\label{sec:methods}}
 
-A screen of dust will Rayleigh scatter incoming light, resulting in an attenuation or extinction and changing its spectrum by reddening it. The total extinction $\rm A_\lambda$ quantifies wavelength-depended dust absorption; reddening is usually parametrized by the selective extinction red versus blue light: $\rm  E(B-V) = (B-V)_{\rm meas} - (B-V)_0$. %(or similarly, $\rm E(g-i) = (g-i)_{\rm meas} - (g-i)_0 $ for SDSS filters). 
+A screen of dust will Rayleigh scatter incoming light, resulting in an attenuation or extinction and changing its spectrum by reddening it. The total extinction $\rm A_\lambda$ quantifies wavelength-dependent dust absorption; reddening is usually parametrized by the selective extinction red versus blue light: $\rm  E(B-V) = (B-V)_{\rm meas} - (B-V)_0$. %(or similarly, $\rm E(g-i) = (g-i)_{\rm meas} - (g-i)_0 $ for SDSS filters). 
 %More dust yields a more positive selective extinction $\rm E(B-V)$. 
 The steepness of $\rm A_\lambda$ as a function of wavelength is usually parametrized by 
 \begin{equation}
@@ -60,7 +60,7 @@ R_V = \rm{A_V / E(B - V)}
 For interstellar Milky Way dust, $R_V \sim 3.1$; dense molecular clouds have $R_V \sim 5$. 
 
 % Somewhat wishy-washy, tighten up during editing
-These statements are generally true for dust-induced reddening and extinction. However, we are looking for a faint, extended signal, buried within the noise and color scatter of our background sample. Magnitude differences like $\rm E(B - V)$ are instructive, but somewhat simplistic given the subtlety of the effect. Here, we use maximum likelihood parameter estimation to find a linear combination of wavelengths that represents the best chance of finding the extinction. This optimal estimator is applied to a sample of background galaxies that have been binned in redshift space to control for cosmological (not dust-induced) reddening. Finally, the resulting dust extinction measure is correlated with the presence of foreground galaxies to search . We describe our approach in greater detail below, noting that for the sake of readability all vector or matrix quantities appear in boldface. 
+These statements are generally true for dust-induced reddening and extinction. However, we are looking for a faint, extended signal, buried within the noise and color scatter of our background sample. Magnitude differences like $\rm E(B - V)$ are instructive, but somewhat simplistic given the subtlety of the effect. Here, we use maximum likelihood parameter estimation to find a linear combination of wavelengths that represents the best chance of finding the extinction. This optimal estimator is applied to a sample of background galaxies that have been binned in redshift space to control for cosmological (not dust-induced) reddening. Finally, the resulting dust extinction measure is correlated with the presence of foreground galaxies to search for extended, anomalous reddening consistent with dust halos at cosmological scales. We describe our approach in greater detail below, noting that for the sake of readability all vector or matrix quantities appear in boldface. 
 
 \subsection{A Maximum Likelihood Estimator for Dust Extinction}\label{ssec:estimator}
 
@@ -265,4 +265,10 @@ this measurement constrains the average radial dust column density (and thus dus
 \printbibliography
 
 
-\end{document}  
+\end{document}
+
+ Fundamentally, the estimators are the projection of the multidimensional vector of galaxy colors onto the appropriate reddening vector. These maximum likelihood estimators are derived using subsamples of the ultraviolet, optical
+1-8
+Use or disclosure of information contained on this sheet is subject to the restriction on the Cover Page of this proposal.
+ 
+and infrared galaxy catalogs that will actually be used in the proposed project. The variance associated with these estimators is very small. For an estimator based solely on the optical (SDSS) colors of redMaGiC galaxies, the variance per galaxy is 1.7\%. The scatter of the reddening estimator for redMaGiC is shown in Figure 1.4. When the sample is generalized to all SDSS galaxies with WISE and GALEX photometry, per-galaxy variance in the reddening vector falls below 1\%. With an expected ~500,000 foreground-background galaxy pairs,sigma/root_n implies that the sample variance is ~10-5. Accordingly, this estimator will yield an exquisitely precise measurement of the stacked extinction profile out to the 10 Mpc radius, where the differential extinction quoted in the Ménard paper was of order 10-4.

@@ -1,0 +1,44 @@
+################################################################################
+#                            CONFIGURATION FILE                               #
+################################################################################
+
+# Description:
+# This configuration file allows you to customize the settings for
+# prep_fg_randoms_runner.py
+
+# Note:
+# - Do not change the variable names (the text before the equal sign).
+# - Only modify the values on the right side of the equal sign (=).
+
+# General Settings:
+# -----------------
+# catalog_path: generic location for catalogs
+# output_path: where to save files
+
+# Set some defaults
+paths:
+  # general path for catalogs
+  catalog_path: '/work/mccleary_group/dusty_halos/catalogs'
+  # Where to save outputs
+  output_path: '/work/mccleary_group/dusty_halos/catalogs/prep_cat_output'
+
+# background mask
+background_mask:
+  # Where is it? Leave blank or commented out to use default paths
+  # What is it called?
+  filename: 'y3_gold_2.2.1_RING_joint_redmagic_v0.5.1_wide_maglim_v2.2_mask.fits'
+  # IMPORTANT!!! GET COORDINATE FRAME CORRECT OR MASKING WILL FAIL!
+  coordframe: 'icrs'
+  # Is mask partial?
+  partial: True
+
+# probably foreground mask
+foreground_mask:
+  # Where is it? If blank, assumes general catalog_path
+  path:
+  # What is it called?
+  filename: 'WISExSCOSmask.fits'
+  # IMPORTANT!!! GET COORDINATE FRAME CORRECT OR MASKING WILL FAIL!
+  coordframe: 'galactic'
+  # Is mask partial? When in doubt, do not pass this argument; code will figure it out.
+  partial: 
