@@ -125,12 +125,13 @@ class Correlator:
         patch_centers = self.treecorrCatalog.patch_centers
 
         # I can't figure out a good way to organize treecorr.Catalog creation
-        updated_treecorr_catalog = treecorr.Catalog(ra=self.coords[wg].ra.deg,
-                                    dec=self.coords[wg].dec.deg, ra_units='deg',
-                                    dec_units='deg', k=reddening_calc.mle,
-                                    w=reddening_calc.mle_var,
-                                    patch_centers = patch_centers
-                                    )
+        updated_treecorr_catalog = treecorr.Catalog(
+            ra=self.coords[wg].ra.deg,
+            dec=self.coords[wg].dec.deg, ra_units='deg',
+            dec_units='deg', k=reddening_calc.mle,
+            w=reddening_calc.mle_var,
+            patch_centers = patch_centers
+        )
 
         updated_treecorr_catalog.redshift = \
                     self.Catalog.data[wg][self.cat_config['z_tag']]
