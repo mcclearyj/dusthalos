@@ -13,3 +13,6 @@ color*.png
 ./*.out 
 runner_scripts/slurm_outfiles/
 slurm_outfiles/
+./writeup/*log
+./writeup/*aux
+./writeup/*out
