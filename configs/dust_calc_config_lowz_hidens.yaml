@@ -32,9 +32,8 @@ foreground_randoms:
 # Where output files and plots will get saved
 output_path: 'output/lowz_hidens_fg_X_hiz_bg'
 # basename or prefix for assorted files to save
-output_basename: 'LRG_dust_correlation_calzetti00_5zbins'
+output_basename: 'LRG_dust_correlation_calzetti00_9bins'
 # Plot output dust profile in kiloparsecs (True) or arcminutes (False)
-use_kpc: True
 
 # -----------------
 # Correlation function parameters:

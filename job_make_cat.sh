@@ -46,5 +46,6 @@ conda activate dustyhalos
 ### Go!
 ###
 
-python $CODEDIR/runner_scripts/prep_cat_runner.py --config_file "$CONFIGDIR/prep_gaia_catalog_config.yaml"
-mv slurm-dust_cat_maker.out "$dirname"
+#python $CODEDIR/runner_scripts/prep_cat_runner.py --config_file "$CONFIGDIR/prep_gaia_catalog_config.yaml"
+python $CODEDIR/junk.py
+#mv slurm-dust_cat_maker.out "$dirname"

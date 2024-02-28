@@ -1,5 +1,5 @@
 #!/bin/sh
-#SBATCH -t 12:59:59
+#SBATCH -t 2:59:59
 #SBATCH -N 1
 #SBATCH --mem=60G
 #SBATCH --partition=short
@@ -45,8 +45,7 @@ conda activate dustyhalos
 ### Go!
 ###
 
-#python $CODEDIR/runner_scripts/dust_calc_runner.py --config_file $CONFIGDIR/dust_calc_config_hidens_fitz99.yaml
-python $CODEDIR/runner_scripts/dust_calc_runner.py --config_file $CONFIGDIR/dust_calc_config_systematics_test.yaml
+python $CODEDIR/runner_scripts/dust_calc_runner.py --config_file $CONFIGDIR/dust_calc_config_9zbins.yaml
 
 #mv slurm-dust_cat_maker.out "$dirname"
 

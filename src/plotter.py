@@ -118,27 +118,17 @@ class DustPlotter(RCParamsMixin):
         theory_kpc = cosmo.kpc_proper_per_arcmin(self.z_theory)
         fg_gal_kpc = cosmo.kpc_proper_per_arcmin(self.z_fg)
 
-        if kpc == True:
-            # Converts us from arcminutes to kpc
-            scl = fg_gal_kpc.value
-            #theory_scl = 304*cosmo.h -- yields their answer
-            theory_scl = theory_kpc.value
-            xlabel_unit = 'kpc'
-        else:
-            # Keep plot in arcminutes
-            scl = 1.0
-            #theory_scl  = (fg_gal_kpc/theory_kpc).value
-            theory_scl = theory_kpc.value
-            xlabel_unit = 'arcmin'
+        # Menard dust relationship 
+        theory_r_arcmin = np.logspace(-5,5,20)
+        theory_r = theory_r_arcmin * theory_kpc.value * cosmo.h
+        coeff = 4.4e-3
+        av_scale = 100
+        av = coeff * (theory_r/av_scale)**(-0.86)
 
-        # Not sure this is right, trying to go from arcmin at z=0.36 to
-        # equivalent arcmin at z=0.11
-        # r is defined in arcminutes, so keep it in arcminutes.
-        # The relationship does seem to be defined in "inverse arcminutes"/"inverse kpc"
-        # so scales need to be 1/kpc_per_arcmin
-        # SO, 1/arcmin *(1/(kpc_per_arcmin)) -- arcmin/kpc.
-        theory_r = np.logspace(-2,5,10)
-        av = 2.5e-3 * (theory_r/theory_scl)**(-0.86)
+        # Converts us from arcminutes to h^-1 kpc 
+        # Menard relationship was in terms of h
+        scl = fg_gal_kpc.value * cosmo.h
+        #theory_scl = 304.6 * cosmo.h  #-- yields their answer
 
         fig, ax = plt.subplots(figsize=(10,7), tight_layout=True)
 
@@ -159,7 +149,7 @@ class DustPlotter(RCParamsMixin):
         ax.set_yscale('log')
         ax.set_xlim(0.05*scl, 200*scl)
         ax.set_ylim(1E-5, 1)
-        ax.set_xlabel(f'Impact parameter ({xlabel_unit})', fontsize=16)
+        ax.set_xlabel(r'Impact parameter ($h ^ {-1}$ kpc)', fontsize=16)
         ax.set_ylabel(r'$A_{\rm V}$ (mag)', fontsize=16)
         ax.set_title('SCOS x redMaGiC', fontsize=16)
         ax.legend(fontsize=14)
@@ -183,7 +173,7 @@ class DustPlotter(RCParamsMixin):
             ax.set_yscale('log')
             ax.set_xlim(0.05*scl, 200*scl)
             ax.set_ylim(1E-5, 1)
-            ax.set_xlabel(f'Impact parameter ({xlabel_unit})', fontsize=16)
+            ax.set_xlabel(r'Impact parameter ($h ^ {-1}$ kpc)', fontsize=16)
             ax.set_ylabel(r'$A_{\rm V}$ (mag)', fontsize=16)
             ax.set_title('SCOS x redMaGiC', fontsize=16)
             ax.legend(fontsize=14)

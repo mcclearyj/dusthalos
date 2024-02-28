@@ -27,7 +27,8 @@ foreground_catalog:
   cat_config: 'configs/catalog_configs/WISExSCOS_cat.yaml'
 
 foreground_randoms:
-  cat_config: 'configs/catalog_configs/WISExSCOS_randoms.yaml'
+  #cat_config: 'configs/catalog_configs/WISExSCOS_randoms.yaml'
+  cat_config: 'configs/catalog_configs/redmagic_hiz_randoms_notjoined.yaml'
 
 # ------------------
 # Output parameters
@@ -36,7 +37,7 @@ foreground_randoms:
 # Where output files and plots will get saved
 output_path: 'output/redmagic_hidens_newvar'
 # basename or prefix for assorted files to save
-output_basename: 'dust_correlation_calzetti00_15zbins'
+output_basename: 'use_hiz_randoms_calzetti00_15zbins'
 # Plot output dust profile in kiloparsecs (True) or arcminutes (False)
 use_kpc: True
 
