@@ -122,16 +122,16 @@ class CatalogJoiner:
 
     def _join_cats_random(self, overwrite=False):
         '''
-        Special-purpose function to draw random galaxies from catalog 2 ("c2") 
-        that like within some redshift bin "zb" and assign their properties, 
-        viz., colors, to corresponding galaxies in catalog 1 ("c1"). Useful for 
+        Special-purpose function to draw random galaxies from catalog 2 ("c2")
+        that like within some redshift bin "zb" and assign their properties,
+        viz., colors, to corresponding galaxies in catalog 1 ("c1"). Useful for
         assigning colors to redMaGiC random catalogs!
         '''
 
         c1 = self.cat1; c2 = self.cat2
         gmr = c2.data['mof_cm_mag_corrected_g'] - c2.data['mof_cm_mag_corrected_r']
         imz = c2.data['mof_cm_mag_corrected_i'] - c2.data['mof_cm_mag_corrected_z']
-        
+
         if 'seed' in self.config.keys():
             seed = self.config['seed']
         else:
@@ -151,12 +151,16 @@ class CatalogJoiner:
         zcol_c1 = 'z'
         zcol_c2 = 'dnf_zmc_mof'
 
-        # OK, here, we are creating the redshift bins of catalog c1
+        # OK, here, we are creating the redshift bins of catalog c1 -- could use different algorithm?
         c1_zhist, c1_zbins = np.histogram(c1.data[zcol_c1], bins=n_zbins)
 
         # digitize the catalogs to be matched into c1's redshift bins
-        c1_zbin_values = np.digitize(c1.data[zcol_c1], bins=c1_zbins, right=False)
-        c2_zbin_values = np.digitize(c2.data[zcol_c2], bins=c1_zbins, right=False)
+        c1_zbin_values = np.digitize(
+            c1.data[zcol_c1], bins=c1_zbins, right=False
+        )
+        c2_zbin_values = np.digitize(
+            c2.data[zcol_c2], bins=c1_zbins, right=False
+        )
 
         # Set the number of bins
         bin_numbers = np.unique(c1_zbin_values)
@@ -169,21 +173,27 @@ class CatalogJoiner:
 
         # Loop over all redshift bins specified in bin_numbers
         for zb in bin_numbers:
-            
+
             # select only galaxies in the current redshift bin
             c2_slice = (c2_zbin_values == zb)
             c1_slice = (c1_zbin_values == zb)
 
-            print(f'random matching: Working on bin {zb}: z={np.median(c2.data[zcol_c2][c2_slice])}')
+            print(
+                f"random matching: Working on bin {zb}:",
+                f" z={np.median(c2.data[zcol_c2][c2_slice])}"
+            )
 
             # Help yourself to some random indices
-            randind = rng.integers(0, len(c2.data[c2_slice]),
-                                   size=len(c1.data[c1_slice])
-                                   )
+            randind = rng.integers(
+                0, len(c2.data[c2_slice]), size=len(c1.data[c1_slice])
+            )
 
-            this_set = full_c2_index[c2_slice] 
+            this_set = full_c2_index[c2_slice]
             this_subset = full_c2_index[c2_slice][randind]
-            print(f"\t There are {np.count_nonzero(c1_slice)} c1 galaxies and {np.count_nonzero(c2_slice)} c2 galaxies in bin")
+            print(
+                f"\t There are {np.count_nonzero(c1_slice)} c1 galaxies ",
+                f"and {np.count_nonzero(c2_slice)} c2 galaxies in bin"
+            )
             print(f"\t Median g-r in bin is {np.median(gmr[this_set])}")
             print(f"\t Median g-r in subset is {np.median(gmr[this_subset])}")
             print("")
@@ -191,7 +201,6 @@ class CatalogJoiner:
             print(f"\t Median i-z in subset is {np.median(imz[this_subset])}")
             print("")
 
-            
             # This holds the indices of matched table (too many hstacks otherwise)
             c1_index_holder.extend(full_c1_index[c1_slice])
             c2_index_holder.extend(full_c2_index[c2_slice][randind])
