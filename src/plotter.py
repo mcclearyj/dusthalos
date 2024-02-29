@@ -58,14 +58,14 @@ class DustPlotter(RCParamsMixin):
 
     def __init__(self, dk_file=None, dr_file=None, fr_file=None,
                     rr_file=None, ck_file=None, z_fg=None, z_theory=None):
-        '''
+        """
         cat_files: str
             Filename for correlation functions.
         z_theory: float
             Average value of Menard 2010 galaxies
         z_bg: float
             Mean redshift of background galaxies
-        '''
+        """
 
         self.dk = None
         self.dr = None
@@ -78,14 +78,14 @@ class DustPlotter(RCParamsMixin):
         self._load_catalogs(dk_file, dr_file, fr_file, rr_file, ck_file)
 
     def _load_catalogs(self, dk_file, dr_file, fr_file, rr_file, ck_file):
-        '''
+        """
         dk_file : the signal (foreground x background galaxies correlation)
         dr_file : foreground x random background
         fr_file : random foreground x background
         rr_file : random foreground x random background
         ck_file : compensated foreground x background signal
-        '''
-        
+        """
+
         self.dk = Table.read(dk_file, format='ascii', header_start=1)
         self.dr = Table.read(dr_file, format='ascii', header_start=1)
         self.fr = Table.read(fr_file, format='ascii', header_start=1)
@@ -94,7 +94,7 @@ class DustPlotter(RCParamsMixin):
             self.ck = Table.read(ck_file, format='ascii', header_start=1)
 
     def _plot_res(self, outplotn, kpc):
-        '''
+        """
         Plot up the correlation results, compare to the published result.
         dk : fg x bg correlation
         dr : fg x random
@@ -103,8 +103,8 @@ class DustPlotter(RCParamsMixin):
         dk_corr: corrected correlation function
         kpc : if true, plot x-axis in kpc units not arcmin (default false)
         outplotn : name for file to plot
-        '''
-        
+        """
+
         dk = self.dk
         dr = self.dr
         fr = self.fr
@@ -112,7 +112,7 @@ class DustPlotter(RCParamsMixin):
         dk_corr = self.ck
 
         self.set_rc_params()
- 
+
         # Scale Menard theory relationship to present-day
         # Proper kpc yields answer closest to the "book answer"
         theory_kpc = cosmo.kpc_proper_per_arcmin(self.z_theory)
@@ -165,19 +165,19 @@ class DustPlotter(RCParamsMixin):
         ax.legend(fontsize=14)
 
         fig.savefig(outplotn)
-        
+
         try:
             fig, ax = plt.subplots(figsize=(10,7), tight_layout=True)
-            
+
             ax.plot(theory_r, av, color='tab:red',
                     label=f'Menard (2010) scaled to z={self.z_fg:.3f}')
             ax.errorbar(dk_corr['meanr']*scl, dk_corr['kappa'],
-                        yerr=dk_corr['sigma'], fmt='--o', capsize=5, 
+                        yerr=dk_corr['sigma'], fmt='--o', capsize=5,
                         color='tab:orange', label='compensated signal')
             ax.errorbar(dk_corr['meanr']*scl,
                         dk_corr['kappa']-dr['kappa']+rr['kappa'],
                         yerr=dk_corr['sigma'],
-                        fmt='-o', capsize=5, color='tab:blue', 
+                        fmt='-o', capsize=5, color='tab:blue',
                         label='compensated signal - all randoms')
             ax.set_xscale('log')
             ax.set_yscale('log')
@@ -187,38 +187,38 @@ class DustPlotter(RCParamsMixin):
             ax.set_ylabel(r'$A_{\rm V}$ (mag)', fontsize=16)
             ax.set_title('SCOS x redMaGiC', fontsize=16)
             ax.legend(fontsize=14)
-            
+
             # Assuming we have gotten thus far, let's make a new file name
             basename = os.path.basename(outplotn)
             dirname  = os.path.dirname(outplotn)
             comp_fig_name = 'compensated_' + basename
             print(f"compensated figure name is {os.path.join(dirname, comp_fig_name)}")
             fig.savefig(os.path.join(dirname, comp_fig_name))
-            
+
         except:
             raise "problem with correlplot"
-                    
+
     def plot_res(self, outplotn='dust_correlation_plot.png',
                     kpc=False, subsample=False):
-        '''
+        """
         outplotn : save plot file to
         kpc : if true, plot x-axis in kpc units (default)
         subsample : use special-purpose plotting software
-        '''
-        
+        """
+
         if subsample == True:
             raise AttributeError('subsample plot is deprecated')
             #self._plot_corr_res(outplotn, kpc)
         else:
             print(f'saving correlation plot figure to {outplotn}')
             self._plot_res(outplotn, kpc)
-        
+
 
 class OverlapPlotter(RCParamsMixin):
 
     def __init__(self, cat1_name=None, cat2_name=None,
                     outname='catalog_overlap.pdf', outdir='./'):
-        '''
+        """
         Make nice catalog RA/Dec overlap plot in both Cartesian and
         Aitoff projection
 
@@ -229,7 +229,7 @@ class OverlapPlotter(RCParamsMixin):
             outdir: where should file be saved
 
         TO DO: add smarter error handling for the cat1/cat2 objects
-        '''
+        """
 
         self.cat1_name = cat1_name
         self.cat2_name = cat2_name
@@ -249,15 +249,15 @@ class OverlapPlotter(RCParamsMixin):
 
 
     def make_plot(self, outname=None, projection=None,
-                  ra_tag1=None, dec_tag1=None, coordframe1=None, label1=None,
-                  ra_tag2=None, dec_tag2=None, coordframe2=None, label2=None):
-        '''
+                  ra_key1=None, dec_key1=None, coordframe1=None, label1=None,
+                  ra_key2=None, dec_key2=None, coordframe2=None, label2=None):
+        """
         TO DO: need to fix catalog labels, also find a smarter way
         to deal with coordinate systems of the two.
 
         Note: default "projection" is rectilinear; other options include
         "mollweide", "aitoff", and "hammer" (time).
-        '''
+        """
 
         self.set_rc_params(fontsize=16)
 
@@ -276,8 +276,8 @@ class OverlapPlotter(RCParamsMixin):
         if (cat2 is not None) & (label2 == None):
             label2 = os.path.basename(self.cat2_name)
 
-        if (ra_tag1 is not None) & (coordframe1 is not None):
-            gal1 = SkyCoord(cat1[ra_tag1], cat1[dec_tag1],
+        if (ra_key1 is not None) & (coordframe1 is not None):
+            gal1 = SkyCoord(cat1[ra_key1], cat1[dec_key1],
                             frame=coordframe1, unit=u.deg)
             sky1 = gal1.icrs
         else:
@@ -289,9 +289,9 @@ class OverlapPlotter(RCParamsMixin):
                 sky1 = SkyCoord(cat1['ra'], cat1['dec'],
                                 frame='icrs', unit=u.deg)
 
-        if (ra_tag2 is not None) & (dec_tag2 is not None) \
+        if (ra_key2 is not None) & (dec_key2 is not None) \
             & (coordframe2 is not None):
-            gal2 = SkyCoord(cat2[ra_tag2], cat2[dec_tag2],
+            gal2 = SkyCoord(cat2[ra_key2], cat2[dec_key2],
                             frame=coordframe2, unit=u.deg)
             sky2 = gal2.icrs
         else:
@@ -332,11 +332,11 @@ class OverlapPlotter(RCParamsMixin):
 
 
     def make_Av_map(self, outname=None, projection=None, label1=None):
-        '''
+        """
         The input should be a treecorrcat;
         Note: default "projection" is rectilinear; other options include
         "mollweide", "aitoff", and "hammer" (time).
-        '''
+        """
 
         self.set_rc_params(fontsize=16)
 

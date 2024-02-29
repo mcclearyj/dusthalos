@@ -5,15 +5,29 @@ from src.extinction_model import ExtinctionModel
 class ReddeningCalculator(ExtinctionModel):
 
     def __init__(self, data, redcalc_config=None):
-        '''
-        Do reddening calculation
-        '''
-        self.data = data # Data with magnitudes, redshifts
-        self.mle = [] # Maximum likelihood estimator for anomalous reddening
-        self.mle_var = [] # Variance of said ML
-        self.nbins = None
-        self.z_tag = None
-        self.use_bin_numbers = False
+        """
+        Do reddening calculation. Though it can be run independently,
+        this class is intended to be called by instance of Correlator() class.
+
+        Inherits ExtinctionModel, which holds central wavelengths and instances
+        of dust models from the Python 'extinction' library.
+
+        Attributes
+            redcalc_config: dust param config; generally suppled as a
+                            subset of the top-level run_config in Correlator()
+            data: Array-like object with magnitudes, redshifts
+            mle: Maximum likelihood estimator for excess reddening
+            mle_var: Variance of said MLE
+            nbins: Number of redshift bins for Av calculation
+            z_key: Column name for self.data redshift info
+            use_bin_numbers: Use DES redMaGiC redshift bin numbers? Prob. not.
+        """
+
+        self.data = data #
+        self.mle = [] #
+        self.mle_var = [] # Variance of said MLE
+        self.nbins = None # Number of redshift bins for Av calculation
+        self.z_key = None # Column name for self.data redshift info
 
         # dust config should be in here now too
         self.load_config(redcalc_config)
@@ -21,20 +35,19 @@ class ReddeningCalculator(ExtinctionModel):
         super().__init__(dmconfig = redcalc_config['dust_params'])
 
     def load_config(self, redcalc_config):
-        '''
+        """
         redshift config should have all the parameters keywords
-        '''
+        """
         # Resonable redshift defaults, not sure about dust params
         #default_dust_pars = {'model': 'calzetti00', 'R': 3.1, 'A_V': 1,
         #                    'wavelengths': [4808.49, 6417.65, 7814.58, 9168.85]}
         # No, it should fail loudly.
 
-        base_config = {'nbins': 7,
-                          'z_tag': 'z',
-                          'use_bin_numbers': False,
-                          'dust_params': None,
-                          'bandpasses': None,
-                          }
+        # Set sensible defaults
+        base_config = {
+            'nbins': 7, 'z_key': 'z', 'use_bin_numbers': False,
+            'dust_params': None
+        }
 
         # Overwrite defaults, append non-standard keys b/c who cares.
         if redcalc_config != None:
@@ -47,24 +60,24 @@ class ReddeningCalculator(ExtinctionModel):
                 base_config[key] = redcalc_config[key]
 
         self.redcalc_config = base_config
+        self.dust_params = base_config['dust_params']
 
-        print(f'\n ReddeningCalculator configuration values:')
+        print(f'\n ReddeningCalculator() configuration values:')
         print(f'\t {base_config}')
 
     def preprocess_catalog(self):
-        '''
+        """
         If there are NaNs or masked values or whatever, clean them out of the
         catalog and be noisy about it.
-        '''
+        """
         # Placeholder bandholder
-        bands = ['mof_cm_mag_corrected_g', 'mof_cm_mag_corrected_r',
-                'mof_cm_mag_corrected_i', 'mof_cm_mag_corrected_z']
+        bands = self.dust_params['band_names']
 
-        # All bands are good <3
+        # Start by assuming all gals in bands are good <3
         catlen = len(self.data)
         wg = np.full(catlen, True)
 
-        # Pick out only the good entries!
+        # Pick out only the good galaxies!
         for band in bands:
             band_mag = np.ma.getdata(self.data[band])
             band_bool = (band_mag > -9999) & \
@@ -72,7 +85,7 @@ class ReddeningCalculator(ExtinctionModel):
                         (band_mag < 28)
             wg *= band_bool
 
-        # percent of galaxies that failed
+        # percent of galaxies that failed to pass selections
         pfail = 100-(np.count_nonzero(wg) / catlen * 100)
 
         # How many failed?
@@ -85,21 +98,27 @@ class ReddeningCalculator(ExtinctionModel):
         self.good_indices = wg
 
     def optimal_estimator(self, catalog):
-        '''
-        Compute the optimal estimator for excess reddening based on the input galaxy catalog.
-        TO DO:
-            - make bandpass names configurable
-            - be able to select a specific dust model
-        '''
+        """
+        Compute the optimal estimator for excess reddening based on the
+        input galaxy catalog.
+
+        TO DO: Move error-checking to earlier in the code?
+        """
 
         # Extract galaxy magnitudes from the catalog
-        gmag = np.ma.getdata(catalog['mof_cm_mag_corrected_g'])
-        rmag = np.ma.getdata(catalog['mof_cm_mag_corrected_r'])
-        imag = np.ma.getdata(catalog['mof_cm_mag_corrected_i'])
-        zmag = np.ma.getdata(catalog['mof_cm_mag_corrected_z'])
+        band_names = self.dust_params['band_names']
+        data_list = []
+        for band in band_names:
+            try:
+                # Append each magnitude column to the data object
+                data_list.append(np.ma.getdata(catalog[band]))
+            except KeyError as ke:
+                # Oh no! Exit, as there are probably other problems
+                print(f"ReddeningCalcuator: no bandpass named '{band}' found!")
+                raise ke
 
         # Stack the extracted magnitudes into a 2D array
-        data = np.vstack([gmag, rmag, imag, zmag])
+        data = np.vstack(data_list)
 
         # Compute the covariance matrix of the galaxy magnitudes
         covar = np.cov(data)
@@ -124,10 +143,10 @@ class ReddeningCalculator(ExtinctionModel):
         return est, wt
 
     def run(self):
-        '''
+        """
         zmin: minimum redshift of galaxies to consider (default None)
         nbins: number of bins for color estimation
-        '''
+        """
 
         print(f'Removing catalog entries with NaN & sentinel values')
         self.preprocess_catalog()
@@ -146,9 +165,9 @@ class ReddeningCalculator(ExtinctionModel):
         else:
             # Make a "bin number" on the fly!
             print("Making redshift bins")
-            z_hist = np.histogram(self.data[self.redcalc_config['z_tag']],
+            z_hist = np.histogram(self.data[self.redcalc_config['z_key']],
                                     bins=self.redcalc_config['nbins'])
-            zbin_col = np.digitize(self.data[self.redcalc_config['z_tag']],
+            zbin_col = np.digitize(self.data[self.redcalc_config['z_key']],
                                     bins=z_hist[1], right=False)
 
         bin_numbers = np.unique(zbin_col)
@@ -175,14 +194,14 @@ class ReddeningCalculator(ExtinctionModel):
             error = f'Too few galaxies in bin {zb}: {np.count_nonzero(slice)}'
             mle[slice] = np.nan
             mle_var[slice] = np.nan
-            
+
         self.mle = mle
         self.mle_var = mle_var
 
     def make_treecorr_obj(self):
-        '''
+        """
         Placeholder for function that can return a treecorr object with k, w if desired!
-        '''
+        """
         self.treecorr_cat = treecorr.Catalog(ra=self.coords.ra.deg,
                             dec=self.coords.dec.deg, ra_units='deg',
                             dec_units='deg', k=redcalc.mle,

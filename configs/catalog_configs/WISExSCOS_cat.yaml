@@ -9,8 +9,8 @@
   ### RA/Dec units ###
   coord_units: 'deg'
   ### RA/Dec column names ###
-  ra_tag: 'l'
+  ra_key: 'l'
   ### Dec column name ###
-  dec_tag: 'b'
+  dec_key: 'b'
   ### Redshift column name ###
-  z_tag: 'zPhoto_Corr'
+  z_key: 'zPhoto_Corr'

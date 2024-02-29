@@ -2,7 +2,8 @@ import numpy as np
 import healpy as hp
 from astropy.table import Table
 
-def radec2healpixels(filename, healpix_name=None, hdu=1):
+def radec2healpixels(filename, healpix_name=None,
+                     ra_col='ra', dec_col='dec', hdu=1):
     """
     Make a HEALPix mask for a catalog using lists of RA, Dec.
     """
@@ -10,8 +11,8 @@ def radec2healpixels(filename, healpix_name=None, hdu=1):
     tab = Table.read(filename, hdu=hdu, memmap=True)
 
     # Example RA and Dec data (in degrees)
-    ra = tab['RA']  # Replace with your RA data
-    dec = tab['Dec']  # Replace with your Dec data
+    ra = tab[ra_col]  # Replace with your RA data
+    dec = tab[dec_col]  # Replace with your Dec data
 
     # Convert RA and Dec to radians
     ra_rad = np.radians(ra)

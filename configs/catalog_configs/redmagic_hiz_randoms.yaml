@@ -10,10 +10,10 @@
   # RA/Dec units
   coord_units: 'deg'
   # RA/Dec column names
-  ra_tag: 'ra'
+  ra_key: 'ra'
   # Dec column name
-  dec_tag: 'dec'
+  dec_key: 'dec'
   # Redshift column name
-  z_tag: 'z'
+  z_key: 'z'
   # optional for redmagic only, basically
   z_bin_number: 'bin_number'

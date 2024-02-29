@@ -24,10 +24,23 @@ class Correlator:
     correl config should hold... what, locations of cat configs?
     Certainly where to store them. First test should just be can we load the
     configuration files in the first place
+
+    Attributes
+        correl_config: high-level run configuration file
+                       see 'configs/dust_calc_config.yaml' for an example
+        cat_config: config file with locations of data catalog, colnames, etc.
+        ctype: type of catalog for calculation; should be one of
+               'background_catalog', 'background_randoms',
+               'foreground_catalog', 'foreground_randoms'.
+        Catalog: instance of dust_halos Catalog class that holds mask,
+                 catalog data, etc.
+        treecorrCatalog: instance of treecorr Catalog class, which is returned
+                         by reddening_calc(). Contains Av mle, wt_mle
     '''
 
     def __init__(self, correl_config=None, ctype=None):
         self.correl_config = correl_config
+        self.cat_config = None
         self.Catalog = None
         self.treecorrCatalog = None
         self.ctype = ctype
@@ -62,19 +75,19 @@ class Correlator:
         if treecorr_npatch != None:
             kwargs['npatch'] = int(treecorr_npatch)
 
-        tc_cat = treecorr.Catalog(ra=coords.ra.deg,
-                                  dec=coords.dec.deg, **kwargs
-                                  )
+        tc_cat = treecorr.Catalog(
+            ra=coords.ra.deg, dec=coords.dec.deg, **kwargs
+        )
 
         return this_cat, tc_cat
 
     def load(self, treecorr_npatch=None, treecorr_patch_centers=None):
-        '''
+        """
         Populate dusthalos-type Catalog attribute (self.catalog) based on
         config values after checking it is one of background, background_random,
         foreground, foreground_random. Also populates the treecorr-type Catalog
         attribute (self.treecorrCatalog).
-        '''
+        """
         # Can't load a dusthalo-catalog type not specified in correl_config
         ctype = self.ctype
         assert self.ctype in self.correl_config.keys()
@@ -94,28 +107,33 @@ class Correlator:
             self._load(treecorr_npatch, treecorr_patch_centers)
 
     def do_reddening(self):
-        ''' Call ReddeningCalculator, run it '''
+        """ Check dust_params config, call ReddeningCalculator, run it """
 
         ctype = self.ctype
 
         # Additional checker: make sure we have redshift
         if 'redshifts' not in self.correl_config[ctype].keys():
-            raise KeyError('correl_config missing parameter group "redshifts"')
+            raise KeyError(f"run config missing parameter set 'redshifts'")
         else:
-             rc_config = self.correl_config[ctype]['redshifts']
+            rc_config = self.correl_config[ctype]['redshifts']
 
-        if 'z_tag' not in self.cat_config.keys():
-            raise KeyError('catalog_config missing parameter "z_tag" ')
+        # Check redshifts
+        if 'z_key' not in self.cat_config.keys():
+            raise KeyError("catalog_config missing parameter 'z_key'")
         else:
-            rc_config['z_tag'] = self.cat_config['z_tag']
+            rc_config['z_key'] = self.cat_config['z_key']
 
         # Grab dust parameters
-        dust_model_config = self.correl_config['dust_params']
-        rc_config['dust_params'] = dust_model_config
+        try:
+            dust_model_config = self.correl_config['dust_params']
+            rc_config['dust_params'] = dust_model_config
+        except KeyError as ke:
+            print(f"run config missing parameter set 'dust_params'")
 
         # Instantiate ReddeningCalculator
-        reddening_calc = ReddeningCalculator(self.Catalog.data,
-                                        redcalc_config=rc_config)
+        reddening_calc = ReddeningCalculator(
+            self.Catalog.data, redcalc_config=rc_config
+        )
         reddening_calc.run()
 
         # Grab indices with clean photometry
@@ -133,8 +151,9 @@ class Correlator:
             patch_centers = patch_centers
         )
 
+        # Add redshift, too
         updated_treecorr_catalog.redshift = \
-                    self.Catalog.data[wg][self.cat_config['z_tag']]
+                    self.Catalog.data[wg][self.cat_config['z_key']]
 
         self.treecorrCatalog = updated_treecorr_catalog
 

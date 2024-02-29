@@ -100,18 +100,18 @@ class CatalogJoiner:
         # Get RA/Dec unit and keys for catalogs 1 and 2;
         # also helps with error checking
         try:
-            ra_tag1 = self.cat1.config['ra_tag']
-            dec_tag1 = self.cat1.config['dec_tag']
-            dec_tag2 = self.config['match']['dec_tag']
-            ra_tag2 = self.config['match']['ra_tag']
+            ra_key1 = self.cat1.config['ra_key']
+            dec_key1 = self.cat1.config['dec_key']
+            dec_key2 = self.config['match']['dec_key']
+            ra_key2 = self.config['match']['ra_key']
 
         except KeyError as ke:
             print('Missing key in config file: ', ke)
 
         # These are line-by-line matched and can be stacked.
         jcat1, jcat2 = utils.match_coords(self.cat1, self.cat2,
-                                ratag1=ra_tag1, dectag1=dec_tag1,
-                                ratag2=ra_tag2, dectag2=dec_tag2, radius=0.5)
+                                rakey1=ra_key1, deckey1=dec_key1,
+                                rakey2=ra_key2, deckey2=dec_key2, radius=0.5)
 
         # Stack the catalogs
         joined_cat = hstack(jcat1, jcat2, \
@@ -146,7 +146,7 @@ class CatalogJoiner:
 
         n_zbins = 17;
         # USE A VARIANT OF THIS SOON, i.e., make configurable:
-        # z_tag_c1 = self.config['z_tag']
+        # z_key_c1 = self.config['z_key']
 
         zcol_c1 = 'z'
         zcol_c2 = 'dnf_zmc_mof'

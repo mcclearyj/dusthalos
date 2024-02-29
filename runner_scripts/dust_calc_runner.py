@@ -75,7 +75,7 @@ def main(args):
     z_theory = 0.36
 
     # Read in configuration file
-    config_file = args.config_file
+    config_file = args.config
     correl_config = utils.read_yaml(config_file)
 
     # Create output directory if it doesn't exist
@@ -98,7 +98,7 @@ def main(args):
     # Load foreground catalog
     fg = Correlator(correl_config, ctype='foreground_catalog')
     fg.load(treecorr_patch_centers=bg.treecorrCatalog.patch_centers)
-    mean_fg_z = np.median(fg.Catalog.data[fg.cat_config['z_tag']])
+    mean_fg_z = np.median(fg.Catalog.data[fg.cat_config['z_key']])
 
     # Load foreground random catalog
     fgr = Correlator(correl_config, ctype='foreground_randoms')
@@ -116,16 +116,19 @@ def main(args):
                        dr_file = names.dr_outfile,
                        fr_file = names.fr_outfile,
                        rr_file = names.rr_outfile,
-                       ck_file = names.ck_outfile, 
+                       ck_file = names.ck_outfile,
                        z_fg = mean_fg_z,
                        z_theory = z_theory
                        )
     plot.plot_res(outplotn=names.fig_output, kpc=correl_config['use_kpc'])
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description=\
-                'Runner script for Catalog operations.')
-    parser.add_argument('--config_file', type=str, \
-                help='Path to the configuration file.', required=True)
+    parser = argparse.ArgumentParser(
+        description="Runner script for Catalog operations."
+    )
+    parser.add_argument(
+        "-config","-c", type=str,
+        help="Path to the configuration file.", required=True
+    )
     args = parser.parse_args()
     main(args)
