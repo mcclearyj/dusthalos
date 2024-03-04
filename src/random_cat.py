@@ -15,36 +15,43 @@ import matplotlib.pyplot as plt
 from . import utils
 from .hpmask import HpMask
 
-class FgRandoms(HpMask):
-        '''
+class RandomCat(HpMask):
+        """
         Subclass of HpMask that produces random galaxies on the sphere. Bit of
         a weird hybrid between HpMask and Catalog.
+
+        NOTE: if no extra configuration file is supplied, RandomCat will just
+              make random points for the supplied HEALPix mask path!! I wish
+              I had remembered that bit of cleverness.
 
         Extra attributes
             seed: seed for random number generator; if not set, uses time()
             mask_config: should be able to build a mask from config?
-        '''
-        def __init__(self, seed=None, config=None, filepath=None,
-                    partial=False, coordframe=None):
+        """
+        def __init__(self, seed=None, mask_config=None, mask_filepath=None,
+                        partial=False, mask_coordframe=None, nrand=1e6,
+                        output_name=None):
             self.seed = seed
-            self.config = config
-            self.rng = None
-            self.nrand = 1e6
+            self.config = mask_config
+            self.nrand = nrand
+            self.output_name = output_name
             self.rand_coords = {}
 
-            # Config check should be run run during runner.
-            if config is not None:
-                filepath = os.path.join(config['path'], config['filename'])
-                coordframe = config['coordframe']
+            # Config check should be run during runner.
+            if mask_config != None:
+                mask_filepath = os.path.join(
+                    mask_config['path'], mask_config['filename']
+                )
+                mask_coordframe = mask_config['coordframe']
 
-            super().__init__(filepath=filepath, coordframe=coordframe)
+            super().__init__(filepath=mask_filepath, coordframe=mask_coordframe)
 
         def _generate_rng(self, seed):
-            '''
+            """
             Quick utility function to generate an rng based on the seed in self,
             though one can be passed too, I guess? Maybe you want to generate
             multiple foregrounds?
-            '''
+            """
 
             if (seed == None):
                 if self.seed == None:
@@ -63,109 +70,122 @@ class FgRandoms(HpMask):
             print(f" Set RNG with seed = {seed}\n")
 
         def _grab_random_coords(self, nrand):
-            '''
-            Method to draw random points on the sphere
-            '''
+            """
+            Method to draw random points on the sphere by creating
+            uniformly distributed random ras, decs.
+
+            NOTA BENE: random declinations should be uniform in sin(dec),
+                       *not* uniform in dec (unless you like pain).
+            """
+
+            # Allow for override of config value
             if nrand == None:
                 nrand = self.nrand
 
-            # There might actually be a smarter way to do this...
+            # There might be a smarter way to do this...
             fcover = np.sum(self.mask > 0)*1./self.mask.size
             ndraw = np.ceil((nrand/fcover)*1.2).astype(int)
 
-            '''
-            This doesn't work! If NSIDE is too small, and the healpixels are
-            correspondingly large, you end up with large gaps in coordinate
-            space (fix garbled language later)
+            """
+            # The algorithm below doesn't work!!! If NSIDE is too small, and
+            # the HEALPixels are correspondingly large, you end up with large
+            # gaps between random points on the sphere, as points will be placed
+            # at the center of the HEALPixel area, not randomly within it.
 
             # Generate random pixel indices for the highest resolution
-            random_hmap_pixels = self.rng.integers(0,
-                                    hp.nside2npix(self.NSIDE), 2*ndraw)
+            random_hmap_pixels = self.rng.integers(
+                0, hp.nside2npix(self.NSIDE), 2*ndraw
+            )
 
             # Get the RA and Dec coordinates of the random pixels for NSIDE
-            rand_ra, rand_dec = hp.pix2ang(self.NSIDE, random_hmap_pixels,
-                                    lonlat=True, nest=False)
-            '''
+            rand_ra, rand_dec = hp.pix2ang(
+                self.NSIDE, random_hmap_pixels, lonlat=True, nest=False
+            )
+            """
 
             rand_ras = self.rng.uniform(0, 2*np.pi, size=ndraw)
-            rand_sindecs = self.rng.uniform(np.sin(-np.pi/2),
-                                            np.sin(np.pi/2),
-                                            size=ndraw)
+            rand_sindecs = self.rng.uniform(
+                np.sin(-np.pi/2), np.sin(np.pi/2), size=ndraw
+            )
             rand_decs = np.arcsin(rand_sindecs)
             rand_ras = np.rad2deg(rand_ras); rand_decs = np.rad2deg(rand_decs)
 
-            self.rand_coords = coord.SkyCoord(ra=rand_ras * u.deg,
-                                         dec=rand_decs * u.deg, frame='icrs')
+            self.rand_coords = coord.SkyCoord(
+                ra=rand_ras * u.deg, dec=rand_decs * u.deg, frame='icrs'
+            )
 
-        def _plot_radec(self, plotname='fgr_radec_distrib.png', 
-                        catalog_for_comparison=None, 
+        def plot_radec(self, plotname, catalog_for_comparison=None,
                         comparison_ra_key='ra', comparison_dec_key='dec'):
-            """ FOR DEBUGGING PURPOSES: plot RA/Dec distributions """
-            
+            """
+            FOR DEBUGGING PURPOSES: plot RA/Dec distributions.
+            By default, create uniformly distributed random ras, decs.
+            """
+
+            # We are comparing to another, outside catalog
             if catalog_for_comparison != None:
-                # We are comparing to another, outside catalog
                 comparison_cat = Table.read(catalog_for_comparison, memmap=True)
                 rand_ras = comparison_cat[comparison_ra_key]
                 rand_decs = comparison_cat[comparison_dec_key]
-                
+                cc_label = f'{os.path.basename(catalog_for_comparison)}'
+            # Just make uniform points on sphere
             else:
-                # Make uniformly distributed random ras, decs
-                # Declinations should be uniform in sin(dec), not uniform in dec
-                # Use degrees b/c easier to interpret
                 rand_ras = self.rng.uniform(0, 2*np.pi, size=int(self.nrand))
                 rand_ras = np.rad2deg(rand_ras)
                 rand_sindecs = self.rng.uniform(
-                               np.sin(-np.pi/2), np.sin(np.pi/2),
-                               size=int(self.nrand)
-                               )
-                rand_decs = np.rad2deg(
-                            np.arcsin(rand_sindecs)
-                            )
-            
+                    np.sin(-np.pi/2), np.sin(np.pi/2), size=int(self.nrand)
+                )
+                rand_decs = np.rad2deg(np.arcsin(rand_sindecs))
+                cc_label = 'Uniform distribution'
+
             # Create bins for histogram plots; use degrees b/c easier to understand
             nn, ra_bins = np.histogram(self.rand_coords.ra.deg, bins=200)
             nn, dec_bins = np.histogram(self.rand_coords.dec.deg, bins=200)
-            
+
             # Now plot
             fig, axs = plt.subplots(1, 2, figsize=(14,6), tight_layout=True)
-            
+
             # First, RA
-            axs[0].hist(rand_ras, bins=ra_bins, 
-                        alpha=0.7, histtype='stepfilled', 
-                        density=True, label='uniform distrib')
-                        
-            axs[0].hist(self.rand_coords.ra.deg, bins=ra_bins, 
-                        alpha=0.8, histtype='stepfilled', 
-                        density=True, label='fg random cat')
-                        
+            axs[0].hist(
+                rand_ras, bins=ra_bins, alpha=0.7, histtype='stepfilled',
+                density=True, label=cc_label
+            )
+
+            axs[0].hist(
+                self.rand_coords.ra.deg, bins=ra_bins, alpha=0.8,
+                histtype='stepfilled', density=True, label='masked random cat'
+            )
+
             axs[0].set_xlabel('RA'); axs[0].set_ylabel('Probability Density')
             axs[0].legend(loc='lower right')
- 
+
             # Now, Dec
-            axs[1].hist(rand_decs, bins=dec_bins, 
-                        alpha=0.7, histtype='stepfilled', 
-                        density=True, label='uniform distrib')
-                        
-            axs[1].hist(self.rand_coords.dec.deg, bins=dec_bins, 
-                        alpha=0.8, histtype='stepfilled', 
-                        density=True, label='fg random cat')
-                        
+            axs[1].hist(
+                rand_decs, bins=dec_bins, alpha=0.7, histtype='stepfilled',
+                density=True, label=cc_label
+            )
+
+            axs[1].hist(
+                self.rand_coords.dec.deg, bins=dec_bins, alpha=0.8,
+                histtype='stepfilled', density=True, label='random cat'
+            )
+
             axs[1].set_xlabel('Dec'); axs[0].set_ylabel('Probability Density')
             axs[1].legend(loc='lower right')
-            
+
             fig.savefig(os.path.join(self.config['path'], plotname))
 
         def write_outfile(self, prefix, mask2=None, overwrite=False):
-            '''
+            """
             Bit ad-hoc, but write to file
-            '''
+            """
 
             # Defile output file name & save
-            if self.config is not None:
-                outdir = self.config['output_path']
+            if self.output_name != None:
+                outcat_name = self.output_name
             else:
-                outdir = os.path.dirname(self.filepath)
-            outcat_name = f'{prefix}{os.path.basename(self.filepath)}'
+                outcat_name = f'{prefix}{os.path.basename(self.filepath)}'
+
+            outdir = os.path.dirname(self.filepath)
             outcat_path = os.path.join(outdir, outcat_name)
 
             # Lazy initialize data table too
@@ -173,7 +193,7 @@ class FgRandoms(HpMask):
             data.meta['comments'] = []
 
             # Save specific metadata for single or double-masked data
-            if mask2 is not None:
+            if mask2 != None:
                 data.meta['comments'].append(\
                     f'Applied HEALPix masks {self.filepath} and ' + \
                     f'{mask2.filepath} on date {datetime.now():%D %H:%M:%S}')
@@ -187,51 +207,51 @@ class FgRandoms(HpMask):
             print(f'\tSaved catalog to {outcat_path}')
 
 
-        def make_fg_randoms(self, seed=None, nrand=None):
-            '''
+        def make_random_cat(self, seed=None, nrand=None):
+            """
             Method to generate random galaxies with masking taken into account.
-            '''
+            """
 
             # First, generate the rng
             self._generate_rng(seed=seed)
 
             # Generate random coodinates with ~appx. the right number of galaxies
             self._grab_random_coords(nrand=nrand)
-            
+
             # FOR DEBUGGING PURPOSES: plot RA/Dec distributions
-            self._plot_radec(plotname='fg_randoms_RADEC_distrib.png')
+            self.plot_radec(plotname='full_randoms_RADEC_distrib.png')
 
             # Apply own mask!
             seen = self.apply_mask(coords=self.rand_coords)
             self.rand_coords = self.rand_coords[seen]
 
             # Then write to file
-            self.write_outfile(prefix='FgMask_randoms_', overwrite=True)
+            self.write_outfile(prefix='masked', overwrite=True)
 
-
-        def do_overlapping_mask(self, mask2, overwrite=False):
-            '''
+        def do_overlapping_mask(self, mask2, overwrite=False,
+                                catalog_for_comparison=None):
+            """
             Wrapper for apply_overlapping_masks with a mask fed in by a
             runner script. Instantiate background mask, run, save to file.
-            '''
+            """
 
             # Get indicies of intersecting coordinates
-            good_gals = self.apply_overlapping_masks(coords=self.rand_coords,
-                        mask1=self, mask2=mask2)
+            good_gals = self.apply_overlapping_masks(
+                coords=self.rand_coords, mask1=self, mask2=mask2
+            )
 
             # Filter own coordinates
             self.rand_coords = self.rand_coords[good_gals]
-            
-            # FOR DEBUGGING PURPOSES: plot RA/Dec distributions
-            catalog_for_comparison = os.path.join(self.config['path'], 
-            'prep_cat_output/redmagic_hiz_randoms_y3_GOLD_JOINED_catalog.fits'
-            )
-            
-            self._plot_radec(plotname='masked_fg_randoms_RADEC_distrib.png',
-                             catalog_for_comparison=catalog_for_comparison, 
-                             comparison_ra_key='ra', comparison_dec_key='dec'
-                             )
+
+            # Plotname isn't an argument right now; but maybe in the future
+            if catalog_for_comparison != None:
+                self.plot_radec(
+                    plotname='masked_randoms_RADEC_distrib_comparison.png',
+                    catalog_for_comparison=catalog_for_comparison,
+                    comparison_ra_key='ra', comparison_dec_key='dec'
+                )
 
             # Write masked to file
-            self.write_outfile(prefix='Bg+FgMask_randoms_', mask2=mask2,
-                                overwrite=overwrite)
+            self.write_outfile(
+                prefix='BgFgMasked_randoms', mask2=mask2, overwrite=overwrite
+            )

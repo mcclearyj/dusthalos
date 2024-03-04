@@ -23,7 +23,7 @@ def radec2healpixels(filename, healpix_name=None,
     phi = ra_rad
 
     # Choose a resolution (Nside)
-    Nside = 256  # for example, can be adjusted based on your needs
+    Nside = 64  # for example, can be adjusted based on your needs
 
     # Convert to HEALPix pixel indices for your RA, Dec coordinates
     pixels = hp.ang2pix(Nside, theta, phi)

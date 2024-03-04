@@ -10,9 +10,9 @@
   # RA/Dec units
   coord_units: 'deg'
   # RA/Dec column names
-  ra_key: 'ra'
+  ra_key: 'ra_redmagic_hiz_randoms'
   # Dec column name
-  dec_key: 'dec'
+  dec_key: 'dec_redmagic_hiz_randoms'
   # Redshift column name
   z_key: 'z'
   # optional for redmagic only, basically

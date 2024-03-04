@@ -18,7 +18,7 @@ from src.catalog import Catalog
 from src.cat_utils import all_config_checker
 
 def main(args):
-    config_file = args.config_file
+    config_file = args.config
     config = utils.read_yaml(config_file)
 
     overwrite = True
@@ -52,16 +52,21 @@ def main(args):
     # Join if requested
     if 'match' in config['background_catalog'].keys():
         start = time.time()
-        
+
         match_cat = Catalog(config['background_catalog']['match'], memmap=True)
         bg_redshift.match_to_catalog(match_cat, overwrite=overwrite)
 
         end = time.time()
-    
+
         print(f"\n Random matching took {((end-start)/60.):.1f} mins \n")
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Runner script for Catalog operations.')
-    parser.add_argument('--config_file', type=str, help='Configuration file.', required=True)
+
+    parser = argparse.ArgumentParser(
+        description='Runner script for Catalog operations.'
+    )
+    parser.add_argument(
+        '-config', '-c', type=str, help='Configuration file', required=True
+    )
     args = parser.parse_args()
     main(args)
