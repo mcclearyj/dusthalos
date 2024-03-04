@@ -50,7 +50,7 @@ def remove_outliers(data, bands):
     # Pick out only the good entries!
     for band in bands:
         band_mag = np.ma.getdata(data[band])
-        band_bool = (band_mag > -9999) & (band_mag != np.nan) & (band_mag < 27)
+        band_bool = (np.abs(band_mag) < 99) & (band_mag != np.nan) & (band_mag < 27)
         wg *= band_bool
 
     # percent of galaxies that failed
@@ -64,106 +64,119 @@ def remove_outliers(data, bands):
 
     return wg
 
-def bin_the_redshifts(rmz_rand, n_zbins=10):
+def bin_the_redshifts(rand_cat, bands, z2_colname, n_zbins=17):
     ## Create colors
-    gmr = rmz_rand['mof_cm_mag_corrected_g'] - rmz_rand['mof_cm_mag_corrected_r']
-    imz = rmz_rand['mof_cm_mag_corrected_i'] - rmz_rand['mof_cm_mag_corrected_z']
+    gmr = rand_cat[bands[0]] - rand_cat[bands[1]]
+    imz = rand_cat[bands[2]] - rand_cat[bands[3]]
 
     ## This is kinda like the algorithm I use elsewhere
-    zhist, zbins = np.histogram(rmz_rand['z'], bins=n_zbins)
-    
+    zhist, zbins = np.histogram(rand_cat[z2_colname], bins=n_zbins)
+
     # Hold redshift bins
-    zbin_values = np.digitize(rmz_rand['z'], bins=zbins, right=False)
-    
+    zbin_values = np.digitize(rand_cat[z2_colname], bins=zbins, right=False)
+
     # Set the number of bins
     bin_numbers = np.unique(zbin_values)
-    
+
     # Hold mean color values & redshift
     gmr_values = []; imz_values = []; z_bin_median = []
 
     # Loop over all redshift bins specified in bin_numbers
     for zb in bin_numbers:
-        
+
         # select only galaxies in the current redshift bin
         c_slice = (zbin_values == zb)
         sq_ngals = np.sqrt(np.count_nonzero(c_slice))
         this_gmr_bin = gmr[c_slice]
         this_imz_bin = imz[c_slice]
-        this_z_bin = rmz_rand['z'][c_slice]
+        this_z_bin = rand_cat[z2_colname][c_slice]
 
-        gmr_values.append((np.mean(this_gmr_bin),
-                           np.std(this_gmr_bin)
-                           ))
-        imz_values.append((np.mean(this_imz_bin),
-                           np.std(this_imz_bin)
-                           ))
-        z_bin_median.append(np.mean(this_z_bin))
+        gmr_values.append((np.median(this_gmr_bin), np.std(this_gmr_bin)))
+        imz_values.append((np.median(this_imz_bin), np.std(this_imz_bin)))
+        z_bin_median.append(np.median(this_z_bin))
 
-    tab = Table([z_bin_median,
-                 np.array(gmr_values)[:,0], np.array(gmr_values)[:,1],
-                 np.array(imz_values)[:,0], np.array(imz_values)[:,1]],
-                 names=['z_median', 'gmr_median', 'gmr_std',
-                 'imz_median', 'imz_std'])
+    tab = Table([
+        z_bin_median, np.array(gmr_values)[:,0], np.array(gmr_values)[:,1],
+        np.array(imz_values)[:,0], np.array(imz_values)[:,1]],
+        names=['z_median', 'gmr_median', 'gmr_std', 'imz_median', 'imz_std']
+    )
 
     tab.write('binned_table.txt', format='ascii.csv', overwrite=True)
 
     return tab
 
 def main():
-    catalog_path = '/work/mccleary_group/dusty_halos/catalogs/prep_cat_output'
-    #catalog_path = '/Users/j.mccleary/Research/dusty_halos/catalogs/prep_cat_output'
-    rmz_cat = Table.read(os.path.join(catalog_path,
-                     'redmagic_hidens_y3_GOLD_JOINED_catalog.fits'),
-                     memmap=True)
-    rmz_rand_f = fits.open(os.path.join(catalog_path,
-                         'redmagic_hidens_randoms_y3_GOLD_JOINED_catalog.fits'))
-    
-    rng = np.random.default_rng()
-    rint = rng.integers(0, high=len(rmz_rand_f[1].data), size=int(2e6), dtype=np.int64)
-    rmz_rand=rmz_rand_f[1].data[rint]
+    #catalog_pa`th = '/work/mccleary_group/dusty_halos/catalogs/prep_cat_output'
+    catalog_path = '/Users/j.mccleary/Research/dusty_halos/catalogs/prep_cat_output'
 
-    bands = ['mof_cm_mag_corrected_g', 'mof_cm_mag_corrected_r',
-             'mof_cm_mag_corrected_i', 'mof_cm_mag_corrected_z']
+    # Read in galaxies
+    gals_cat = Table.read(
+        os.path.join(catalog_path,
+        'DoubleMasked_sdss_fg_gals.fits'), memmap=True
+    )
 
-    wg_rmz_cat = remove_outliers(rmz_cat, bands)
-    rmz_cat = rmz_cat[wg_rmz_cat]
-    wg_rmz_rand = remove_outliers(rmz_rand, bands)
-    rmz_rand = rmz_rand[wg_rmz_rand]
+    # Read in random catalog
+    rand_cat_f = fits.open(os.path.join(catalog_path,
+        'rand_sdss_fg_JOINED_catalog.fits')
+    )
 
-    binned_randoms = bin_the_redshifts(rmz_rand)
+    # In case random catalog is super-super long, pick subset for plotting
+    if len(rand_cat_f[1].data) > int(2e6):
+        rng = np.random.default_rng()
+        rint = rng.integers(0, high=len(rand_cat_f[1].data),
+                size=int(2e6), dtype=np.int64)
+        rand_cat=rand_cat_f[1].data[rint]
+
+    else:
+        rand_cat=rand_cat_f[1].data
+
+    #bands = ['mof_cm_mag_corrected_g', 'mof_cm_mag_corrected_r', 'mof_cm_mag_corrected_i', 'mof_cm_mag_corrected_z']
+    bands = ['dered_g', 'dered_r', 'dered_i', 'dered_z']
+    z1_colname = 'redshift'
+    z2_colname = 'redshift_rand'
+
+    wg_gals_cat = remove_outliers(gals_cat, bands)
+    gals_cat = gals_cat[wg_gals_cat]
+    wg_rand_cat = remove_outliers(rand_cat, bands)
+    rand_cat = rand_cat[wg_rand_cat]
+
+    binned_randoms = bin_the_redshifts(rand_cat, bands=bands, z2_colname=z2_colname)
 
     fig, axs = plt.subplots(1, 2, figsize=(12,6), tight_layout=True)
 
-    axs[0].plot(rmz_cat['zredmagic'],
-                (rmz_cat['mof_cm_mag_corrected_g'] - rmz_cat['mof_cm_mag_corrected_r']),
-                '.', markersize=0.5, color='xkcd:deep red', label='hidens')
+    axs[0].plot(gals_cat[z1_colname],
+                (gals_cat[bands[0]] - gals_cat[bands[1]]),
+                '.', markersize=0.5, color='xkcd:deep red', label='galaxies')
 
-    axs[0].errorbar(binned_randoms['z_median'], binned_randoms['gmr_median'],
-                    yerr=binned_randoms['gmr_std'], fmt='o-',
-                    color='xkcd:tomato red', label='hidens randoms',
-                    capsize=5)
-    
+    axs[0].errorbar(
+        binned_randoms['z_median'], binned_randoms['gmr_median'],
+        yerr=binned_randoms['gmr_std'], fmt='o-', color='xkcd:tomato red',
+        label='randoms', capsize=5
+    )
+
     axs[0].set_ylim(-1, 4)
     axs[0].legend(loc='upper left')
     axs[0].set_xlabel('Redshift')
     axs[0].set_ylabel(r'$g$ - $r$')
 
-    axs[1].plot(rmz_cat['zredmagic'],
-                (rmz_cat['mof_cm_mag_corrected_i'] - rmz_cat['mof_cm_mag_corrected_z']),
-                '.', markersize=0.5, color='xkcd:deep red', label='hidens')
+    axs[1].plot(
+        gals_cat[z1_colname], (gals_cat[bands[2]] - gals_cat[bands[3]]),
+        '.', markersize=0.5, color='xkcd:deep red', label='galaxies'
+    )
 
-    axs[1].errorbar(binned_randoms['z_median'], binned_randoms['imz_median'],
-                    yerr=binned_randoms['imz_std'], fmt='o-',
-                    color='xkcd:tomato red', label='hidens randoms',
-                    capsize=5)
+    axs[1].errorbar(
+        binned_randoms['z_median'], binned_randoms['imz_median'],
+        yerr=binned_randoms['imz_std'], fmt='o-', color='xkcd:tomato red',
+        label='hidens randoms', capsize=5
+    )
 
     axs[1].set_ylim(-0.5, 1)
     axs[1].legend(loc='upper left')
     axs[1].set_xlabel('Redshift')
     axs[1].set_ylabel(r'$i$ - $z$')
 
-    fig.suptitle('Redmagic hi-dens resampled') 
-    fig.savefig('color_redshift_redmagic_hidens_resamp.png')
+    fig.suptitle('SDSS galaxies resampled')
+    fig.savefig('color_redshift_sdss_resamp.png')
 
     return 0
 
@@ -172,6 +185,6 @@ if __name__ == '__main__':
     rc = main()
 
     if rc == 0:
-        print("color redshift plots have been successfully completed")
+        print("color redshift plotting has successfully completed")
     else:
-        print(f'get_jwst_psfs.py has failed w/ rc={rc}')
+        print(f'color redshift plotting has failed w/ rc={rc}')

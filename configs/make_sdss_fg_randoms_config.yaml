@@ -27,17 +27,17 @@ paths:
 nrand: 1e6
 
 # Output name for random catalog; note that "masked_" will be added as prefix
-output_name: 'sdss_bg_gals_randoms.fits'
+output_name: 'sdss_fg_randoms.fits'
 
 # Populate if comparison to another catalog's RA, Dec distribution is desired
-comparison_cat: '/Users/j.mccleary/Research/dusty_halos/catalogs/prep_cat_output/DoubleMasked_sdss_fg_gals_jemcclear.fits'
+comparison_cat: '/Users/j.mccleary/Research/dusty_halos/catalogs/prep_cat_output/DoubleMasked_sdss_fg_gals.fits'
 
 # HpMask for which random points are desired
 mask1:
   # Where is mask2? Leave blank or commented out to use default paths
   path:
   # What is it called?
-  filename: 'sdss_bg_gals_jemcclear_healpix_mask.fits'
+  filename: 'sdss_fg_gals_healpix_mask.fits'
   # IMPORTANT!!! GET COORDINATE FRAME CORRECT OR MASKING WILL FAIL!
   coordframe: 'icrs'
   # Is mask partial?
@@ -48,7 +48,7 @@ mask2:
   # Where is mask2? If none, code assumes general catalog_path
   path:
   # What is mask2 called?
-  filename: 'sdss_fg_gals_jemcclear_healpix_mask.fits'
+  filename: 'sdss_bg_gals_healpix_mask.fits'
   # IMPORTANT!!! GET COORDINATE FRAME CORRECT OR MASKING WILL FAIL!
   coordframe: 'icrs'
   # Is mask partial? When in doubt, do not pass this argument; code will figure it out.

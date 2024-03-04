@@ -51,13 +51,14 @@ def main(args):
 
     # Join if requested
     if 'match' in config['background_catalog'].keys():
+
         start = time.time()
 
         match_cat = Catalog(config['background_catalog']['match'], memmap=True)
+
         bg_redshift.match_to_catalog(match_cat, overwrite=overwrite)
 
         end = time.time()
-
         print(f"\n Random matching took {((end-start)/60.):.1f} mins \n")
 
 if __name__ == '__main__':

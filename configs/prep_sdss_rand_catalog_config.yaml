@@ -21,26 +21,35 @@ paths:
 # This is probably the background catalog
 background_catalog:
   # Where is it? Leave blank or commented out to use default
-  path:
-  # Name of catalog
-  filename: 'sdss_bg_gals.fits'
+  #path:
+  filename: 'sdss_bg_randoms.fits'
   # nickname for table if we are matching to another catalog
-  tabname: 'sdss_bg'
+  tabname: 'rand'
   # WCS frame
   coordframe: 'icrs'
   # RA/Dec units
   coord_units: 'deg'
-  # RA/Dec column names
+  # RA column name
   ra_key: 'ra'
+  # Dec column name
   dec_key: 'dec'
-  # Name for filtered (possibly joined) output catalog
-  output_name:
   # Are we matching? Uncomment fields below if true!
+  match:
+    # Set the path to catalog to be matched
+    path: '/Users/j.mccleary/Research/dusty_halos/catalogs/'
+    # Name of catalog file
+    filename: 'sdss_bg_gals.fits'
+    # Should be 'kw', 'coordinates', or 'random'
+    match_type: 'random'
+    # If type is random: z1 is the catalog to be augmented -- leave it blank to make a redshift column!!!
+    z1_colname:
+    # If type is random: z2 is matching photometry catalog
+    z2_colname: 'redshift'
+    # nickname for table
+    tabname: 'sdss_bg'
 
 # background mask
 background_mask:
-  # Where is it? Leave blank or commented out to use default paths
-  path:
   # What is it called?
   filename: 'sdss_bg_gals_healpix_mask.fits'
   # IMPORTANT!!! GET COORDINATE FRAME CORRECT OR MASKING WILL FAIL!
@@ -50,17 +59,13 @@ background_mask:
 
 # This is probably the foreground
 foreground_catalog:
-  # Where is it?
-  #path:
   # What is it called ?
-  filename: 'sdss_fg_gals.fits'
+  filename: 'sdss_fg_randoms.fits'
   # RA, Dec names + units + coordframe
   coordframe: 'icrs'
   ra_key: 'ra'
   dec_key: 'dec'
   coord_units: 'deg'
-  # output_path: '/Users/j.mccleary/Research/dusty_halos/catalogs'
-
 
 # probably foreground mask
 foreground_mask:
@@ -70,4 +75,3 @@ foreground_mask:
   filename: 'sdss_fg_gals_healpix_mask.fits'
   # IMPORTANT!!! GET COORDINATE FRAME CORRECT OR MASKING WILL FAIL!
   coordframe: 'icrs'
-  # Is mask partial? When in doubt, do not pass this argument. Code will figure it out

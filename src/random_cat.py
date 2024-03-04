@@ -181,7 +181,7 @@ class RandomCat(HpMask):
 
             # Defile output file name & save
             if self.output_name != None:
-                outcat_name = self.output_name
+                outcat_name = f'{prefix}{self.output_name}'
             else:
                 outcat_name = f'{prefix}{os.path.basename(self.filepath)}'
 
@@ -206,7 +206,6 @@ class RandomCat(HpMask):
 
             print(f'\tSaved catalog to {outcat_path}')
 
-
         def make_random_cat(self, seed=None, nrand=None):
             """
             Method to generate random galaxies with masking taken into account.
@@ -218,15 +217,12 @@ class RandomCat(HpMask):
             # Generate random coodinates with ~appx. the right number of galaxies
             self._grab_random_coords(nrand=nrand)
 
-            # FOR DEBUGGING PURPOSES: plot RA/Dec distributions
-            self.plot_radec(plotname='full_randoms_RADEC_distrib.png')
-
             # Apply own mask!
             seen = self.apply_mask(coords=self.rand_coords)
             self.rand_coords = self.rand_coords[seen]
 
             # Then write to file
-            self.write_outfile(prefix='masked', overwrite=True)
+            self.write_outfile(prefix='', overwrite=True)
 
         def do_overlapping_mask(self, mask2, overwrite=False,
                                 catalog_for_comparison=None):
@@ -253,5 +249,5 @@ class RandomCat(HpMask):
 
             # Write masked to file
             self.write_outfile(
-                prefix='BgFgMasked_randoms', mask2=mask2, overwrite=overwrite
+                prefix='BgFgMasked_', mask2=mask2, overwrite=overwrite
             )
