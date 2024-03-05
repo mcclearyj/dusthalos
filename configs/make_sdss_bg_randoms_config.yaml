@@ -24,7 +24,7 @@ paths:
 
 # How many random points are we making?
 # Suggestion: use 1e6 for making overlap plots, > 3e7 for science
-nrand: 1e6
+nrand: 2e7
 
 # Output name for random catalog; note that "masked_" will be added as prefix
 output_name: 'sdss_bg_randoms.fits'
