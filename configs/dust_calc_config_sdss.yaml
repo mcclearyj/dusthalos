@@ -11,30 +11,30 @@
 #  - "treecorr_npatch" sets the number of sky patches used in treecorr
 
 background_catalog:
-  cat_config: 'configs/catalog_configs/redmagic_hiz_y3gold_joined.yaml'
+  cat_config: 'configs/catalog_configs/sdss_bg_galaxies.yaml'
   treecorr_npatch: 10   # Set number of treecorr patches
   redshifts: # How to deal with redshifts
     #use_bin_numbers: True # Basically just for redmagic
     nbins: 5
 
 background_randoms:
-  cat_config: 'configs/catalog_configs/redmagic_hiz_randoms.yaml'
+  cat_config: 'configs/catalog_configs/sdss_bg_randoms.yaml'
   redshifts: # How to deal with redshifts
     #use_bin_numbers: True # Basically just for redmagic
     nbins: 5
 
 foreground_catalog:
-  cat_config: 'configs/catalog_configs/WISExSCOS_cat.yaml'
+  cat_config: 'configs/catalog_configs/sdss_fg_galaxies.yaml'
 
 foreground_randoms:
-  cat_config: 'configs/catalog_configs/WISExSCOS_randoms.yaml'
+  cat_config: 'configs/catalog_configs/sdss_fg_randoms.yaml'
 
 # ------------------
 # Output parameters
 # ------------------
 
 # Where output files and plots will get saved
-output_path: 'output/redmagic_hiz_newvar'
+output_path: 'output/sdss_partial'
 # basename or prefix for assorted files to save
 output_basename: 'dust_correlation_calzetti00_5zbins'
 # Plot output dust profile in kiloparsecs (True) or arcminutes (False)
@@ -59,7 +59,6 @@ dust_params:
   # Extinction in V band
   A_V: 1
   # Bandpass column names in catalog
-  band_names: ['mof_cm_mag_corrected_g', 'mof_cm_mag_corrected_r',
-              'mof_cm_mag_corrected_i', 'mof_cm_mag_corrected_z']
+  band_names: ['dered_u', 'dered_g', 'dered_r', 'dered_i', 'dered_z']
   # Central wavelengths (spectrum) to model; should match number of bands!
-  wavelengths: [4808.49, 6417.65, 7814.58, 9168.85]
+  wavelengths: [3556.52, 4702.50, 6175.58, 7489.98, 8946.71]

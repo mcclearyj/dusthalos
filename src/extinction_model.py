@@ -39,9 +39,10 @@ class ExtinctionModel:
         '''
         r_v = self.dmconfig['R']
         model = self.dmconfig['model']
-        kwargs = {'wave': np.array(self.dmconfig['wavelengths']),
-                  'a_v': self.dmconfig['A_V']
-                  }
+        kwargs = {
+            'wave': np.array(self.dmconfig['wavelengths']),
+            'a_v': self.dmconfig['A_V']
+        }
         if model == 'ccm89':
             self.dmdp = extinction.ccm89(**kwargs, r_v=r_v)
         elif model == 'odonnell94':
@@ -53,9 +54,9 @@ class ExtinctionModel:
         else:
             model = 'fm07'
             self.dmdp = extinction.fm07(**kwargs)
-        
+
         print(f"Using extinction model {model}") # Comfort display
-        
+
     def get_dust_model(self):
         '''
         Get a dust model based on configuration file parameters

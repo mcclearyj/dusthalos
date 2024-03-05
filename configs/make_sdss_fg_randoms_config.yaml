@@ -4,11 +4,11 @@
 
 # Description:
 # This configuration file allows you to customize the settings for
-# prep_fg_randoms_runner.py
+# prep_random_cat_runner.py
 
 # Note:
 # - Do not change the variable names (the text before the equal sign).
-# - Only modify the values on the right side of the equal sign (=).
+# - Only modify the values on the right side of the colon sign (:).
 
 # General Settings:
 # -----------------
@@ -24,29 +24,32 @@ paths:
 
 # How many random points are we making?
 # Suggestion: use 1e6 for making overlap plots, > 3e7 for science
-nrand: 1e6
+nrand: 2e7
 
 # Output name for random catalog; note that "masked_" will be added as prefix
-# output_name: 'sdss_fg_gals_randoms.fits'
+output_name: 'sdss_fg_randoms.fits'
 
-# background mask
+# Populate if comparison to another catalog's RA, Dec distribution is desired
+comparison_cat: '/Users/j.mccleary/Research/dusty_halos/catalogs/prep_cat_output/DoubleMasked_sdss_fg_gals.fits'
+
+# HpMask for which random points are desired
 mask1:
-  # Where is it? Leave blank or commented out to use default paths
+  # Where is mask2? Leave blank or commented out to use default paths
   path:
   # What is it called?
-  filename: 'y3_gold_2.2.1_RING_joint_redmagic_v0.5.1_wide_maglim_v2.2_mask.fits'
+  filename: 'sdss_fg_gals_healpix_mask.fits'
   # IMPORTANT!!! GET COORDINATE FRAME CORRECT OR MASKING WILL FAIL!
   coordframe: 'icrs'
   # Is mask partial?
-  partial: True
+  partial: False
 
-# probably foreground mask
+# Uncomment if catalog should also be masked against a second mask
 mask2:
-  # Where is it? If blank, assumes general catalog_path
+  # Where is mask2? If none, code assumes general catalog_path
   path:
-  # What is it called?
-  filename: 'WISExSCOSmask.fits'
+  # What is mask2 called?
+  filename: 'sdss_bg_gals_healpix_mask.fits'
   # IMPORTANT!!! GET COORDINATE FRAME CORRECT OR MASKING WILL FAIL!
-  coordframe: 'galactic'
+  coordframe: 'icrs'
   # Is mask partial? When in doubt, do not pass this argument; code will figure it out.
-  partial:
+  partial: False

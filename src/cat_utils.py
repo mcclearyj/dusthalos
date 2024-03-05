@@ -1,13 +1,14 @@
 import os
 from astropy.table import Table, join
+import pdb
 import numpy as np
 from . import utils
 
 def cat_checker(catalog):
-    '''
+    """
     Minimal helper function to ensure required attributes are present. We could
     think about making this a cat *loader* too, not just a cat checker
-    '''
+    """
     # A dict is fine too
     if type(catalog) == dict:
         catalog = utils.AttrDict(catalog)
@@ -19,10 +20,10 @@ def cat_checker(catalog):
             raise KeyError(f'Catalog object is missing attribute {key}')
 
 def mask_config_checker(config):
-    '''
+    """
     Utility method to check for required keys in individual mask config file
     Not finished -- repeated code, so not ideal practice.
-    '''
+    """
 
     # Required mask keys
     required_mask_keys = ['path', 'filename', 'coordframe']
@@ -43,10 +44,10 @@ def mask_config_checker(config):
                 raise KeyError(f'mask config is missing required key: {key}')
 
 def cat_config_checker(cat_config):
-    '''
+    """
     Check that keys required for a single configuration catalog are in place
-    '''
-    required_cat_keys = ['filename', 'ra_tag', 'dec_tag',
+    """
+    required_cat_keys = ['filename', 'ra_key', 'dec_key',
                         'coordframe', 'coord_units']
     required_match_keys = ['filename', 'match_type', 'tabname']
 
@@ -65,15 +66,17 @@ def cat_config_checker(cat_config):
                     raise KeyError(f'match config missing key: {mkey}')
 
 def all_config_checker(config):
-    '''
+    """
     Utility method to check that config for catalog_runner has keys are in place.
-    '''
+    """
 
     cf_keys = config.keys()
+
     # Required catalog keys
-    required_cat_keys = ['filename', 'ra_tag', 'dec_tag',
+    required_cat_keys = ['filename', 'ra_key', 'dec_key',
                         'coordframe', 'coord_units']
     required_match_keys = ['filename', 'match_type', 'tabname']
+
     # Required mask keys
     required_mask_keys = ['filename', 'coordframe']
 
@@ -83,14 +86,20 @@ def all_config_checker(config):
 
     # Make sure there is a path defined; if not, add one
     for sub_cfg in cf_keys:
-        if ('path' not in config[sub_cfg].keys()) or \
-            (config[sub_cfg]['path'] is None):
+        try:
+            # Set default input path if none provided
+            if config[sub_cfg].get('path') == None:
                 config[sub_cfg]['path'] = config['paths']['catalog_path']
-        if ('output_path' not in config[sub_cfg].keys()) or \
-            (config[sub_cfg]['output_path'] is None):
+
+            # Set default output path if none provided
+            if config[sub_cfg].get('output_path') == None:
                 config[sub_cfg]['output_path'] = config['paths']['output_path']
 
-    # For catalog1, catalog2: make sure the coord tags are there
+        # Probaby just a float or something
+        except AttributeError:
+            print(f"Skipping validation for key {sub_cfg}")
+
+    # For catalog1, catalog2: make sure the coord keys are there
     catalogs = []
     masks = []
 

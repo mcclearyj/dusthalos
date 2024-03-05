@@ -100,18 +100,18 @@ class CatalogJoiner:
         # Get RA/Dec unit and keys for catalogs 1 and 2;
         # also helps with error checking
         try:
-            ra_tag1 = self.cat1.config['ra_tag']
-            dec_tag1 = self.cat1.config['dec_tag']
-            dec_tag2 = self.config['match']['dec_tag']
-            ra_tag2 = self.config['match']['ra_tag']
+            ra_key1 = self.cat1.config['ra_key']
+            dec_key1 = self.cat1.config['dec_key']
+            dec_key2 = self.config['match']['dec_key']
+            ra_key2 = self.config['match']['ra_key']
 
         except KeyError as ke:
             print('Missing key in config file: ', ke)
 
         # These are line-by-line matched and can be stacked.
         jcat1, jcat2 = utils.match_coords(self.cat1, self.cat2,
-                                ratag1=ra_tag1, dectag1=dec_tag1,
-                                ratag2=ra_tag2, dectag2=dec_tag2, radius=0.5)
+                                rakey1=ra_key1, deckey1=dec_key1,
+                                rakey2=ra_key2, deckey2=dec_key2, radius=0.5)
 
         # Stack the catalogs
         joined_cat = hstack(jcat1, jcat2, \
@@ -129,8 +129,15 @@ class CatalogJoiner:
         '''
 
         c1 = self.cat1; c2 = self.cat2
-        gmr = c2.data['mof_cm_mag_corrected_g'] - c2.data['mof_cm_mag_corrected_r']
-        imz = c2.data['mof_cm_mag_corrected_i'] - c2.data['mof_cm_mag_corrected_z']
+
+        # For debugging
+        gmr = c2.data['dered_g'] - c2.data['dered_r']
+        imz = c2.data['dered_i'] - c2.data['dered_z']
+
+        # Define z cols and bins
+        zcol_c1 = self.config['z1_colname']
+        zcol_c2 = self.config['z2_colname']
+        n_zbins = 17
 
         if 'seed' in self.config.keys():
             seed = self.config['seed']
@@ -141,15 +148,18 @@ class CatalogJoiner:
         rng = np.random.default_rng(seed)
         print(f'join_cats_random: set RNG with seed = {seed}\n')
 
-        # OK, first we need to bin catalog 1 by redshift. This should be made
-        # a configurable value ASAP
+        # This is probably a case where we have made our own bg rand cat
+        # and need to add redshifts to it as well.
+        if zcol_c1 == None:
+            print("\n\n supplied z1_col of 'None'",
+                    f"generating redshifts from z2_col={zcol_c2}!!\n\n")
 
-        n_zbins = 17;
-        # USE A VARIANT OF THIS SOON, i.e., make configurable:
-        # z_tag_c1 = self.config['z_tag']
+            # Help yourself to some random indices
+            randind = rng.integers(0, len(c2.data), size=len(c1.data))
 
-        zcol_c1 = 'z'
-        zcol_c2 = 'dnf_zmc_mof'
+            # Add redshift column; recall type(c1.data) == astropy.Table!
+            zcol_c1 = zcol_c2
+            c1.data.add_column(c2.data[zcol_c2][randind], name=zcol_c1)
 
         # OK, here, we are creating the redshift bins of catalog c1 -- could use different algorithm?
         c1_zhist, c1_zbins = np.histogram(c1.data[zcol_c1], bins=n_zbins)
@@ -178,22 +188,23 @@ class CatalogJoiner:
             c2_slice = (c2_zbin_values == zb)
             c1_slice = (c1_zbin_values == zb)
 
-            print(
-                f"random matching: Working on bin {zb}:",
-                f" z={np.median(c2.data[zcol_c2][c2_slice])}"
-            )
+            print(f"random matching: Working on bin {zb}:",
+                    f" z={np.median(c2.data[zcol_c2][c2_slice])}")
 
             # Help yourself to some random indices
             randind = rng.integers(
                 0, len(c2.data[c2_slice]), size=len(c1.data[c1_slice])
             )
 
+            ###
+            ### Next block is for debugging
+            ###
             this_set = full_c2_index[c2_slice]
             this_subset = full_c2_index[c2_slice][randind]
-            print(
-                f"\t There are {np.count_nonzero(c1_slice)} c1 galaxies ",
-                f"and {np.count_nonzero(c2_slice)} c2 galaxies in bin"
-            )
+
+            print(f"\t There are {np.count_nonzero(c1_slice)} c1 galaxies ",
+                    f"and {np.count_nonzero(c2_slice)} c2 galaxies in bin")
+
             print(f"\t Median g-r in bin is {np.median(gmr[this_set])}")
             print(f"\t Median g-r in subset is {np.median(gmr[this_subset])}")
             print("")
@@ -243,7 +254,7 @@ class CatalogJoiner:
 
         # Add some metadata
         jc.meta['comments'].append(f'{self.cat1.tabname} joined with ' + \
-                                    f'{self.cat2.tabname} on' +
+                                    f'{self.cat2.tabname} on ' +
                                     f'{datetime.now():%D %H:%M:%S}')
         jc.meta['comments'].append(f'join_type: {join_type}')
 

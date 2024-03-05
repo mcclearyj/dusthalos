@@ -31,7 +31,8 @@ class Catalog():
 
             config: sets attributes of catalog class
 
-            memmap: "secret" argument that enables memmap for large fits files -- should really be made a config.
+            memmap: "secret" argument that enables memmap for large fits
+                    files -- should really be made a configurable parameter.
     '''
 
     def __init__(self, config=None, filepath=None, data=None,
@@ -116,8 +117,8 @@ class Catalog():
             unit = u.rad
 
         # Create and return SkyCoord instance
-        coords = SkyCoord(self.data[self.config['ra_tag']].data*unit,
-                            self.data[self.config['dec_tag']].data*unit,
+        coords = SkyCoord(self.data[self.config['ra_key']].data*unit,
+                            self.data[self.config['dec_key']].data*unit,
                             frame=self.config['coordframe'])
 
         return coords
