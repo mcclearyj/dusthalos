@@ -130,7 +130,7 @@ class ReddeningCalculator(ExtinctionModel):
         Cinv = np.linalg.inv(covar)
 
         # De-mean the galaxy magnitudes in each redshift bin
-        colors = (data.T - np.average(data, axis=1)).T
+        colors = (data.T - np.median(data, axis=1)).T
 
         # Compute the optimal estimator for excess reddening of galaxies
         # in this redshift bin using maximum likelihood
