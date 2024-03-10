@@ -14,7 +14,7 @@ paths:
   # Where to save outputs
   output_path: '/Users/j.mccleary/Research/dusty_halos/catalogs/prep_cat_output'
 
-#
+##
 # Input catalogs and masks:
 # -----------------
 
@@ -53,20 +53,21 @@ foreground_catalog:
   # Where is it?
   #path:
   # What is it called ?
-  filename: 'wiseScosPhotoz160708_redshift_cut.fits'
+  filename: 'GSWLC-X2_in_SDSS_z_lt_0.2.fits'
+  # Name for filtered (possibly joined) output catalog
+  output_name:
   # RA, Dec names + units + coordframe
-  coordframe: 'galactic'
-  ra_key: 'l'
-  dec_key: 'b'
+  coordframe: 'icrs'
+  ra_key: 'RA'
+  dec_key: 'Dec'
   coord_units: 'deg'
-
+  # output_path: '/Users/j.mccleary/Research/dusty_halos/catalogs'
 
 # probably foreground mask
 foreground_mask:
   # Where is it?
   path:
   # What is it called?
-  filename: 'WISExSCOSmask.fits'
+  filename: 'GSWLC-X2_in_SDSS_healpix_mask.fits'
   # IMPORTANT!!! GET COORDINATE FRAME CORRECT OR MASKING WILL FAIL!
   coordframe: 'icrs'
-  # Is mask partial? When in doubt, do not pass this argument. Code will figure it out

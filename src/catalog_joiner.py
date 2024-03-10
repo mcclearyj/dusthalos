@@ -131,8 +131,8 @@ class CatalogJoiner:
         c1 = self.cat1; c2 = self.cat2
 
         # For debugging
-        gmr = c2.data['dered_g'] - c2.data['dered_r']
-        imz = c2.data['dered_i'] - c2.data['dered_z']
+        #gmr = c2.data['dered_g'] - c2.data['dered_r']
+        #imz = c2.data['dered_i'] - c2.data['dered_z']
 
         # Define z cols and bins
         zcol_c1 = self.config['z1_colname']
@@ -205,12 +205,14 @@ class CatalogJoiner:
             print(f"\t There are {np.count_nonzero(c1_slice)} c1 galaxies ",
                     f"and {np.count_nonzero(c2_slice)} c2 galaxies in bin")
 
+            '''
             print(f"\t Median g-r in bin is {np.median(gmr[this_set])}")
             print(f"\t Median g-r in subset is {np.median(gmr[this_subset])}")
             print("")
             print(f"\t Median i-z in bin is {np.median(imz[this_set])}")
             print(f"\t Median i-z in subset is {np.median(imz[this_subset])}")
             print("")
+            '''
 
             # This holds the indices of matched table (too many hstacks otherwise)
             c1_index_holder.extend(full_c1_index[c1_slice])

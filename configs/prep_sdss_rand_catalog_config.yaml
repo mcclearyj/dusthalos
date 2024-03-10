@@ -60,7 +60,7 @@ background_mask:
 # This is probably the foreground
 foreground_catalog:
   # What is it called ?
-  filename: 'sdss_fg_randoms.fits'
+  filename: 'WISExSCOS_fg_randoms3.fits'
   # RA, Dec names + units + coordframe
   coordframe: 'icrs'
   ra_key: 'ra'
@@ -72,6 +72,6 @@ foreground_mask:
   # Where is it?
   path:
   # What is it called?
-  filename: 'sdss_fg_gals_healpix_mask.fits'
+  filename: 'WISExSCOSmask.fits'
   # IMPORTANT!!! GET COORDINATE FRAME CORRECT OR MASKING WILL FAIL!
   coordframe: 'icrs'
