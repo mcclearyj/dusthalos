@@ -1,7 +1,7 @@
   ### Where is it? Leave blank or commented out to use default ###
   path: /Users/j.mccleary/Research/dusty_halos/catalogs/prep_cat_output
   #path: /work/mccleary_group/dusty_halos/catalogs/prep_cat_output
-  filename: Bg+FgMask_randoms_WISExSCOSmask.fits
+  filename: 'DoubleMasked_WISExSCOS_fg_randoms3.fits'
   # nickname for table if we are matching to another catalog
   tabname: 'WISExSCOS_randoms'
   # WCS frame

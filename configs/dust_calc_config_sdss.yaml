@@ -15,28 +15,30 @@ background_catalog:
   treecorr_npatch: 10   # Set number of treecorr patches
   redshifts: # How to deal with redshifts
     #use_bin_numbers: True # Basically just for redmagic
-    nbins: 5
+    nbins: 3
 
 background_randoms:
   cat_config: 'configs/catalog_configs/sdss_bg_randoms.yaml'
   redshifts: # How to deal with redshifts
     #use_bin_numbers: True # Basically just for redmagic
-    nbins: 5
+    nbins: 3
 
 foreground_catalog:
-  cat_config: 'configs/catalog_configs/sdss_fg_galaxies.yaml'
+  cat_config: 'configs/catalog_configs/WISExSCOS_cat.yaml'
+  #cat_config: 'configs/catalog_configs/GWSLC_cat.yaml'
 
 foreground_randoms:
-  cat_config: 'configs/catalog_configs/sdss_fg_randoms.yaml'
+  cat_config: 'configs/catalog_configs/WISExSCOS_randoms.yaml'
+  #cat_config: 'configs/catalog_configs/GWSLC_randoms.yaml'
 
 # ------------------
 # Output parameters
 # ------------------
 
 # Where output files and plots will get saved
-output_path: 'output/sdss_partial'
+output_path: 'output/sdss'
 # basename or prefix for assorted files to save
-output_basename: 'dust_correlation_calzetti00_5zbins'
+output_basename: 'dust_correlation_calzetti00_3zbins'
 # Plot output dust profile in kiloparsecs (True) or arcminutes (False)
 use_kpc: True
 
@@ -44,9 +46,9 @@ use_kpc: True
 # Correlation function parameters:
 # -----------------
 treecorr_params:
-  min_sep: 0.1
+  min_sep: 0.2
   max_sep: 200.0
-  bin_size: 0.6
+  bin_size: 1
   sep_units: 'arcmin'
   var_method: 'sample'
 

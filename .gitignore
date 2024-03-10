@@ -16,3 +16,4 @@ slurm_outfiles/
 ./writeup/*log
 ./writeup/*aux
 ./writeup/*out
+.ipynb_checkpoints/

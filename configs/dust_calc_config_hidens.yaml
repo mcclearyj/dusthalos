@@ -15,13 +15,13 @@ background_catalog:
   treecorr_npatch: 10   # Set number of treecorr patches
   redshifts: # How to deal with redshifts
     #use_bin_numbers: True # Basically just for redmagic
-    nbins: 15
+    nbins: 5
 
 background_randoms:
   cat_config: 'configs/catalog_configs/redmagic_hidens_randoms.yaml'
   redshifts: # How to deal with redshifts
     #use_bin_numbers: True # Basically just for redmagic
-    nbins: 15
+    nbins: 5
 
 foreground_catalog:
   cat_config: 'configs/catalog_configs/WISExSCOS_cat.yaml'
@@ -34,9 +34,9 @@ foreground_randoms:
 # ------------------
 
 # Where output files and plots will get saved
-output_path: 'output/redmagic_hidens_newvar'
+output_path: 'output/redmagic_hidens_zgt045'
 # basename or prefix for assorted files to save
-output_basename: 'dust_correlation_calzetti00_15zbins'
+output_basename: 'dust_correlation_calzetti00_5zbins'
 # Plot output dust profile in kiloparsecs (True) or arcminutes (False)
 use_kpc: True
 
@@ -58,8 +58,8 @@ dust_params:
   R: 3.1
   # Extinction in V band
   A_V: 1
-  # Wavelengths (spectrum) to model; should match number of bands!
+  # Bandpass column names in catalog
+  band_names: ['mof_cm_mag_corrected_g', 'mof_cm_mag_corrected_r',
+              'mof_cm_mag_corrected_i', 'mof_cm_mag_corrected_z']
+  # Central wavelengths (spectrum) to model; should match number of bands!
   wavelengths: [4808.49, 6417.65, 7814.58, 9168.85]
-
-# Placeholder for selecting bands; make it a list?
-bands:

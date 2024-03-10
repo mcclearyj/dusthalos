@@ -24,13 +24,13 @@ paths:
 
 # How many random points are we making?
 # Suggestion: use 1e6 for making overlap plots, > 3e7 for science
-nrand: 2e7
+nrand: 5e7
 
 # Output name for random catalog; note that "masked_" will be added as prefix
 output_name: 'sdss_bg_randoms.fits'
 
 # Populate if comparison to another catalog's RA, Dec distribution is desired
-comparison_cat: '/Users/j.mccleary/Research/dusty_halos/catalogs/prep_cat_output/DoubleMasked_sdss_fg_gals.fits'
+comparison_cat: '/Users/j.mccleary/Research/dusty_halos/catalogs/prep_cat_output/DoubleMasked_sdss_bg_gals.fits'
 
 # HpMask for which random points are desired
 mask1:
