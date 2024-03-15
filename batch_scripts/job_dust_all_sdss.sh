@@ -14,8 +14,8 @@
 ### Define some environmental variables
 ###
 
-export CODEDIR='/Users/j.mccleary/Research/dusty_halos/dusthalos_emh'
-export CONFIGDIR='/Users/j.mccleary/Research/dusty_halos/dusthalos_emh/configs'
+export CODEDIR='/work/mccleary_group/dusty_halos/dusthalos_emh'
+export CONFIGDIR='/work/mccleary_group/dusty_halos/dusthalos_emh/configs'
 #export PATH=$PATH:'/Users/j.mccleary/Software/texlive-bin/x86_64-linux'
 
 echo $PATH
@@ -27,7 +27,7 @@ echo $CONFIGDIR
 ### Activate Conda
 ###
 source /Users/j.mccleary/Software/miniconda3/etc/profile.d/conda.sh
-conda activate dustyhalos_emh
+conda activate dustyhalos
 
 ###
 ### Go!
@@ -36,7 +36,6 @@ conda activate dustyhalos_emh
 # Prep the regular catalogs
 echo "Running prep_cat_runner for regular galaxy catalogs"
 python $CODEDIR/runner_scripts/prep_cat_runner.py -c $CONFIGDIR/prep_sdss_catalog_config.yaml
-#python $CODEDIR/runner_scripts/prep_cat_runner.py -c $CONFIGDIR/prep_gwslcxsdss_catalog_config.yaml
 
 # Make the random catalogs
 #echo "Running make_random_cat_runner.py for foregrounds"

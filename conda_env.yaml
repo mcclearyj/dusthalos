@@ -205,4 +205,3 @@ dependencies:
       - latex==0.7.0
       - shutilwhich==1.1.0
       - tempdir==0.7.1
-prefix: /Users/j.mccleary/Software/miniconda3/envs/dustyhalos_emh
