@@ -35,16 +35,16 @@ conda activate dustyhalos_emh
 
 # Prep the regular catalogs
 echo "Running prep_cat_runner for regular galaxy catalogs"
-python $CODEDIR/runner_scripts/prep_cat_runner.py -c $CONFIGDIR/prep_gwslcxsdss_catalog_config.yaml
+python $CODEDIR/runner_scripts/prep_cat_runner.py -c $CONFIGDIR/prep_hidens_catalog_config.yaml
 
 # Make the random catalogs
 echo "Running make_random_cat_runner.py for foreground"
-#python $CODEDIR/runner_scripts/make_random_cat_runner.py -c $CONFIGDIR/make_fg_randoms_config.yaml
+python $CODEDIR/runner_scripts/make_random_cat_runner.py -c $CONFIGDIR/make_fg_randoms_config.yaml
 
 # Prep the random catalogs
 echo "Running prep_cat_runner for random galaxy catalogs"
-python $CODEDIR/runner_scripts/prep_cat_runner.py -c $CONFIGDIR/prep_sdss_rand_catalog_config.yaml
+python $CODEDIR/runner_scripts/prep_cat_runner.py -c $CONFIGDIR/prep_hidens_randoms_config.yaml
 
 # Dust calc
 echo "Running dust calc runner"
-python $CODEDIR/runner_scripts/dust_calc_runner.py -c $CONFIGDIR/dust_calc_config_sdss.yaml
+python $CODEDIR/runner_scripts/dust_calc_runner.py -c $CONFIGDIR/dust_calc_config.yaml

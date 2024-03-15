@@ -59,7 +59,7 @@ def main(args):
         bg_redshift.match_to_catalog(match_cat, overwrite=overwrite)
 
         end = time.time()
-        print(f"\n Random matching took {((end-start)/60.):.1f} mins \n")
+        print(f"\n prep_cat_runner: photometry/redshift catalog matching took {((end-start)/60.):.1f} mins \n")
 
 if __name__ == '__main__':
 

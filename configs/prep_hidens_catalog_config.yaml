@@ -1,4 +1,4 @@
-n################################################################################
+################################################################################
 #                            CONFIGURATION FILE                               #
 ################################################################################
 
@@ -6,55 +6,45 @@ n###############################################################################
 # This configuration file allows you to customize the settings for
 # cat_prep_runner.py
 
-# Note:
-# - Do not change the variable names (the text before the equal sign).
-# - Only modify the values on the right side of the equal sign (=).
-
 # General Settings:
 # -----------------
-# catalog_path: generic location for catalogs
-# output_path: where to save files
-
-# Set some defaults because I am lazy
 paths:
   # general path for catalogs
-  #catalog_path: '/work/mccleary_group/dusty_halos/catalogs'
   catalog_path: '/Users/j.mccleary/Research/dusty_halos/catalogs'
   # Where to save outputs
-  #output_path: '/work/mccleary_group/dusty_halos/catalogs/prep_cat_output'
   output_path: '/Users/j.mccleary/Research/dusty_halos/catalogs/prep_cat_output'
-#
+
 #
 # Input catalogs and masks:
 # -----------------
 
-# This is probably the background
+# This is probably the background catalog
 background_catalog:
   # Where is it? Leave blank or commented out to use default
-  #path:
-  filename: 'y3a2_gold2.2.1_redmagic_highdens_randoms.fits'
-  # table nickname for naming outputs and duplicate columns (if joining)
-  tabname: 'redmagic_hidens_randoms'
+  path:
+  # Name of catalog
+  filename: 'y3a2_gold2.2.1_redmagic_highdens.fits'
+  # nickname for table if we are matching to another catalog
+  tabname: 'redmagic_hidens'
   # WCS frame
   coordframe: 'icrs'
   # RA/Dec units
   coord_units: 'deg'
-  # Azimuth-type column name
+  # RA column names
   ra_key: 'ra'
-  # Altitude-type column name
+  # Dec column name
   dec_key: 'dec'
   # Are we matching? Uncomment fields below if true!
   match:
     # Set the path to catalog to be matched
-    #catalog_path: '/work/mccleary_group/dusty_halos/catalogs'
-    catalog_path: '/Users/j.mccleary/Research/dusty_halos/catalogs'
+    path: '/Users/j.mccleary/Research/dusty_halos/catalogs/'
     # Name of catalog file
-    filename: ''
+    filename: 'redmagic_hidens_y3_GOLD_JOINED_catalog.fits'
     # Should be 'kw', 'coordinates', or 'random'
-    match_type: 'random'
-    # If random matching, specifiy seed
-    seed: 5589320
-    # nickname for table, used to name outputs
+    match_type: 'kw'
+    # If kw matching, specify
+    match_kw: 'coadd_object_id'
+    # nickname for table
     tabname: 'y3_GOLD'
 
 # background mask
@@ -69,18 +59,21 @@ background_mask:
 # This is probably the foreground
 foreground_catalog:
   # What is it called ?
-  filename: 'WISExSCOS_randoms.fits'
-  # RA, Dec names + units + coordframe
-  coordframe: 'icrs'
-  ra_key: 'ra'
-  dec_key: 'dec'
+  filename: 'wiseScosPhotoz160708_redshift_cut.fits'
+  # WCS coordinate frame
+  coordframe: 'galactic'
+  # azimuth-type keyword (could be l)
+  ra_key: 'l'
+  # altitude-type keyword
+  dec_key: 'b'
+  # WCS coordinate units (usually deg)
   coord_units: 'deg'
-  # Are we matching? Uncomment if matching
-  match:
+
 
 # probably foreground mask
 foreground_mask:
   # What is it called?
   filename: 'WISExSCOSmask.fits'
   # IMPORTANT!!! GET COORDINATE FRAME CORRECT OR MASKING WILL FAIL!
-  coordframe: 'galactic'
+  coordframe: 'icrs'
+  # Is mask partial? When in doubt, do not pass this argument. Code will figure it out

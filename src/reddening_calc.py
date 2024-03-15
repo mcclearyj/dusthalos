@@ -148,23 +148,23 @@ class ReddeningCalculator(ExtinctionModel):
         nbins: number of bins for color estimation
         """
 
-        print(f'Removing catalog entries with NaN & sentinel values')
+        print("ReddeningCalc: removing catalog entries with NaN & sentinel values")
         self.preprocess_catalog()
 
-        print(f'Make dust extinction model')
+        print("ReddeningCalc: making dust extinction model")
         self.get_dust_model()
 
-        print(f'Beginning background catalog reddening calculation...')
+        print("ReddeningCalc: beginning background galaxy reddening calculation...")
 
         mle = np.zeros(len(self.data))
         mle_var = np.zeros(len(self.data))
 
         if self.redcalc_config['use_bin_numbers'] == True:
-            print("using bin numbers for redshifts")
+            print("ReddeningCalc: using bin numbers for redshifts")
             zbin_col = self.data['bin_number']
         else:
             # Make a "bin number" on the fly!
-            print("Making redshift bins")
+            print("ReddeningCalc: making redshift bins")
             z_hist = np.histogram(self.data[self.redcalc_config['z_key']],
                                     bins=self.redcalc_config['nbins'])
             zbin_col = np.digitize(self.data[self.redcalc_config['z_key']],
@@ -191,7 +191,7 @@ class ReddeningCalculator(ExtinctionModel):
         except np.linalg.LinAlgError:
             # If a Linear Algebra Error occurs, it's likely due to having too
             # few galaxies in the bin
-            error = f'Too few galaxies in bin {zb}: {np.count_nonzero(slice)}'
+            print(f"ReddeningCalc: too few galaxies in bin {zb}: {np.count_nonzero(slice)}")
             mle[slice] = np.nan
             mle_var[slice] = np.nan
 
@@ -200,7 +200,7 @@ class ReddeningCalculator(ExtinctionModel):
 
     def make_treecorr_obj(self):
         """
-        Placeholder for function that can return a treecorr object with k, w if desired!
+        Function that augments a treecorr catalog with reddening k, w
         """
         self.treecorr_cat = treecorr.Catalog(ra=self.coords.ra.deg,
                             dec=self.coords.dec.deg, ra_units='deg',

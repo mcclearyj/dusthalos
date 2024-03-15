@@ -38,7 +38,7 @@ foreground_randoms:
 # Where output files and plots will get saved
 output_path: 'output/sdss'
 # basename or prefix for assorted files to save
-output_basename: 'dust_correlation_calzetti00_3zbins'
+output_basename: 'dust_correlation_3zbins_calz00_var'
 # Plot output dust profile in kiloparsecs (True) or arcminutes (False)
 use_kpc: True
 
@@ -54,7 +54,7 @@ treecorr_params:
 
 # Parameters for dust model
 dust_params:
-  # Must be one of 'fm07', 'calzetti00', 'ccm89', 'odonnell94', 'fitzpatrick99'
+  # Must be one of 'calzetti00', 'ccm89', 'odonnell94', 'fitzpatrick99', or 'g23'
   model: 'calzetti00'
   # Ratio of selective to total extinction
   R: 3.1

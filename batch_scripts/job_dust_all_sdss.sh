@@ -39,11 +39,10 @@ python $CODEDIR/runner_scripts/prep_cat_runner.py -c $CONFIGDIR/prep_sdss_catalo
 #python $CODEDIR/runner_scripts/prep_cat_runner.py -c $CONFIGDIR/prep_gwslcxsdss_catalog_config.yaml
 
 # Make the random catalogs
-echo "Running make_random_cat_runner.py for foregrounds"
+#echo "Running make_random_cat_runner.py for foregrounds"
 #python $CODEDIR/runner_scripts/make_random_cat_runner.py -c $CONFIGDIR/make_sdss_fg_randoms_config.yaml
-#python $CODEDIR/runner_scripts/make_random_cat_runner.py -c $CONFIGDIR/make_fg_randoms_config.yaml
 
-#echo "Running make_random_cat_runner.py for background random"
+echo "Running make_random_cat_runner.py for background random"
 python $CODEDIR/runner_scripts/make_random_cat_runner.py -c $CONFIGDIR/make_sdss_bg_randoms_config.yaml
 
 # Prep the random catalogs

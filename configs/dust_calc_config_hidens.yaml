@@ -15,13 +15,13 @@ background_catalog:
   treecorr_npatch: 10   # Set number of treecorr patches
   redshifts: # How to deal with redshifts
     #use_bin_numbers: True # Basically just for redmagic
-    nbins: 5
+    nbins: 15
 
 background_randoms:
   cat_config: 'configs/catalog_configs/redmagic_hidens_randoms.yaml'
   redshifts: # How to deal with redshifts
     #use_bin_numbers: True # Basically just for redmagic
-    nbins: 5
+    nbins: 15
 
 foreground_catalog:
   cat_config: 'configs/catalog_configs/WISExSCOS_cat.yaml'
@@ -34,9 +34,9 @@ foreground_randoms:
 # ------------------
 
 # Where output files and plots will get saved
-output_path: 'output/redmagic_hidens_zgt045'
+output_path: 'output/redmagic_hidens_newmodel'
 # basename or prefix for assorted files to save
-output_basename: 'dust_correlation_calzetti00_5zbins'
+output_basename: 'dust_correlation_calzetti00_15zbins'
 # Plot output dust profile in kiloparsecs (True) or arcminutes (False)
 use_kpc: True
 
@@ -52,7 +52,7 @@ treecorr_params:
 
 # Parameters for dust model
 dust_params:
-  # Must be one of 'fm07', 'calzetti00', 'ccm89', 'odonnell94', 'fitzpatrick99'
+  # Must be one of 'calzetti00', 'ccm89', 'odonnell94', 'fitzpatrick99', or 'g23'
   model: 'calzetti00'
   # Ratio of selective to total extinction
   R: 3.1

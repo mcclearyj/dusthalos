@@ -23,7 +23,7 @@ background_catalog:
   # Where is it? Leave blank or commented out to use default
   path:
   # Name of catalog
-  filename: 'sdss_bg_gals.fits'
+  filename: 'sdss_bg_photoz.fits'
   # nickname for table if we are matching to another catalog
   tabname: 'sdss_bg'
   # WCS frame

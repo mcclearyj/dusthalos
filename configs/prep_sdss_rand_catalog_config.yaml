@@ -22,7 +22,7 @@ paths:
 background_catalog:
   # Where is it? Leave blank or commented out to use default
   #path:
-  filename: 'sdss_bg_randoms.fits'
+  filename: 'sdss_bg_photoz_randoms.fits'
   # nickname for table if we are matching to another catalog
   tabname: 'rand'
   # WCS frame
@@ -38,7 +38,7 @@ background_catalog:
     # Set the path to catalog to be matched
     path: '/Users/j.mccleary/Research/dusty_halos/catalogs/'
     # Name of catalog file
-    filename: 'sdss_bg_gals.fits'
+    filename: 'sdss_bg_photoz.fits'
     # Should be 'kw', 'coordinates', or 'random'
     match_type: 'random'
     # If type is random: z1 is the catalog to be augmented -- leave it blank to make a redshift column!!!
