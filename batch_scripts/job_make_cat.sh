@@ -1,26 +1,27 @@
 #!/bin/sh
-#SBATCH -t 23:59:59
+#SBATCH -t 59:59
 #SBATCH -N 1
-#SBATCH --mem=60G
-#SBATCH --partition=short
-#SBATCH -J dust_cat_maker
+#SBATCH --mem=80G
+#SBATCH --partition=express
+#SBATCH -J overlap_plotter
 #SBATCH -v
-#SBATCH --mail-type=ALL
-#SBATCH --mail-user=jmac.ftw@gmail.com
-#SBATCH -o slurm-dust_cat_maker.out
+#SBATCH -o slurm-cat_maker.out
 
 
 ###
 ### Define some environmental variables
 ###
 
-export CODEDIR='/work/mccleary_group/dusty_halos/dusthalos'
-export CONFIGDIR='/work/mccleary_group/dusty_halos/dusthalos/configs'
-export PATH=$PATH:'/work/mccleary_group/Software/texlive-bin/x86_64-linux'
+
+export CODEDIR='/work/mccleary_group/dusty_halos/dusthalos_emh'
+export CONFIGDIR='/work/mccleary_group/dusty_halos/dusthalos_emh/configs'
+export PATH='.':$PATH:'/work/mccleary_group/Software/texlive-bin/x86_64-linux'
+export PYTHONPATH='.':$PYTHONPATH
 
 echo $PATH
 echo $PYTHONPATH
 echo $CONFIGDIR
+
 
 dirname="slurm_outfiles"
 if [ ! -d "$dirname" ]
@@ -34,17 +35,23 @@ then
 
  echo "Proceeding with code..."
 
+
 ###
 ### Activate Conda
-### 
+###
+
+#source /Users/j.mccleary/Software/miniconda3/etc/profile.d/conda.sh
 source /work/mccleary_group/miniconda3/etc/profile.d/conda.sh
-
 conda activate dustyhalos
-
 
 ###
 ### Go!
 ###
 
-python $CODEDIR/runner_scripts/prep_cat_runner.py --config_file "$CONFIGDIR/prep_gaia_catalog_config.yaml"
+echo "Running prep_cat_runner for sdss real galaxy catalogs"
+python $CODEDIR/runner_scripts/prep_cat_runner.py -c $CONFIGDIR/prep_sdss_catalog_config.yaml
+
+echo "Running prep_cat_runner for gaia catalogs"
+python $CODEDIR/runner_scripts/prep_cat_runner.py -c $CONFIGDIR/prep_gaia_catalog_config.yaml
+
 mv slurm-dust_cat_maker.out "$dirname"
