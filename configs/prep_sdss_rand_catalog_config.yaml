@@ -10,9 +10,10 @@
 # -----------------
 paths:
   # general path for catalogs
-  catalog_path: '/Users/j.mccleary/Research/dusty_halos/catalogs'
+  #catalog_path: '/Users/j.mccleary/Research/dusty_halos/catalogs'
+  catalog_path: '/work/mccleary_group/dusty_halos/catalogs'
   # Where to save outputs
-  output_path: '/Users/j.mccleary/Research/dusty_halos/catalogs/prep_cat_output'
+  output_path: '/work/mccleary_group/dusty_halos/catalogs/prep_cat_output'
 
 #
 # Input catalogs and masks:
@@ -36,7 +37,8 @@ background_catalog:
   # Are we matching? Uncomment fields below if true!
   match:
     # Set the path to catalog to be matched
-    path: '/Users/j.mccleary/Research/dusty_halos/catalogs/'
+    #path: '/Users/j.mccleary/Research/dusty_halos/catalogs/'
+    path: '/work/mccleary_group/dusty_halos/catalogs/'
     # Name of catalog file
     filename: 'sdss_bg_photoz.fits'
     # Should be 'kw', 'coordinates', or 'random'
@@ -51,7 +53,7 @@ background_catalog:
 # background mask
 background_mask:
   # What is it called?
-  filename: 'sdss_bg_gals_healpix_mask.fits'
+  filename: 'sdss_bg_photoz_healpix_mask.fits'
   # IMPORTANT!!! GET COORDINATE FRAME CORRECT OR MASKING WILL FAIL!
   coordframe: 'icrs'
   # Is mask partial?
@@ -60,7 +62,7 @@ background_mask:
 # This is probably the foreground
 foreground_catalog:
   # What is it called ?
-  filename: 'WISExSCOS_fg_randoms3.fits'
+  filename: 'WISExSCOS_randoms4.fits'
   # RA, Dec names + units + coordframe
   coordframe: 'icrs'
   ra_key: 'ra'

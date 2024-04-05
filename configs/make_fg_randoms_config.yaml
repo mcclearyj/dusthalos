@@ -25,14 +25,15 @@ paths:
 
 # How many random points are we making?
 # Suggestion: use 1e6 for making overlap plots, > 3e7 for science
-nrand: 5e7
+nrand: 5e8
 
 # Output name for random catalog; note that "masked_" will be added as prefix
-output_name: 'WISExSCOS_randoms.fits'
+output_name: 'WISExSCOS_randoms3.fits'
 
-#comparison_cat: '/Users/j.mccleary/Research/dusty_halos/catalogs/prep_cat_output/DoubleMasked_sdss_bg_gals.fits'
+# If you want to compare (plot) RA/Dec distributions of two catalogs
+comparison_cat: 
 
-# background mask
+# main catalog mask
 mask1:
   # Where is it? Leave blank or commented out to use default paths
   path:
@@ -43,13 +44,13 @@ mask1:
   # Is mask partial?
   partial: False
 
-# probably foreground mask
-mask2:
-  # Where is it? If blank, assumes general catalog_path
-  path:
-  # What is it called?
-  filename: 'y3_gold_2.2.1_RING_joint_redmagic_v0.5.1_wide_maglim_v2.2_mask.fits'
-  # IMPORTANT!!! GET COORDINATE FRAME CORRECT OR MASKING WILL FAIL!
-  coordframe: 'icrs'
-  # Is mask partial? When in doubt, do not pass this argument; code will figure it out.
-  partial: True
+# additional mask -- optional
+#mask2:
+#  # Where is it? If blank, assumes general catalog_path
+#  path:
+#  # What is it called?
+#  filename: 'y3_gold_2.2.1_RING_joint_redmagic_v0.5.1_wide_maglim_v2.2_mask.fits'
+#  # IMPORTANT!!! GET COORDINATE FRAME CORRECT OR MASKING WILL FAIL!
+#  coordframe: 'icrs'
+#  # Is mask partial? When in doubt, do not pass this argument; code will figure it out.
+#  partial: True

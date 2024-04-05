@@ -19,10 +19,9 @@
 paths:
   # general path for catalogs
   catalog_path: '/work/mccleary_group/dusty_halos/catalogs'
-  #catalog_path: '/Users/j.mccleary/Research/dusty_halos/catalogs'
   # Where to save outputs
   output_path: '/work/mccleary_group/dusty_halos/catalogs/prep_cat_output'
-  #output_path: '/Users/j.mccleary/Research/dusty_halos/catalogs/prep_cat_output'
+
 #
 #
 # Input catalogs and masks:
@@ -32,38 +31,28 @@ paths:
 background_catalog:
   # Where is it? Leave blank or commented out to use default
   #path:
-  filename: 'y3a2_gold2.2.1_redmagic_highlum_highz_randoms.fits'
-  # table nickname for naming outputs and duplicate columns (if joining)
-  tabname: 'redmagic_hiz_randoms'
+  filename: 'y3a2_gold2.2.1_redmagic_highlum_highz.fits'
+  # nickname for table if we are matching to another catalog
+  tabname: 'redmagic_hiz'
   # WCS frame
   coordframe: 'icrs'
   # RA/Dec units
   coord_units: 'deg'
-  # Azimuth-type column name
-  ra_key: 'ra'
-  # Altitude-type column name
-  dec_key: 'dec'
+  # RA/Dec column names
+  ra_tag: 'ra'
+  dec_tag: 'dec'
+  # Name for filtered (possibly joined) output catalog
+  output_name: 'rmz_highlum_hiz_MOF.fits'
   # Are we matching? Uncomment fields below if true!
-  match:
-    # Set the path to catalog to be matched
-    path: '/work/mccleary_group/dusty_halos/catalogs'
-    #path: '/Users/j.mccleary/Research/dusty_halos/catalogs'
-    # Name of catalog file
-    filename: 'des_y3_gold_MOF_highpurity_gals.fits'
-    match_type: 'random'
-    # If type is random: z1 is the catalog to be augmented -- leave it blank to make a redshift column!!!
-    z1_colname: 'z'
-    # If type is random: z2 is matching photometry catalog
-    z2_colname: 'dnf_zmean_sof'
-    # If random matching, specifiy seed
-    seed: 5589320
-    # nickname for table, used to name outputs
-    tabname: 'y3_GOLD'
+  #match:
 
 # background mask
 background_mask:
+  # Where is it? Leave blank or commented out to use default paths
+  path:
   # What is it called?
   filename: 'y3_gold_2.2.1_RING_joint_redmagic_v0.5.1_wide_maglim_v2.2_mask.fits'
+
   # IMPORTANT!!! GET COORDINATE FRAME CORRECT OR MASKING WILL FAIL!
   coordframe: 'icrs'
   # Is mask partial?
@@ -71,19 +60,27 @@ background_mask:
 
 # This is probably the foreground
 foreground_catalog:
+  # Where is it?
+  #path:
   # What is it called ?
-  filename: 'WISExSCOS_randoms3.fits'
+  filename: 'gaia_stars_southern_full.fits'
+  # Name for filtered (possibly joined) output catalog
+  output_name: 'masked_gaia_starcat.fits'
   # RA, Dec names + units + coordframe
   coordframe: 'icrs'
-  ra_key: 'ra'
-  dec_key: 'dec'
+  ra_tag: 'ra'
+  dec_tag: 'dec'
   coord_units: 'deg'
+  # output_path: '/work/mccleary_group/dusty_halos/catalogs'
   # Are we matching? Uncomment if matching
   match:
 
 # probably foreground mask
 foreground_mask:
+  # Where is it?
+  #path:
   # What is it called?
-  filename: 'WISExSCOSmask.fits'
+  filename: 'gaia_cat_southern_hpmask.fits'
   # IMPORTANT!!! GET COORDINATE FRAME CORRECT OR MASKING WILL FAIL!
-  coordframe: 'galactic'
+  coordframe: 'icrs'
+  # Is mask partial? When in doubt, do not pass this argument. Code will figure it out

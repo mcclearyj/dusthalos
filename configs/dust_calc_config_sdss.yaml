@@ -12,35 +12,31 @@
 
 background_catalog:
   cat_config: 'configs/catalog_configs/sdss_bg_galaxies.yaml'
-  treecorr_npatch: 10   # Set number of treecorr patches
+  treecorr_npatch: 12   # Set number of treecorr patches
   redshifts: # How to deal with redshifts
-    #use_bin_numbers: True # Basically just for redmagic
-    nbins: 3
+    nbins: 5
 
 background_randoms:
   cat_config: 'configs/catalog_configs/sdss_bg_randoms.yaml'
   redshifts: # How to deal with redshifts
-    #use_bin_numbers: True # Basically just for redmagic
-    nbins: 3
+    nbins: 5
 
 foreground_catalog:
   cat_config: 'configs/catalog_configs/WISExSCOS_cat.yaml'
-  #cat_config: 'configs/catalog_configs/GWSLC_cat.yaml'
 
 foreground_randoms:
   cat_config: 'configs/catalog_configs/WISExSCOS_randoms.yaml'
-  #cat_config: 'configs/catalog_configs/GWSLC_randoms.yaml'
 
 # ------------------
 # Output parameters
 # ------------------
 
 # Where output files and plots will get saved
-output_path: 'output/sdss'
+output_path: 'output/sdss_v2'
 # basename or prefix for assorted files to save
-output_basename: 'dust_correlation_3zbins_calz00_var'
-# Plot output dust profile in kiloparsecs (True) or arcminutes (False)
-use_kpc: True
+output_basename: 'dust_correlation_5zbins_g23'
+# Plot output dust profile in kiloparsecs (False) or arcminutes (True)
+use_arcmin: False
 
 # -----------------
 # Correlation function parameters:
@@ -48,19 +44,21 @@ use_kpc: True
 treecorr_params:
   min_sep: 0.2
   max_sep: 200.0
-  bin_size: 1
+  bin_size: 0.6
   sep_units: 'arcmin'
   var_method: 'sample'
 
 # Parameters for dust model
 dust_params:
   # Must be one of 'calzetti00', 'ccm89', 'odonnell94', 'fitzpatrick99', or 'g23'
-  model: 'calzetti00'
+  model: 'g23'
   # Ratio of selective to total extinction
   R: 3.1
   # Extinction in V band
   A_V: 1
   # Bandpass column names in catalog
   band_names: ['dered_u', 'dered_g', 'dered_r', 'dered_i', 'dered_z']
+  #  Error/uncertainty column names in catalog (in order, please!)
+  band_names: ['err_u', 'err_g', 'err_r', 'err_i', 'err_z']
   # Central wavelengths (spectrum) to model; should match number of bands!
   wavelengths: [3556.52, 4702.50, 6175.58, 7489.98, 8946.71]

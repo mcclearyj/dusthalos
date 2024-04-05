@@ -1,16 +1,17 @@
 #!/bin/sh
-#SBATCH -t 12:59:59
+#SBATCH -t 59:59
 #SBATCH -N 1
-#SBATCH --mem=150G
-#SBATCH --partition=short
-#SBATCH -J dust_calc
+#SBATCH --mem=120G
+#SBATCH --partition=express
+#SBATCH -J overlap_plotter
 #SBATCH -v
-#SBATCH -o slurm-dust_calc.out
+#SBATCH -o slurm-cat_maker.out
 
 
 ###
 ### Define some environmental variables
 ###
+
 
 export CODEDIR='/work/mccleary_group/dusty_halos/dusthalos_emh'
 export CONFIGDIR='/work/mccleary_group/dusty_halos/dusthalos_emh/configs'
@@ -20,6 +21,7 @@ export PYTHONPATH='.':$PYTHONPATH
 echo $PATH
 echo $PYTHONPATH
 echo $CONFIGDIR
+
 
 dirname="slurm_outfiles"
 if [ ! -d "$dirname" ]
@@ -33,10 +35,12 @@ then
 
  echo "Proceeding with code..."
 
+
 ###
 ### Activate Conda
-### 
+###
 
+#source /Users/j.mccleary/Software/miniconda3/etc/profile.d/conda.sh
 source /work/mccleary_group/miniconda3/etc/profile.d/conda.sh
 conda activate dustyhalos
 
@@ -44,4 +48,10 @@ conda activate dustyhalos
 ### Go!
 ###
 
-python $CODEDIR/runner_scripts/dust_calc_runner.py -c $CONFIGDIR/dust_calc_config_sdss.yaml
+echo "Running prep_cat_runner for real galaxy catalogs"
+python $CODEDIR/runner_scripts/prep_cat_runner.py -c $CONFIGDIR/prep_hiz_catalog_config.yaml
+
+echo "Plotting overlap plots" 
+python $CODEDIR/runner_scripts/make_overlap_plots.py
+
+mv slurm-dust_cat_maker.out "$dirname"

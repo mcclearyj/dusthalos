@@ -18,13 +18,13 @@
 # Set some defaults
 paths:
   # general path for catalogs
-  catalog_path: '/Users/j.mccleary/Research/dusty_halos/catalogs'
+  catalog_path: '/work/mccleary_group/dusty_halos/catalogs/'
   # Where to save outputs
-  output_path: '/Users/j.mccleary/Research/dusty_halos/catalogs/prep_cat_output'
+  output_path: '/work/mccleary_group/dusty_halos/catalogs/prep_cat_output'
 
 # How many random points are we making?
 # Suggestion: use 1e6 for making overlap plots, > 3e7 for science
-nrand: 5e8
+nrand: 2e8
 
 # Output name for random catalog; note that "masked_" will be added as prefix
 output_name: 'sdss_bg_photoz_randoms.fits'

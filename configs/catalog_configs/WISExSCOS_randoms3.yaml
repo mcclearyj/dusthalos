@@ -1,9 +1,9 @@
   ### Where is it? Leave blank or commented out to use default ###
   #path: /Users/j.mccleary/Research/dusty_halos/catalogs/prep_cat_output
   path: /work/mccleary_group/dusty_halos/catalogs/prep_cat_output
-  filename: 'DoubleMasked_WISExSCOS_randoms4.fits'
+  filename: 'DoubleMasked_WISExSCOS_randoms3.fits'
   # nickname for table if we are matching to another catalog
-  tabname: 'WISExSCOS_randoms4'
+  tabname: 'WISExSCOS_randoms3'
   # WCS frame
   coordframe: 'icrs'
   # RA/Dec units

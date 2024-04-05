@@ -71,7 +71,7 @@ background_mask:
 # This is probably the foreground
 foreground_catalog:
   # What is it called ?
-  filename: 'WISExSCOS_randoms.fits'
+  filename: 'WISExSCOS_randoms4.fits'
   # RA, Dec names + units + coordframe
   coordframe: 'icrs'
   ra_key: 'ra'
