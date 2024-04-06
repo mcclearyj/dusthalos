@@ -127,7 +127,14 @@ class DustPlotter(RCParamsMixin):
 
         # Converts us from arcminutes to h^-1 kpc
         # Menard relationship was in terms of h
-        scl = fg_gal_kpc.value * cosmo.h
+        if kpc == True:
+            scl = fg_gal_kpc.value * cosmo.h
+            theory_r_plot = theory_r
+            x_label = f'Impact parameter ($h^{-1}$ kpc)'
+        else:
+            scl = 1
+            theory_r_plot = theory_r_arcmin
+            x_label = f'Impact parameter (arcmin)'
 
         fig, ax = plt.subplots(figsize=(10,7), tight_layout=True)
 
@@ -148,9 +155,9 @@ class DustPlotter(RCParamsMixin):
         ax.set_yscale('log')
         ax.set_xlim(0.05*scl, 200*scl)
         ax.set_ylim(1E-5, 1)
-        ax.set_xlabel(f'Impact parameter ($h^{-1}$ kpc)', fontsize=16)
+        ax.set_xlabel(x_label, fontsize=16)
         ax.set_ylabel(r'$A_{\rm V}$ (mag)', fontsize=16)
-        ax.set_title('SCOS x redMaGiC', fontsize=16)
+        #ax.set_title('SCOS x redMaGiC', fontsize=16)
         ax.legend(fontsize=14)
 
         fig.savefig(outplotn)
@@ -172,9 +179,9 @@ class DustPlotter(RCParamsMixin):
             ax.set_yscale('log')
             ax.set_xlim(0.05*scl, 200*scl)
             ax.set_ylim(1E-5, 1)
-            ax.set_xlabel(f'Impact parameter ($h^{-1}$ kpc)', fontsize=16)
+            ax.set_xlabel(x_label, fontsize=16)
             ax.set_ylabel(r'$A_{\rm V}$ (mag)', fontsize=16)
-            ax.set_title('SCOS x redMaGiC', fontsize=16)
+            #ax.set_title('SCOS x redMaGiC', fontsize=16)
             ax.legend(fontsize=14)
 
             # Assuming we have gotten thus far, let's make a new file name

@@ -105,32 +105,42 @@ class ReddeningCalculator(ExtinctionModel):
         TO DO: Move error-checking to earlier in the code?
         """
 
-        # Extract galaxy magnitudes from the catalog
+        # Extract galaxy magnitudes and uncertainties from the catalog
         band_names = self.dust_params['band_names']
-        data_list = []
-        for band in band_names:
+        error_names = self.dust_params['err_names']
+        data_list = []  # Will hold the arrays of magnitudes
+        error_list = []  # Will hold the arrays of uncertainties
+
+        for i, band in enumerate(band_names):
             try:
-                # Append each magnitude column to the data object
-                data_list.append(np.ma.getdata(catalog[band]))
+                # Directly append the magnitude and uncertainty arrays
+                data_list.append(catalog[band])
+                error_list.append(catalog[error_names[i]])
+
             except KeyError as ke:
-                # Oh no! Exit, as there are probably other problems
-                print(f"ReddeningCalcuator: no bandpass named '{band}' found!")
+                print(f"ReddeningCalculator: no bandpass named '{band}' found!")
                 raise ke
 
-        # Stack the extracted magnitudes into a 2D array
+        # Stack the extracted magnitudes and uncertainties into 2D arrays
         data = np.vstack(data_list)
+        errors = np.vstack(error_list)
+
+        # Compute the average in each band, weighting by the inverse
+        # of the square of the uncertainties
+        weights = 1 / errors**2
+        weighted_avg = np.average(data, weights=weights, axis=1)
 
         # Compute the covariance matrix of the galaxy magnitudes
         covar = np.cov(data)
 
-        # Initialize delta based on the dust extinction model (self.dmdp)
-        delta = (np.zeros_like(data).T + self.dmdp)
-
         # Compute the inverse covariance matrix
         Cinv = np.linalg.inv(covar)
 
+        # Initialize delta based on the dust extinction model (self.dmdp)
+        delta = (np.zeros_like(data).T + self.dmdp)
+
         # De-mean the galaxy magnitudes in each redshift bin
-        colors = (data.T - np.median(data, axis=1)).T
+        colors = (data.T - weighted_avg).T
 
         # Compute the optimal estimator for excess reddening of galaxies
         # in this redshift bin using maximum likelihood

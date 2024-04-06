@@ -112,14 +112,15 @@ def main(args):
                 names=names, correl_config=correl_config)
 
     print('Plotting output figure...\n')
-    plot = DustPlotter(dk_file = names.dk_outfile,
-                       dr_file = names.dr_outfile,
-                       fr_file = names.fr_outfile,
-                       rr_file = names.rr_outfile,
-                       ck_file = names.ck_outfile,
-                       z_fg = mean_fg_z,
-                       z_theory = z_theory
-                       )
+    plot = DustPlotter(
+        dk_file = names.dk_outfile,
+        dr_file = names.dr_outfile,
+        fr_file = names.fr_outfile,
+        rr_file = names.rr_outfile,
+        ck_file = names.ck_outfile,
+        z_fg = mean_fg_z,
+        z_theory = z_theory
+    )
     plot.plot_res(outplotn=names.fig_output, kpc=correl_config['use_kpc'])
 
 if __name__ == '__main__':

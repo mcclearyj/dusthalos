@@ -14,5 +14,3 @@
   dec_key: 'dec'
   # Redshift column name
   z_key: 'z'
-  # optional for redmagic only, basically
-  # z_bin_number: 'bin_number'
