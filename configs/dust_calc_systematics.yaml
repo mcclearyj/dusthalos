@@ -44,7 +44,7 @@ use_kpc: False
 treecorr_params:
   min_sep: 0.1
   max_sep: 200.0
-  bin_size: 0.6
+  bin_size: 1
   sep_units: 'arcmin'
   var_method: 'sample'
 

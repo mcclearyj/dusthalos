@@ -44,7 +44,7 @@ use_kpc: True
 # Correlation function parameters:
 # -----------------
 treecorr_params:
-  min_sep: 0.1
+  min_sep: 0.2
   max_sep: 200.0
   bin_size: 0.6
   sep_units: 'arcmin'

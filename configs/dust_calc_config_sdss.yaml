@@ -36,7 +36,7 @@ output_path: 'output/sdss_v2'
 # basename or prefix for assorted files to save
 output_basename: 'dust_correlation_5zbins_g23'
 # Plot output dust profile in kiloparsecs (False) or arcminutes (True)
-use_arcmin: False
+use_kpc: False
 
 # -----------------
 # Correlation function parameters:
