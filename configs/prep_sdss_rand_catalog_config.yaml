@@ -76,4 +76,4 @@ foreground_mask:
   # What is it called?
   filename: 'WISExSCOSmask.fits'
   # IMPORTANT!!! GET COORDINATE FRAME CORRECT OR MASKING WILL FAIL!
-  coordframe: 'icrs'
+  coordframe: 'galactic'

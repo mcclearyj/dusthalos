@@ -46,16 +46,16 @@ background_catalog:
   # Are we matching? Uncomment fields below if true!
   match:
     # Set the path to catalog to be matched
-    path: '/work/mccleary_group/dusty_halos/catalogs/prep_cat_output'
+    path: '/work/mccleary_group/dusty_halos/catalogs'
     #catalog_path: '/Users/j.mccleary/Research/dusty_halos/catalogs'
     # Name of catalog file
-    filename: 'redmagic_hidens_y3_GOLD_JOINED_catalog.fits'
+    filename: 'des_y3_gold_MOF_highpurity_gals.fits'
     # Should be 'kw', 'coordinates', or 'random'
     match_type: 'random'
     # If type is random: z1 is the catalog to be augmented -- leave it blank to make a redshift column!!!
     z1_colname: 'z'
     # If type is random: z2 is matching photometry catalog
-    z2_colname: 'zredmagic'
+    z2_colname: 'dnf_zmean_sof'
     # nickname for table, used to name outputs
     tabname: 'y3_GOLD'
 
@@ -71,7 +71,7 @@ background_mask:
 # This is probably the foreground
 foreground_catalog:
   # What is it called ?
-  filename: 'WISExSCOS_randoms4.fits'
+  filename: 'WISExSCOS_randoms3.fits'
   # RA, Dec names + units + coordframe
   coordframe: 'icrs'
   ra_key: 'ra'
@@ -86,3 +86,6 @@ foreground_mask:
   filename: 'WISExSCOSmask.fits'
   # IMPORTANT!!! GET COORDINATE FRAME CORRECT OR MASKING WILL FAIL!
   coordframe: 'galactic'
+  # Is mask partial? When in doubt, do not pass this argument. Code will figure it out
+  partial: False
+ 

@@ -78,5 +78,6 @@ foreground_mask:
   # What is it called?
   filename: 'WISExSCOSmask.fits'
   # IMPORTANT!!! GET COORDINATE FRAME CORRECT OR MASKING WILL FAIL!
-  coordframe: 'icrs'
+  coordframe: 'galactic'
   # Is mask partial? When in doubt, do not pass this argument. Code will figure it out
+  partial: False

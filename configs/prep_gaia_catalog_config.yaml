@@ -31,28 +31,35 @@ paths:
 background_catalog:
   # Where is it? Leave blank or commented out to use default
   #path:
-  filename: 'y3a2_gold2.2.1_redmagic_highlum_highz.fits'
+  filename: 'y3a2_gold2.2.1_redmagic_highdens.fits'
   # nickname for table if we are matching to another catalog
-  tabname: 'redmagic_hiz'
+  tabname: 'redmagic_hidens'
   # WCS frame
   coordframe: 'icrs'
   # RA/Dec units
   coord_units: 'deg'
   # RA/Dec column names
-  ra_tag: 'ra'
-  dec_tag: 'dec'
-  # Name for filtered (possibly joined) output catalog
-  output_name: 'rmz_highlum_hiz_MOF.fits'
+  ra_key: 'ra'
+  dec_key: 'dec'
   # Are we matching? Uncomment fields below if true!
-  #match:
-
+  match:
+    # Set the path to catalog to be matched
+    path: '/work/mccleary_group/dusty_halos/catalogs'
+    # Name of catalog file
+    filename: 'des_y3_gold_MOF_highpurity_gals.fits'
+    # Should be 'kw', 'coordinates', or 'random'
+    match_type: 'kw'
+    # If kw matching, specify
+    match_kw: 'coadd_object_id'
+    # nickname for table
+    tabname: 'y3_GOLD'
+    
 # background mask
 background_mask:
   # Where is it? Leave blank or commented out to use default paths
   path:
   # What is it called?
   filename: 'y3_gold_2.2.1_RING_joint_redmagic_v0.5.1_wide_maglim_v2.2_mask.fits'
-
   # IMPORTANT!!! GET COORDINATE FRAME CORRECT OR MASKING WILL FAIL!
   coordframe: 'icrs'
   # Is mask partial?
@@ -68,8 +75,8 @@ foreground_catalog:
   output_name: 'masked_gaia_starcat.fits'
   # RA, Dec names + units + coordframe
   coordframe: 'icrs'
-  ra_tag: 'ra'
-  dec_tag: 'dec'
+  ra_key: 'ra'
+  dec_key: 'dec'
   coord_units: 'deg'
   # output_path: '/work/mccleary_group/dusty_halos/catalogs'
   # Are we matching? Uncomment if matching
@@ -80,7 +87,7 @@ foreground_mask:
   # Where is it?
   #path:
   # What is it called?
-  filename: 'gaia_cat_southern_hpmask.fits'
+  filename: 'gaia_stars_southern_full_healpix_mask.fits'
   # IMPORTANT!!! GET COORDINATE FRAME CORRECT OR MASKING WILL FAIL!
   coordframe: 'icrs'
   # Is mask partial? When in doubt, do not pass this argument. Code will figure it out

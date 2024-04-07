@@ -54,7 +54,7 @@ foreground_catalog:
   # Where is it?
   #path:
   # What is it called ?
-  filename: 'wiseScosPhotoz160708_redshift_cut.fits'
+  filename: 'wiseScosPhotoz160708_redshift_cut_for_sdss.fits'
   # RA, Dec names + units + coordframe
   coordframe: 'galactic'
   ra_key: 'l'
@@ -69,5 +69,5 @@ foreground_mask:
   # What is it called?
   filename: 'WISExSCOSmask.fits'
   # IMPORTANT!!! GET COORDINATE FRAME CORRECT OR MASKING WILL FAIL!
-  coordframe: 'icrs'
+  coordframe: 'galactic'
   # Is mask partial? When in doubt, do not pass this argument. Code will figure it out

@@ -12,19 +12,19 @@
 
 background_catalog:
   cat_config: 'configs/catalog_configs/redmagic_hidens_y3gold_joined.yaml'
-  treecorr_npatch: 10   # Set number of treecorr patches
+  treecorr_npatch: 12   # Set number of treecorr patches
   redshifts: # How to deal with redshifts
     #use_bin_numbers: True # Basically just for redmagic
-    nbins: 15
+    nbins: 13
 
 background_randoms:
   cat_config: 'configs/catalog_configs/redmagic_hidens_randoms.yaml'
   redshifts: # How to deal with redshifts
     #use_bin_numbers: True # Basically just for redmagic
-    nbins: 15
+    nbins: 13
 
 foreground_catalog:
-  cat_config: 'configs/catalog_configs/WISExSCOS_cat_for_rmz.yaml'
+  cat_config: 'configs/catalog_configs/WISExSCOS_cat.yaml'
 
 foreground_randoms:
   cat_config: 'configs/catalog_configs/WISExSCOS_randoms3.yaml'
@@ -36,7 +36,7 @@ foreground_randoms:
 # Where output files and plots will get saved
 output_path: 'output/redmagic_hidens_weighted'
 # basename or prefix for assorted files to save
-output_basename: 'dust_correlation_g23_15zbins'
+output_basename: 'dust_correlation_g23_13zbins'
 # Plot output dust profile in kiloparsecs (True) or arcminutes (False)
 use_kpc: True
 

@@ -106,18 +106,18 @@ def bin_the_redshifts(rand_cat, bands, z2_colname, n_zbins=17):
     return tab
 
 def main():
-    #catalog_pa`th = '/work/mccleary_group/dusty_halos/catalogs/prep_cat_output'
-    catalog_path = '/Users/j.mccleary/Research/dusty_halos/catalogs/prep_cat_output'
+    catalog_path = '/work/mccleary_group/dusty_halos/catalogs/prep_cat_output'
+    #catalog_path = '/Users/j.mccleary/Research/dusty_halos/catalogs/prep_cat_output'
 
     # Read in galaxies
     gals_cat = Table.read(
         os.path.join(catalog_path,
-        'DoubleMasked_sdss_fg_gals.fits'), memmap=True
+        'DoubleMasked_sdss_bg_photoz.fits'), memmap=True
     )
 
     # Read in random catalog
     rand_cat_f = fits.open(os.path.join(catalog_path,
-        'rand_sdss_fg_JOINED_catalog.fits')
+        'rand_sdss_bg_JOINED_catalog.fits')
     )
 
     # In case random catalog is super-super long, pick subset for plotting
@@ -146,7 +146,7 @@ def main():
 
     axs[0].plot(gals_cat[z1_colname],
                 (gals_cat[bands[0]] - gals_cat[bands[1]]),
-                '.', markersize=0.5, color='xkcd:deep red', label='galaxies')
+                '.', markersize=0.05, color='xkcd:deep red', label='galaxies')
 
     axs[0].errorbar(
         binned_randoms['z_median'], binned_randoms['gmr_median'],
@@ -154,14 +154,14 @@ def main():
         label='randoms', capsize=5
     )
 
-    axs[0].set_ylim(-1, 4)
+    axs[0].set_ylim(-3, 7)
     axs[0].legend(loc='upper left')
     axs[0].set_xlabel('Redshift')
     axs[0].set_ylabel(r'$g$ - $r$')
 
     axs[1].plot(
         gals_cat[z1_colname], (gals_cat[bands[2]] - gals_cat[bands[3]]),
-        '.', markersize=0.5, color='xkcd:deep red', label='galaxies'
+        '.', markersize=0.05, color='xkcd:deep red', label='galaxies'
     )
 
     axs[1].errorbar(
@@ -170,13 +170,13 @@ def main():
         label='hidens randoms', capsize=5
     )
 
-    axs[1].set_ylim(-0.5, 1)
+    axs[1].set_ylim(-3, 7)
     axs[1].legend(loc='upper left')
     axs[1].set_xlabel('Redshift')
     axs[1].set_ylabel(r'$i$ - $z$')
 
     fig.suptitle('SDSS galaxies resampled')
-    fig.savefig('color_redshift_sdss_resamp.png')
+    fig.savefig('color_redshift_sdss_resamp1.png')
 
     return 0
 

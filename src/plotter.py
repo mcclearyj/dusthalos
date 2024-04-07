@@ -325,7 +325,9 @@ class OverlapPlotter(RCParamsMixin):
 
         fig.savefig(outname)
         fig.savefig(outname.replace('pdf', 'png'))
-
+        
+        # Close figure to save memory!
+        plt.close(fig)
 
     def make_Av_map(self, outname=None, projection=None, label1=None):
         """

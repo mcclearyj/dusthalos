@@ -3,7 +3,6 @@ writeup/.DS_Store
 build/
 dist/
 dusthalos.egg-info/
-output/
 runner_scripts/dust_calc_tester.py
 src/__pycache__/
 src_v1/optimal_estimator.py
