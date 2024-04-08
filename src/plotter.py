@@ -213,7 +213,8 @@ class DustPlotter(RCParamsMixin):
 class OverlapPlotter(RCParamsMixin):
 
     def __init__(self, cat1_name=None, cat2_name=None,
-                    outname='catalog_overlap.pdf', outdir='./'):
+                 outname='catalog_overlap.pdf', outdir='./', 
+                 subsample_cat1=False, subsample_cat2=False, subsample_size=2e6):
         """
         Make nice catalog RA/Dec overlap plot in both Cartesian and
         Aitoff projection
@@ -223,16 +224,21 @@ class OverlapPlotter(RCParamsMixin):
             cat2: path to second catalog
             outname: name to save figure to
             outdir: where should file be saved
+            subample{1,2}: whether to subsample data for plotting; this is 
+                      useful for very large catalogs.  
+            subsample_size: size of subsampled catalog for plotting
 
         TO DO: add smarter error handling for the cat1/cat2 objects
         """
 
         self.cat1_name = cat1_name
         self.cat2_name = cat2_name
+        self.cat1 = []
+        self.cat2 = []
         self.outname = outname
         self.outdir = outdir
 
-
+        # Read in files
         if type(cat1_name)==str:
             self.cat1 = Table.read(cat1_name, memmap=True)
         else:
@@ -242,7 +248,22 @@ class OverlapPlotter(RCParamsMixin):
             self.cat2 = Table.read(cat2_name, memmap=True)
         else:
             self.cat2 = cat2_name
-
+        
+        # Implement auto-subsampling if the data is very large
+        if subsample_cat1 == True:
+            self.cat1 = self._subsample(self.cat1, size=subsample_size)
+        if subsample_cat2 == True:
+            self.cat2 = self._subsample(self.cat2, size=subsample_size)
+        
+    def _subsample(self, cat, size):
+        """ 
+        Select subsample of data for plotting. I am not sure about pre-setting array 
+        size, may need to revisit this
+        """
+        rng = np.random.default_rng()
+        indices = rng.integers(low=0, high=len(cat), size=int(size))
+        
+        return cat[indices]
 
     def make_plot(self, outname=None, projection=None,
                   ra_key1=None, dec_key1=None, coordframe1=None, label1=None,
@@ -315,7 +336,7 @@ class OverlapPlotter(RCParamsMixin):
 
         # Plot the points - it takes a long time for them all to show up!
         ax.plot(sky1.ra.wrap_at('180d').radian, sky1.dec.radian, '.',
-                label=label1, color='xkcd:light blue grey', markersize=0.025)
+                label=label1, color='xkcd:lightish blue', markersize=0.025)
         if (sky2 is not None):
             ax.plot(sky2.ra.wrap_at('180d').radian, sky2.dec.radian, '.',
                     label=label2, color='xkcd:neon red', markersize=0.025)
