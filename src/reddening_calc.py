@@ -4,7 +4,7 @@ from src.extinction_model import ExtinctionModel
 
 class ReddeningCalculator(ExtinctionModel):
 
-    def __init__(self, data, redcalc_config=None):
+    def __init__(self, data, redcalc_config):
         """
         Do reddening calculation. Though it can be run independently,
         this class is intended to be called by instance of Correlator() class.
@@ -21,6 +21,7 @@ class ReddeningCalculator(ExtinctionModel):
             nbins: Number of redshift bins for Av calculation
             z_key: Column name for self.data redshift info
             use_bin_numbers: Use DES redMaGiC redshift bin numbers? Prob. not.
+            z_bin_key: if you are using bin_numbers, supply column name
         """
 
         self.data = data #
@@ -38,26 +39,21 @@ class ReddeningCalculator(ExtinctionModel):
         """
         redshift config should have all the parameters keywords
         """
-        # Resonable redshift defaults, not sure about dust params
-        #default_dust_pars = {'model': 'calzetti00', 'R': 3.1, 'A_V': 1,
-        #                    'wavelengths': [4808.49, 6417.65, 7814.58, 9168.85]}
-        # No, it should fail loudly.
 
         # Set sensible defaults
         base_config = {
             'nbins': 7, 'z_key': 'z', 'use_bin_numbers': False,
-            'dust_params': None
+            'dust_params': None, 'zbin_key': None 
         }
 
         # Overwrite defaults, append non-standard keys b/c who cares.
-        if redcalc_config != None:
-            config_keys = redcalc_config.keys()
-            for key in config_keys:
-                if key not in base_config.keys():
-                    print(f'Warning: "{key}" is not a standard ',
-                            'ReddeningCalculator config key:')
-                    print(f'\t {base_config.keys()}')
-                base_config[key] = redcalc_config[key]
+        config_keys = redcalc_config.keys()
+        for key in config_keys:
+            if key not in base_config.keys():
+                print(f'Warning: "{key}" is not a standard ',
+                        'ReddeningCalculator config key:')
+                print(f'\t {base_config.keys()}')
+            base_config[key] = redcalc_config[key]
 
         self.redcalc_config = base_config
         self.dust_params = base_config['dust_params']
@@ -84,7 +80,27 @@ class ReddeningCalculator(ExtinctionModel):
                         (band_mag != np.nan) & \
                         (band_mag < 28)
             wg *= band_bool
-
+            
+        # OK, this is an extra level of cleaning but here we go:
+        '''
+        if 'mof_cm_mag_corrected_i' in bands:
+            iband = np.ma.getdata(self.data['mof_cm_mag_corrected_i'])
+            iband_bool = (iband <= 22.5) & (iband >= 18)
+            wg *= iband_bool
+        else:
+            # SDSS photometry is already "good" but idk, we can add
+            pass
+ 
+        if 'mof_cm_t' in self.data.colnames:
+            print("Doing size cut...")
+            size = np.ma.getdata(self.data['mof_cm_t'])
+            size_bool = (size < 10)
+            wg *= size_bool
+        
+        else:
+            raise KeyError("no size column found")
+        '''
+        
         # percent of galaxies that failed to pass selections
         pfail = 100-(np.count_nonzero(wg) / catlen * 100)
 
@@ -171,7 +187,7 @@ class ReddeningCalculator(ExtinctionModel):
 
         if self.redcalc_config['use_bin_numbers'] == True:
             print("ReddeningCalc: using bin numbers for redshifts")
-            zbin_col = self.data['bin_number']
+            zbin_col = self.data[self.redcalc_config['zbin_key']]
         else:
             # Make a "bin number" on the fly!
             print("ReddeningCalc: making redshift bins")
