@@ -130,7 +130,7 @@ class DustPlotter(RCParamsMixin):
         if kpc == True:
             scl = fg_gal_kpc.value * cosmo.h
             theory_r_plot = theory_r
-            x_label = f'Impact parameter ($h^{-1}$ kpc)'
+            x_label = r'Impact parameter ($h^{-1}$ kpc)'
         else:
             scl = 1
             theory_r_plot = theory_r_arcmin
