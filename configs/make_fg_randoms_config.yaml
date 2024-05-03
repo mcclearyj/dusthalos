@@ -18,29 +18,30 @@
 # Set some defaults
 paths:
   # general path for catalogs
-  #catalog_path: '/Users/j.mccleary/Research/dusty_halos/catalogs'
-  catalog_path: '/work/mccleary_group/dusty_halos/catalogs'
+  catalog_path: '/Users/j.mccleary/Research/dusty_halos/catalogs'
+  #catalog_path: '/work/mccleary_group/dusty_halos/catalogs'
   # Where to save outputs
-  output_path: '/work/mccleary_group/dusty_halos/catalogs/prep_cat_output'
+  #output_path: '/work/mccleary_group/dusty_halos/catalogs/prep_cat_output'
+  output_path: '/Users/j.mccleary/Research/dusty_halos/catalogs/prep_cat_gwslc'
 
 # How many random points are we making?
 # Suggestion: use 1e6 for making overlap plots, > 3e7 for science
-nrand: 5e8
+nrand: 1e6
 
 # Output name for random catalog; note that "masked_" will be added as prefix
-output_name: 'WISExSCOS_randoms3.fits'
+output_name: 'gwslc_randoms_testing.fits'
 
 # If you want to compare (plot) RA/Dec distributions of two catalogs
-comparison_cat: 
+comparison_cat:
 
 # main catalog mask
 mask1:
   # Where is it? Leave blank or commented out to use default paths
-  path:
+  #path: '/Users/j.mccleary/Research/dusty_halos/catalogs/prep_cat_gwslc/'
   # What is it called?
-  filename: 'WISExSCOSmask.fits'
+  filename: 'GSWLC-X2_in_SDSS_z_lt_0.2_healpix_mask.fits'
   # IMPORTANT!!! GET COORDINATE FRAME CORRECT OR MASKING WILL FAIL!
-  coordframe: 'galactic'
+  coordframe: 'icrs'
   # Is mask partial?
   partial: False
 
