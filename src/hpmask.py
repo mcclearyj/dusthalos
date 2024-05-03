@@ -99,11 +99,11 @@ class HpMask:
         if self.coordframe == 'galactic':
             lon = coords.galactic.l.deg; lat = coords.galactic.b.deg
         else:
-            lon = coords.icrs.ra.rad; lat = coords.icrs.dec.rad
+            lon = coords.icrs.ra.deg; lat = coords.icrs.dec.deg
 
         # Get HEALPixel for each RA, Dec
-        hpInd = hp.ang2pix(self.NSIDE, lon, lat, lonlat=lonlat)
-
+        hpInd = hp.ang2pix(self.NSIDE, lon, lat, lonlat=lonlat, nest=False)
+        print("using most recent one")
         # Identify coordinates that fall into good (unmasked) HEALPixels
         overlap = np.in1d(hpInd, good_map_hpix)
 
