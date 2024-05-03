@@ -1,13 +1,18 @@
 ###
 ### For cases where no HEALPix mask is supplied, create one based on
-### RA and Dec of catalog (assuming they are representative, ofc!)
+### RA and Dec of catalog (assuming these are representative of whole survey)
 ###
 
 from src.radec2healpixels import radec2healpixels
 
-catname = '/work/mccleary_group/dusty_halos/catalogs/gaia_stars_southern_full.fits'
-ra_col = 'ra'
-dec_col = 'dec'
+### Define parameters...
+catname = '/work/mccleary_group/dusty_halos/catalogs/GSWLC-X2_in_SDSS.fits'
+ra_col = 'RA'
+dec_col = 'Dec'
+Nside = 2048
 
-radec2healpixels(filename=catname, ra_col=ra_col, dec_col=dec_col)
+### Run!
+radec2healpixels(
+    filename=catname, Nside=Nside, ra_col=ra_col, dec_col=dec_col
+)
 
