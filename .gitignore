@@ -20,3 +20,4 @@ slurm_outfiles/
 .ipynb_checkpoints/
 configs/
 *.out
+configs_safe/
