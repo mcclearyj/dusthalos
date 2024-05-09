@@ -6,10 +6,10 @@
 from src.radec2healpixels import radec2healpixels
 
 ### Define parameters...
-catname = '/work/mccleary_group/dusty_halos/catalogs/GSWLC-X2_in_SDSS.fits'
-ra_col = 'RA'
-dec_col = 'Dec'
-Nside = 2048
+catname = '/work/mccleary_group/dusty_halos/catalogs/sdss_bg_photoz.fits'
+ra_col = 'ra'
+dec_col = 'dec'
+Nside = 512
 
 ### Run!
 radec2healpixels(

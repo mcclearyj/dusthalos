@@ -4,6 +4,8 @@ build/
 dist/
 dusthalos.egg-info/
 runner_scripts/dust_calc_tester.py
+runner_scripts/*local*.py
+runner_scripts/*sdss*.py
 src/__pycache__/
 src_v1/optimal_estimator.py
 writeup/.ipynb_checkpoints/
@@ -17,3 +19,4 @@ slurm_outfiles/
 ./writeup/*out
 .ipynb_checkpoints/
 configs/
+*.out
