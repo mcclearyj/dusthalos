@@ -21,3 +21,4 @@ slurm_outfiles/
 configs/
 *.out
 configs_safe/
+output/*/*treecorrcat.fits
