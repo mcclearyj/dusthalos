@@ -265,7 +265,7 @@ class OverlapPlotter(RCParamsMixin):
         
         return cat[indices]
 
-    def make_plot(self, outname=None, projection=None,
+    def make_plot(self, outname=None, projection=None, central_longitude=180,
                   ra_key1=None, dec_key1=None, coordframe1=None, label1=None,
                   ra_key2=None, dec_key2=None, coordframe2=None, label2=None):
         """
@@ -335,11 +335,15 @@ class OverlapPlotter(RCParamsMixin):
         ax.set_xlabel('RA'); ax.set_ylabel('Dec')
 
         # Plot the points - it takes a long time for them all to show up!
-        ax.plot(sky1.ra.radian, sky1.dec.radian, '.',
-                label=label1, color='xkcd:lightish blue', markersize=0.025)
+        ax.plot(
+            sky1.ra.wrap_at(f'{central_longitude}d').radian, sky1.dec.radian, 
+            '.', label=label1, color='xkcd:lightish blue', markersize=0.025
+        )
         if (sky2 is not None):
-            ax.plot(sky2.ra.radian, sky2.dec.radian, '.',
-                    label=label2, color='xkcd:neon red', markersize=0.025)
+            ax.plot(
+                sky2.ra.wrap_at(f'{central_longitude}d').radian, sky2.dec.radian, 
+                '.', label=label2, color='xkcd:neon red', markersize=0.025
+            )
 
         lg = ax.legend(markerscale=400, loc='upper right')
         fig.tight_layout()
