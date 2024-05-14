@@ -6,13 +6,19 @@
 from src.radec2healpixels import radec2healpixels
 
 ### Define parameters...
-catname = '/work/mccleary_group/dusty_halos/catalogs/sdss_bg_photoz.fits'
-ra_col = 'ra'
-dec_col = 'dec'
-Nside = 512
+catname = '/work/mccleary_group/dusty_halos/catalogs/sf_gswlc_galaxies.fits'
+ra_col = 'RA'
+dec_col = 'Dec'
+Nside = 2048
 
 ### Run!
 radec2healpixels(
     filename=catname, Nside=Nside, ra_col=ra_col, dec_col=dec_col
 )
 
+catname = '/work/mccleary_group/dusty_halos/catalogs/quiescent_gswlc_galaxies.fits'
+
+### Run!
+radec2healpixels(
+    filename=catname, Nside=Nside, ra_col=ra_col, dec_col=dec_col
+)

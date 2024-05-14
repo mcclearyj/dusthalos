@@ -106,7 +106,7 @@ def bin_the_redshifts(rand_cat, bands, z2_colname, n_zbins=17):
     return tab
 
 def main():
-    catalog_path = '/work/mccleary_group/dusty_halos/catalogs/prep_cat_output'
+    catalog_path = '/work/mccleary_group/dusty_halos/catalogs/prep_cat_gwslc'
     #catalog_path = '/Users/j.mccleary/Research/dusty_halos/catalogs/prep_cat_output'
 
     # Read in galaxies
@@ -146,7 +146,7 @@ def main():
 
     axs[0].plot(gals_cat[z1_colname],
                 (gals_cat[bands[0]] - gals_cat[bands[1]]),
-                '.', markersize=0.05, color='xkcd:deep red', label='galaxies')
+                '.', markersize=0.025, color='xkcd:deep red', label='galaxies')
 
     axs[0].errorbar(
         binned_randoms['z_median'], binned_randoms['gmr_median'],
@@ -154,14 +154,14 @@ def main():
         label='randoms', capsize=5
     )
 
-    axs[0].set_ylim(-3, 7)
+    axs[0].set_ylim(-2.5, 6.5)
     axs[0].legend(loc='upper left')
     axs[0].set_xlabel('Redshift')
     axs[0].set_ylabel(r'$g$ - $r$')
 
     axs[1].plot(
         gals_cat[z1_colname], (gals_cat[bands[2]] - gals_cat[bands[3]]),
-        '.', markersize=0.05, color='xkcd:deep red', label='galaxies'
+        '.', markersize=0.025, color='xkcd:deep red', label='galaxies'
     )
 
     axs[1].errorbar(
@@ -170,7 +170,7 @@ def main():
         label='hidens randoms', capsize=5
     )
 
-    axs[1].set_ylim(-3, 7)
+    axs[1].set_ylim(-5, 5)
     axs[1].legend(loc='upper left')
     axs[1].set_xlabel('Redshift')
     axs[1].set_ylabel(r'$i$ - $z$')
