@@ -1,15 +1,24 @@
 ###
 ### For cases where no HEALPix mask is supplied, create one based on
-### RA and Dec of catalog (assuming they are representative, ofc!)
+### RA and Dec of catalog (assuming these are representative of whole survey)
 ###
 
 from src.radec2healpixels import radec2healpixels
 
-bg_catname = '/Users/j.mccleary/Research/dusty_halos/catalogs/sdss_bg_gals_jemcclear.fits'
-fg_catname = '/Users/j.mccleary/Research/dusty_halos/catalogs/sdss_fg_gals_jemcclear.fits'
+### Define parameters...
+catname = '/work/mccleary_group/dusty_halos/catalogs/sf_gswlc_galaxies.fits'
+ra_col = 'RA'
+dec_col = 'Dec'
+Nside = 2048
 
-ra_col = 'ra'
-dec_col = 'dec'
+### Run!
+radec2healpixels(
+    filename=catname, Nside=Nside, ra_col=ra_col, dec_col=dec_col
+)
 
-radec2healpixels(filename=bg_catname, ra_col=ra_col, dec_col=dec_col)
-radec2healpixels(filename=fg_catname, ra_col=ra_col, dec_col=dec_col)
+catname = '/work/mccleary_group/dusty_halos/catalogs/quiescent_gswlc_galaxies.fits'
+
+### Run!
+radec2healpixels(
+    filename=catname, Nside=Nside, ra_col=ra_col, dec_col=dec_col
+)

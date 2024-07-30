@@ -2,7 +2,7 @@ import numpy as np
 import healpy as hp
 from astropy.table import Table
 
-def radec2healpixels(filename, healpix_name=None,
+def radec2healpixels(filename, healpix_name=None, Nside=128,
                      ra_col='ra', dec_col='dec', hdu=1):
     """
     Make a HEALPix mask for a catalog using lists of RA, Dec.
@@ -23,7 +23,7 @@ def radec2healpixels(filename, healpix_name=None,
     phi = ra_rad
 
     # Choose a resolution (Nside)
-    Nside = 64  # for example, can be adjusted based on your needs
+    # Nside = Nside  # for example, can be adjusted based on your needs
 
     # Convert to HEALPix pixel indices for your RA, Dec coordinates
     pixels = hp.ang2pix(Nside, theta, phi)

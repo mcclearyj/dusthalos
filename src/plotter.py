@@ -127,7 +127,14 @@ class DustPlotter(RCParamsMixin):
 
         # Converts us from arcminutes to h^-1 kpc
         # Menard relationship was in terms of h
-        scl = fg_gal_kpc.value * cosmo.h
+        if kpc == True:
+            scl = fg_gal_kpc.value * cosmo.h
+            theory_r_plot = theory_r
+            x_label = r'Impact parameter ($h^{-1}$ kpc)'
+        else:
+            scl = 1
+            theory_r_plot = theory_r_arcmin
+            x_label = f'Impact parameter (arcmin)'
 
         fig, ax = plt.subplots(figsize=(10,7), tight_layout=True)
 
@@ -148,9 +155,9 @@ class DustPlotter(RCParamsMixin):
         ax.set_yscale('log')
         ax.set_xlim(0.05*scl, 200*scl)
         ax.set_ylim(1E-5, 1)
-        ax.set_xlabel(f'Impact parameter ($h^{-1}$ kpc)', fontsize=16)
+        ax.set_xlabel(x_label, fontsize=16)
         ax.set_ylabel(r'$A_{\rm V}$ (mag)', fontsize=16)
-        ax.set_title('SCOS x redMaGiC', fontsize=16)
+        #ax.set_title('SCOS x redMaGiC', fontsize=16)
         ax.legend(fontsize=14)
 
         fig.savefig(outplotn)
@@ -172,9 +179,9 @@ class DustPlotter(RCParamsMixin):
             ax.set_yscale('log')
             ax.set_xlim(0.05*scl, 200*scl)
             ax.set_ylim(1E-5, 1)
-            ax.set_xlabel(f'Impact parameter ($h^{-1}$ kpc)', fontsize=16)
+            ax.set_xlabel(x_label, fontsize=16)
             ax.set_ylabel(r'$A_{\rm V}$ (mag)', fontsize=16)
-            ax.set_title('SCOS x redMaGiC', fontsize=16)
+            #ax.set_title('SCOS x redMaGiC', fontsize=16)
             ax.legend(fontsize=14)
 
             # Assuming we have gotten thus far, let's make a new file name
@@ -206,7 +213,8 @@ class DustPlotter(RCParamsMixin):
 class OverlapPlotter(RCParamsMixin):
 
     def __init__(self, cat1_name=None, cat2_name=None,
-                    outname='catalog_overlap.pdf', outdir='./'):
+                 outname='catalog_overlap.pdf', outdir='./', 
+                 subsample_cat1=False, subsample_cat2=False, subsample_size=2e6):
         """
         Make nice catalog RA/Dec overlap plot in both Cartesian and
         Aitoff projection
@@ -216,16 +224,21 @@ class OverlapPlotter(RCParamsMixin):
             cat2: path to second catalog
             outname: name to save figure to
             outdir: where should file be saved
+            subample{1,2}: whether to subsample data for plotting; this is 
+                      useful for very large catalogs.  
+            subsample_size: size of subsampled catalog for plotting
 
         TO DO: add smarter error handling for the cat1/cat2 objects
         """
 
         self.cat1_name = cat1_name
         self.cat2_name = cat2_name
+        self.cat1 = []
+        self.cat2 = []
         self.outname = outname
         self.outdir = outdir
 
-
+        # Read in files
         if type(cat1_name)==str:
             self.cat1 = Table.read(cat1_name, memmap=True)
         else:
@@ -235,9 +248,24 @@ class OverlapPlotter(RCParamsMixin):
             self.cat2 = Table.read(cat2_name, memmap=True)
         else:
             self.cat2 = cat2_name
+        
+        # Implement auto-subsampling if the data is very large
+        if subsample_cat1 == True:
+            self.cat1 = self._subsample(self.cat1, size=subsample_size)
+        if subsample_cat2 == True:
+            self.cat2 = self._subsample(self.cat2, size=subsample_size)
+        
+    def _subsample(self, cat, size):
+        """ 
+        Select subsample of data for plotting. I am not sure about pre-setting array 
+        size, may need to revisit this
+        """
+        rng = np.random.default_rng()
+        indices = rng.integers(low=0, high=len(cat), size=int(size))
+        
+        return cat[indices]
 
-
-    def make_plot(self, outname=None, projection=None,
+    def make_plot(self, outname=None, projection=None, central_longitude=180,
                   ra_key1=None, dec_key1=None, coordframe1=None, label1=None,
                   ra_key2=None, dec_key2=None, coordframe2=None, label2=None):
         """
@@ -307,18 +335,24 @@ class OverlapPlotter(RCParamsMixin):
         ax.set_xlabel('RA'); ax.set_ylabel('Dec')
 
         # Plot the points - it takes a long time for them all to show up!
-        ax.plot(sky1.ra.wrap_at('180d').radian, sky1.dec.radian, '.',
-                label=label1, color='xkcd:light blue grey', markersize=0.025)
+        ax.plot(
+            sky1.ra.wrap_at(f'{central_longitude}d').radian, sky1.dec.radian, 
+            '.', label=label1, color='xkcd:light navy', markersize=0.025
+        )
         if (sky2 is not None):
-            ax.plot(sky2.ra.wrap_at('180d').radian, sky2.dec.radian, '.',
-                    label=label2, color='xkcd:neon red', markersize=0.025)
+            ax.plot(
+                sky2.ra.wrap_at(f'{central_longitude}d').radian, sky2.dec.radian, 
+                '.', label=label2, color='xkcd:neon red', markersize=0.025
+            )
 
         lg = ax.legend(markerscale=400, loc='upper right')
         fig.tight_layout()
 
         fig.savefig(outname)
         fig.savefig(outname.replace('pdf', 'png'))
-
+        
+        # Close figure to save memory!
+        plt.close(fig)
 
     def make_Av_map(self, outname=None, projection=None, label1=None):
         """

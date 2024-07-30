@@ -107,7 +107,15 @@ class Correlator:
             self._load(treecorr_npatch, treecorr_patch_centers)
 
     def do_reddening(self):
-        """ Check dust_params config, call ReddeningCalculator, run it """
+        """ 
+        Check dust_params config, call ReddeningCalculator, run it. The various 
+        configs do get a little messy, and it might be worth reorganizing them. 
+        For now: the 'correl_config' is the overall dust_calc_config, organized
+        by 'ctype' (bg random, bg galaxy, fg rand, fg galaxy). 'cat_config' is
+        the  catalog_config with all relevant column names and file paths for 
+        that particular catalog (redMaGiC, WISE, ...)
+        
+        """
 
         ctype = self.ctype
 
@@ -123,6 +131,16 @@ class Correlator:
         else:
             rc_config['z_key'] = self.cat_config['z_key']
 
+        # Update bin number parameters if using them in Av calculation
+        if ('use_bin_numbers' in rc_config.keys()) == True:
+            if 'zbin_key' not in self.cat_config.keys():
+                raise KeyError(
+                    "catalog_config missing parameter 'zbin_key' required " + \
+                    "for using redshift bin numbers in A_V calculation"
+                )
+            else:
+                rc_config['zbin_key'] = self.cat_config['zbin_key']
+            
         # Grab dust parameters
         try:
             dust_model_config = self.correl_config['dust_params']

@@ -3,8 +3,9 @@ writeup/.DS_Store
 build/
 dist/
 dusthalos.egg-info/
-output/
 runner_scripts/dust_calc_tester.py
+runner_scripts/*local*.py
+runner_scripts/*sdss*.py
 src/__pycache__/
 src_v1/optimal_estimator.py
 writeup/.ipynb_checkpoints/
@@ -17,3 +18,9 @@ slurm_outfiles/
 ./writeup/*aux
 ./writeup/*out
 .ipynb_checkpoints/
+configs/
+*.out
+configs_safe/
+output/*/*treecorrcat.fits
+output/systematics_testing/gaia_fg_altcols/
+output/systematics_testing/large_angular_scales/

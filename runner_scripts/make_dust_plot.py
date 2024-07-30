@@ -74,7 +74,7 @@ def main(args):
     z_theory = 0.36
 
     # Read in configuration file
-    config_file = args.config_file
+    config_file = args.config
     correl_config = utils.read_yaml(config_file)
 
     # Create output directory if it doesn't exist
@@ -84,11 +84,10 @@ def main(args):
     # Load foreground catalog
     fg = Correlator(correl_config, ctype='foreground_catalog')
     fg.load()
-    mean_fg_z = np.median(fg.Catalog.data[fg.cat_config['z_tag']])
+    mean_fg_z = np.median(fg.Catalog.data[fg.cat_config['z_key']])
 
     names = make_names(correl_config)
 
-    print('Plotting output figure...\n')
     plot = DustPlotter(
         dk_file = names.dk_outfile,
         dr_file = names.dr_outfile,
@@ -98,13 +97,13 @@ def main(args):
         z_fg = mean_fg_z,
         z_theory = z_theory
     )
-    plot.plot_res(outplotn=names.fig_output)
+    plot.plot_res(outplotn=names.fig_output, kpc=correl_config['use_kpc'])
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
         description='Runner script for Catalog operations.'
     )
-    parser.add_argument('-config_file', '-c', type=str,
+    parser.add_argument('-config', '-c', type=str,
         help='Path to the configuration file.', required=True
     )
     args = parser.parse_args()
