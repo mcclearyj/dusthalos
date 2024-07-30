@@ -337,7 +337,7 @@ class OverlapPlotter(RCParamsMixin):
         # Plot the points - it takes a long time for them all to show up!
         ax.plot(
             sky1.ra.wrap_at(f'{central_longitude}d').radian, sky1.dec.radian, 
-            '.', label=label1, color='xkcd:lightish blue', markersize=0.025
+            '.', label=label1, color='xkcd:light navy', markersize=0.025
         )
         if (sky2 is not None):
             ax.plot(
