@@ -12,7 +12,7 @@ paths:
   # general path for catalogs
   catalog_path: '/work/mccleary_group/dusty_halos/catalogs/'
   # Where to save outputs
-  output_path: '/work/mccleary_group/dusty_halos/catalogs/prep_cat_gwslc'
+  output_path: '/work/mccleary_group/dusty_halos/catalogs/prep_cat_gwslc/sf'
 
 ##
 # Input catalogs and masks:
@@ -51,7 +51,7 @@ foreground_catalog:
   # Where is it?
   #path:
   # What is it called ?
-  filename: 'gswlc_sf_galaxies.fits'
+  filename: 'sf_gswlc_galaxies.fits'
   # Name for filtered (possibly joined) output catalog
   output_name:
   # RA, Dec names + units + coordframe
@@ -65,6 +65,6 @@ foreground_mask:
   # Where is it?
   path:
   # What is it called?
-  filename: 'gswlc_sf_galaxies_healpix_mask.fits'
+  filename: 'sf_gswlc_galaxies_healpix_mask.fits'
   # IMPORTANT!!! GET COORDINATE FRAME CORRECT OR MASKING WILL FAIL!
   coordframe: 'icrs'

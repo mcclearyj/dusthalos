@@ -34,7 +34,7 @@ foreground_randoms:
 # Where output files and plots will get saved
 output_path: 'output/systematics_testing/gaia_fg'
 # basename or prefix for assorted files to save
-output_basename: 'dustcorrel_hidens_g23_5zbins'
+output_basename: 'dustcorrel_hidens_g23_usebins'
 # Plot output dust profile in kiloparsecs (True) or arcminutes (False)
 use_kpc: False
 

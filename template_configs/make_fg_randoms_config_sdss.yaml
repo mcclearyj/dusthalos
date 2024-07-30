@@ -20,7 +20,7 @@ paths:
   # general path for catalogs
   catalog_path: '/work/mccleary_group/dusty_halos/catalogs'
   # Where to save outputs
-  output_path: '/work/mccleary_group/dusty_halos/catalogs/prep_cat_sdss'
+  output_path: '/work/mccleary_group/dusty_halos/catalogs'
 
 # How many random points are we making?
 # Suggestion: use 1e6 for making overlap plots, > 3e7 for science
@@ -35,11 +35,11 @@ comparison_cat: '/work/mccleary_group/dusty_halos/catalogs/prep_cat_sdss/DoubleM
 # main catalog mask
 mask1:
   # Where is it? Leave blank or commented out to use default paths
-  path:
+  path: 'sdss_bg_photoz_healpix_mask.fits'
   # What is it called?
-  filename: 'WISExSCOSmask.fits'
+  filename: ''
   # IMPORTANT!!! GET COORDINATE FRAME CORRECT OR MASKING WILL FAIL!
-  coordframe: 'galactic'
+  coordframe: 'icrs'
   # Is mask partial?
   partial: False
 

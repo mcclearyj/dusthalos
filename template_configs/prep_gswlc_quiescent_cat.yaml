@@ -51,7 +51,7 @@ foreground_catalog:
   # Where is it?
   #path:
   # What is it called ?
-  filename: 'gswlc_quiescent_galaxies.fits'
+  filename: 'quiescent_gswlc_galaxies.fits'
   # Name for filtered (possibly joined) output catalog
   output_name:
   # RA, Dec names + units + coordframe
@@ -65,6 +65,6 @@ foreground_mask:
   # Where is it?
   path:
   # What is it called?
-  filename: 'gswlc_quiescent_galaxies_healpix_mask.fits'
+  filename: 'quiescent_gswlc_galaxies_healpix_mask.fits'
   # IMPORTANT!!! GET COORDINATE FRAME CORRECT OR MASKING WILL FAIL!
   coordframe: 'icrs'
