@@ -1,0 +1,79 @@
+################################################################################
+#                            CONFIGURATION FILE                               #
+################################################################################
+
+# Description:
+# This configuration file allows you to customize the settings for
+# cat_prep_runner.py
+
+# General Settings:
+# -----------------
+paths:
+  # general path for catalogs
+  catalog_path: '/work/mccleary_group/dusty_halos/catalogs'
+  # Where to save outputs
+  output_path: '/work/mccleary_group/dusty_halos/catalogs/prep_cat_gwslc'
+
+#
+# Input catalogs and masks:
+# -----------------
+
+# This is probably the background catalog
+background_catalog:
+  # Where is it? Leave blank or commented out to use default
+  #path:
+  filename: 'sdss_bg_photoz_randoms.fits'
+  # nickname for table if we are matching to another catalog
+  tabname: 'rand'
+  # WCS frame
+  coordframe: 'icrs'
+  # RA/Dec units
+  coord_units: 'deg'
+  # RA column name
+  ra_key: 'ra'
+  # Dec column name
+  dec_key: 'dec'
+  # Are we matching? Uncomment fields below if true!
+  match:
+    # Set the path to catalog to be matched
+    path: '/work/mccleary_group/dusty_halos/catalogs/prep_cat_gwslc'
+    # Name of catalog file
+    filename: 'DoubleMasked_sdss_bg_photoz.fits'
+    # Should be 'kw', 'coordinates', or 'random'
+    match_type: 'random'
+    # If type is random: z1 is the catalog to be augmented -- leave it blank to make a redshift column!!!
+    z1_colname:
+    # If type is random: z2 is matching photometry catalog
+    z2_colname: 'redshift'
+    # nickname for table
+    tabname: 'sdss_bg'
+
+# background mask
+background_mask:
+  # What is it called?
+  filename: 'sdss_bg_photoz_healpix_mask.fits'
+  # IMPORTANT!!! GET COORDINATE FRAME CORRECT OR MASKING WILL FAIL!
+  coordframe: 'icrs'
+  # Is mask partial?
+  partial: False
+
+# This is probably the foreground
+foreground_catalog:
+  # What is it called ?
+  filename: 'gwslc_randoms.fits'
+  # RA, Dec names + units + coordframe
+  coordframe: 'icrs'
+  ra_key: 'ra'
+  dec_key: 'dec'
+  coord_units: 'deg'
+
+# probably foreground mask
+foreground_mask:
+  # Where is it?
+  path:
+  # What is it called?
+  filename: 'GSWLC-X2_in_SDSS_healpix_mask.fits'
+  # IMPORTANT!!! GET COORDINATE FRAME CORRECT OR MASKING WILL FAIL!
+  coordframe: 'icrs'
+  # Is mask partial?
+  partial: False

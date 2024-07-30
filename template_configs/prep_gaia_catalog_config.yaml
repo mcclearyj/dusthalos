@@ -1,0 +1,81 @@
+################################################################################
+#                            CONFIGURATION FILE                               #
+################################################################################
+
+# Description:
+# This configuration file allows you to customize the settings for
+# cat_prep_runner.py
+
+# Note:
+# - Do not change the variable names (the text before the equal sign).
+# - Only modify the values on the right side of the equal sign (=).
+
+# General Settings:
+# -----------------
+# catalog_path: generic location for catalogs
+# output_path: where to save files
+
+# Set some defaults because I am lazy
+paths:
+  # general path for catalogs
+  catalog_path: '/work/mccleary_group/dusty_halos/catalogs'
+  # Where to save outputs
+  output_path: '/work/mccleary_group/dusty_halos/catalogs/prep_cat_v2'
+
+#
+#
+# Input catalogs and masks:
+# -----------------
+
+# This is probably the background
+background_catalog:
+  # Where is it? Leave blank or commented out to use default
+  #path:
+  filename: 'y3a2_gold2.2.1_redmagic_highdens.fits'
+  # nickname for table if we are matching to another catalog
+  tabname: 'redmagic_hidens'
+  # WCS frame
+  coordframe: 'icrs'
+  # RA/Dec units
+  coord_units: 'deg'
+  # RA/Dec column names
+  ra_key: 'ra'
+  dec_key: 'dec'
+    
+# background mask
+background_mask:
+  # Where is it? Leave blank or commented out to use default paths
+  path:
+  # What is it called?
+  filename: 'y3_gold_2.2.1_RING_joint_redmagic_v0.5.1_wide_maglim_v2.2_mask.fits'
+  # IMPORTANT!!! GET COORDINATE FRAME CORRECT OR MASKING WILL FAIL!
+  coordframe: 'icrs'
+  # Is mask partial?
+  partial: True
+
+# This is probably the foreground
+foreground_catalog:
+  # Where is it?
+  #path:
+  # What is it called ?
+  filename: 'gaia_stars_southern_subsample2.fits'
+  # Name for filtered (possibly joined) output catalog
+  output_name: 'masked_gaia_starcat.fits'
+  # RA, Dec names + units + coordframe
+  coordframe: 'icrs'
+  ra_key: 'ra'
+  dec_key: 'dec'
+  coord_units: 'deg'
+  # output_path: '/work/mccleary_group/dusty_halos/catalogs'
+  # Are we matching? Uncomment if matching
+  match:
+
+# probably foreground mask
+foreground_mask:
+  # Where is it?
+  #path:
+  # What is it called?
+  filename: 'gaia_stars_southern_full_healpix_mask.fits'
+  # IMPORTANT!!! GET COORDINATE FRAME CORRECT OR MASKING WILL FAIL!
+  coordframe: 'icrs'
+  # Is mask partial? When in doubt, do not pass this argument. Code will figure it out
