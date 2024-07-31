@@ -14,9 +14,10 @@ color*.png
 ./*.out 
 runner_scripts/slurm_outfiles/
 slurm_outfiles/
-./writeup/*log
-./writeup/*aux
-./writeup/*out
+writeup/*log
+writeup/*aux
+writeup/*out
+writeup/*gz
 .ipynb_checkpoints/
 configs/
 *.out
