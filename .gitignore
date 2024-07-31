@@ -23,5 +23,6 @@ configs/
 *.out
 configs_safe/
 output/*/*treecorrcat.fits
+output/*/*/*treecorrcat.fits
 output/systematics_testing/gaia_fg_altcols/
 output/systematics_testing/large_angular_scales/
