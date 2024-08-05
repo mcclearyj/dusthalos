@@ -131,7 +131,7 @@ def main():
         rand_cat=rand_cat_f[1].data
 
     #bands = ['mof_cm_mag_corrected_g', 'mof_cm_mag_corrected_r', 'mof_cm_mag_corrected_i', 'mof_cm_mag_corrected_z']
-    bands = ['dered_g', 'dered_r', 'dered_i', 'dered_z']
+    bands = ['g_corr_csfd', 'r_corr_csfd', 'i_corr_csfd', 'z_corr_csfd']
     z1_colname = 'redshift'
     z2_colname = 'redshift_rand'
 

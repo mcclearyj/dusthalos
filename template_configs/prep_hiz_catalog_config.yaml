@@ -20,7 +20,7 @@ paths:
   # general path for catalogs
   catalog_path: '/work/mccleary_group/dusty_halos/catalogs'
   # Where to save outputs
-  output_path: '/work/mccleary_group/dusty_halos/catalogs/prep_cat_v2'
+  output_path: '/work/mccleary_group/dusty_halos/catalogs/prep_cat_csfd'
 
 #
 #

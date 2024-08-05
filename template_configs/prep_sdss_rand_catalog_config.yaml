@@ -23,7 +23,7 @@ paths:
 background_catalog:
   # Where is it? Leave blank or commented out to use default
   #path:
-  filename: 'sdss_bg_photoz_randoms.fits'
+  filename: 'sdss_bg_photoz2_randoms.fits'
   # nickname for table if we are matching to another catalog
   tabname: 'rand'
   # WCS frame
