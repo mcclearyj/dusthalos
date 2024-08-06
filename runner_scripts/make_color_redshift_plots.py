@@ -7,6 +7,7 @@ from astropy.table import Table
 from scipy import stats
 import numpy as np
 import pdb
+import seaborn as sns
 
 def set_rc_params(fontsize=None):
 
@@ -106,18 +107,18 @@ def bin_the_redshifts(rand_cat, bands, z2_colname, n_zbins=17):
     return tab
 
 def main():
-    catalog_path = '/work/mccleary_group/dusty_halos/catalogs/prep_cat_gwslc'
+    catalog_path = '/work/mccleary_group/dusty_halos/catalogs/'
     #catalog_path = '/Users/j.mccleary/Research/dusty_halos/catalogs/prep_cat_output'
 
     # Read in galaxies
     gals_cat = Table.read(
         os.path.join(catalog_path,
-        'DoubleMasked_sdss_bg_photoz.fits'), memmap=True
+        'sdss_bg_photoz2.fits'), memmap=True
     )
 
     # Read in random catalog
     rand_cat_f = fits.open(os.path.join(catalog_path,
-        'rand_sdss_bg_JOINED_catalog.fits')
+        'sdss_bg_photoz2.fits')
     )
 
     # In case random catalog is super-super long, pick subset for plotting
@@ -133,7 +134,7 @@ def main():
     #bands = ['mof_cm_mag_corrected_g', 'mof_cm_mag_corrected_r', 'mof_cm_mag_corrected_i', 'mof_cm_mag_corrected_z']
     bands = ['g_corr_csfd', 'r_corr_csfd', 'i_corr_csfd', 'z_corr_csfd']
     z1_colname = 'redshift'
-    z2_colname = 'redshift_rand'
+    z2_colname = 'redshift'
 
     wg_gals_cat = remove_outliers(gals_cat, bands)
     gals_cat = gals_cat[wg_gals_cat]
@@ -177,6 +178,26 @@ def main():
 
     fig.suptitle('SDSS galaxies resampled')
     fig.savefig('color_redshift_sdss_resamp1.png')
+
+    ## Try a Seaborn plot
+    gals_pd = gals_cat.to_pandas()
+    plt.figure(figsize=(10, 8))
+    sns.kdeplot(
+        x=gals_pd[z1_colname],
+        y=(gals_pd[bands[2]] - gals_pd[bands[3]]),
+        fill=True, 
+        cmap="viridis",
+        levels=20,  # Adjust the number of contour levels as needed
+        thresh=0.05
+    )
+
+    plt.xlabel(z1_colname)
+    plt.ylabel(f"{bands[0]} - {bands[1]}")
+    plt.title("SDSS galaxies")
+    plt.xlabel("Redshift")
+    plt.tight_layout()
+    plt.savefig('color_redshift_sdss_contour.png')
+    plt.close()
 
     return 0
 

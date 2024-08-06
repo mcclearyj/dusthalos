@@ -36,7 +36,6 @@ def radec2healpixels(filename, healpix_name=None, Nside=128,
         healpix_map[pix] = 1
 
     if healpix_name == None:
-        #healpix_name = "GSWLC-A2_healpix_mask.fits"
         healpix_name = filename.replace('.fits', '_healpix_mask.fits')
 
     # Save the map to a FITS file
