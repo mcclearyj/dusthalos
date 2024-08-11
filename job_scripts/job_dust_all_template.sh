@@ -22,7 +22,18 @@ echo $PATH
 echo $PYTHONPATH
 echo $CONFIGDIR
 
+dirname="slurm_outfiles"
+if [ ! -d "$dirname" ]
+then
+     echo " Directory $dirname does not exist. Creating now"
+     mkdir -p -- "$dirname"
+     echo " $dirname created"
+ else
+     echo " Directory $dirname exists"
+ fi
 
+ echo "Proceeding with code..."
+ 
 ###
 ### Activate Conda
 ###

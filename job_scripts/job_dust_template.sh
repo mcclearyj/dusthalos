@@ -48,6 +48,8 @@ python $CODEDIR/runner_scripts/dust_calc_runner.py -c $CONFIGDIR/dust_calc_syste
 python $CODEDIR/runner_scripts/dust_calc_runner.py -c $CONFIGDIR/dust_calc_hidens.yaml
 
 
+### Move slurm outfile
+mv slurm-dust_calc.out "$dirname"
 
 
 
