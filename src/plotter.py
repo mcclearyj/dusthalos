@@ -261,7 +261,7 @@ class OverlapPlotter(RCParamsMixin):
         size, may need to revisit this
         """
         rng = np.random.default_rng()
-        indices = rng.integers(low=0, high=len(cat), size=int(size))
+        indices = rng.choice(len(cat), size=int(size), replace=False)
         
         return cat[indices]
 
