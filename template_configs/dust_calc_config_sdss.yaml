@@ -11,30 +11,30 @@
 #  - "treecorr_npatch" sets the number of sky patches used in treecorr
 
 background_catalog:
-  cat_config: 'configs/catalog_configs/sdss_bg_galaxies.yaml'
+  cat_config: 'configs/catalog_configs/sdss_colorcut_galaxies.yaml'
   treecorr_npatch: 10   # Set number of treecorr patches
   redshifts: # How to deal with redshifts
-    nbins: 10
+    nbins: 4
 
 background_randoms:
-  cat_config: 'configs/catalog_configs/sdss_bg_randoms.yaml'
+  cat_config: 'configs/catalog_configs/sdss_colorcut_randoms.yaml'
   redshifts: # How to deal with redshifts
-    nbins: 10
+    nbins: 4
 
 foreground_catalog:
-  cat_config: 'configs/catalog_configs/GWSLC_cat.yaml'
+  cat_config: 'configs/catalog_configs/WISExSCOS_sdss.yaml'
 
 foreground_randoms:
-  cat_config: 'configs/catalog_configs/GWSLC_randoms.yaml'
+  cat_config: 'configs/catalog_configs/WISExSCOS_sdss_randoms.yaml'
 
 # ------------------
 # Output parameters
 # ------------------
 
 # Where output files and plots will get saved
-output_path: 'output/sdss_x_gwslc'
+output_path: 'output/sdss_csfd'
 # basename or prefix for assorted files to save
-output_basename: 'dustcorrel_quiescent_10zbins'
+output_basename: 'dustcorrel_csfd_4zbins'
 # Plot output dust profile in kiloparsecs (False) or arcminutes (True)
 use_kpc: True
 
@@ -57,8 +57,8 @@ dust_params:
   # Extinction in V band
   A_V: 1
   # Bandpass column names in catalog
-  band_names: ['dered_u', 'dered_g', 'dered_r', 'dered_i', 'dered_z']
+  band_names: ['u_corr_csfd', 'g_corr_csfd', 'r_corr_csfd', 'i_corr_csfd', 'z_corr_csfd']
   #  Error/uncertainty column names in catalog (in order, please!)
   err_names: ['err_u', 'err_g', 'err_r', 'err_i', 'err_z']
   # Central wavelengths (spectrum) to model; should match number of bands!
-  wavelengths: [3556.52, 4702.50, 6175.58, 7489.98, 8946.71]
+  wavelengths: [3586.8, 4716.7, 6165.1, 7475.9, 8922.9]

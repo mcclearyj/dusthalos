@@ -15,13 +15,13 @@ background_catalog:
   treecorr_npatch: 10   # Set number of treecorr patches
   redshifts: # How to deal with redshifts
     #use_bin_numbers: True # Basically just for redmagic
-    nbins: 5
+    nbins: 9
 
 background_randoms:
   cat_config: 'configs/catalog_configs/redmagic_hidens_randoms.yaml'
   redshifts: # How to deal with redshifts
     #use_bin_numbers: True # Basically just for redmagic
-    nbins: 5
+    nbins: 9
 
 foreground_catalog:
   cat_config: 'configs/catalog_configs/WISExSCOS_zlt0.2.yaml'
@@ -34,9 +34,9 @@ foreground_randoms:
 # ------------------
 
 # Where output files and plots will get saved
-output_path: 'output/systematics_testing/large_angular_scales'
+output_path: 'output/redmagic_hidens_csfd'
 # basename or prefix for assorted files to save
-output_basename: 'z_lt_0.5_dustcorrel_g23_5zbins_WISEzcut'
+output_basename: 'z_lt_0.5_dustcorrel_g23_9zbins'
 # Plot output dust profile in kiloparsecs (True) or arcminutes (False)
 use_kpc: True
 
@@ -44,8 +44,8 @@ use_kpc: True
 # Correlation function parameters:
 # -----------------
 treecorr_params:
-  min_sep: 0.5
-  max_sep: 1000.0
+  min_sep: 0.1
+  max_sep: 200.0
   bin_size: 0.6
   sep_units: 'arcmin'
   var_method: 'sample'
@@ -59,11 +59,10 @@ dust_params:
   # Extinction in V band
   A_V: 1
   # Bandpass column names in catalog
-  band_names: ['mof_cm_mag_corrected_g', 'mof_cm_mag_corrected_r',
-              'mof_cm_mag_corrected_i', 'mof_cm_mag_corrected_z']
+  band_names: ['mof_cm_mag_g_corr_csfd', 'mof_cm_mag_r_corr_csfd',
+              'mof_cm_mag_i_corr_csfd', 'mof_cm_mag_z_corr_csfd']
   # Error/uncertainty column names in catalog (in order, please!)
   err_names: ['mof_cm_mag_err_g', 'mof_cm_mag_err_r',
               'mof_cm_mag_err_i', 'mof_cm_mag_err_z']
   # Central wavelengths (spectrum) to model; should match number of bands!
-  wavelengths: [4808.49, 6417.65, 7814.58, 9168.85]
-  #wavelengths: [4769.90, 6370.44, 7774.30, 9154.88] 
+  wavelengths: [4796.6, 6382.6, 7769.0, 9108.2] 

@@ -34,9 +34,9 @@ foreground_randoms:
 # ------------------
 
 # Where output files and plots will get saved
-output_path: 'output/redmagic_hidens_v2'
+output_path: 'output/redmagic_hidens_csfd'
 # basename or prefix for assorted files to save
-output_basename: 'z_lt_0.5_dustcorrel_g23_usebins_sof'
+output_basename: 'z_lt_0.5_dustcorrel_g23_usebins'
 # Plot output dust profile in kiloparsecs (True) or arcminutes (False)
 use_kpc: True
 
@@ -59,11 +59,10 @@ dust_params:
   # Extinction in V band
   A_V: 1
   # Bandpass column names in catalog
-  band_names: ['sof_cm_mag_corrected_g', 'sof_cm_mag_corrected_r',
-              'sof_cm_mag_corrected_i', 'sof_cm_mag_corrected_z']
+  band_names: ['mof_cm_mag_g_corr_csfd', 'mof_cm_mag_r_corr_csfd',
+              'mof_cm_mag_i_corr_csfd', 'mof_cm_mag_z_corr_csfd']
   # Error/uncertainty column names in catalog (in order, please!)
-  err_names: ['sof_cm_mag_err_g', 'sof_cm_mag_err_r',
-              'sof_cm_mag_err_i', 'sof_cm_mag_err_z']
+  err_names: ['mof_cm_mag_err_g', 'mof_cm_mag_err_r',
+              'mof_cm_mag_err_i', 'mof_cm_mag_err_z']
   # Central wavelengths (spectrum) to model; should match number of bands!
-  wavelengths: [4808.49, 6417.65, 7814.58, 9168.85]
-  #wavelengths: [4769.90, 6370.44, 7774.30, 9154.88] 
+  wavelengths: [4796.6, 6382.6, 7769.0, 9108.2] 

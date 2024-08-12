@@ -3,8 +3,10 @@
 \geometry{letterpaper, margin=1.0in}                   		% ... or a4paper or a5paper or ... 
 %\geometry{landscape}                		% Activate for rotated page geometry
 \usepackage[parfill]{parskip}    		% Activate to begin paragraphs with an empty line rather than an indent
+\usepackage[backend=biber]{biblatex} 
+\usepackage{aas_macros}
+\addbibresource{dust_halos.bib}
 \usepackage{graphicx}				% Use pdf, png, jpg, or eps§ with pdflatex; use eps in DVI mode
-								% TeX will automatically convert eps --> pdf in pdflatex		
 \usepackage{amssymb}
 \usepackage{hyperref}
 \usepackage{comment}
@@ -33,7 +35,7 @@
 
 \section{Executive Summary}
 
-This is a short follow-up to the comprehensive ``Circumgalactic dust halos update'' document circulated in October 2023. It has been about six months and here are the principal updates since that time: 
+This is a short follow-up to the comprehensive ``Circumgalactic dust halos update'' document circulated in October 2023. Here are the principal updates since that time: 
 
 \begin{enumerate}
 \item Implemented redshift-based matching for augmenting redMaGiC random catalogs with galaxy colors.% (Figure \ref{fig:redshiftmatch}). 
@@ -42,13 +44,16 @@ This is a short follow-up to the comprehensive ``Circumgalactic dust halos updat
 
 \item Implemented a patch-based approach to variance estimation in correlation function calculations, as strongly recommended in \texttt{Treecorr} documentation. 
 
-\item Implemented a more up-to-date dust extinction law taken from Gordon et al. 2023; the one previously in use dated from 2000 and was due for an update. 
+\item Implemented a new dust extinction law taken from Gordon et al. 2023; the one I had been using dated from 2000 and was due for an update. 
+
+\item Started using the CSFD map recommended in Yi-Kuan Chiang 2023, as the canonical SFD98 extinction map has CIB contamination, leading to $10^{-3}-10^{-4}$ mag excesses in E(B-V). This didn't make a huge difference, but is the right thing to do. 
 
 \item Tested for systematics using Gaia star catalogs, which yielded quite good results; see Figure \ref{fig:gaia}. 
 
 \item Fit extinction profiles to the assorted redMaGiC-background fits; came up with the same slope as M\'{e}nard et al.~2010. 
 
 \item Expanded analysis to galaxies in the Sloan Digital Sky Survey and GALEX-WISE-SDSS Legacy Catalog! The results aren't as amazing as one would hope, but aren't complete messes either. 
+
 \end{enumerate}
 
 The code and analysis improvements are covered in Section \ref{sec:code}. Information about the new catalogs is presented in Section \ref{sec:catalogs}. Results of systematics testing and profile fitting are in Section \ref{sec:results}, and next steps are covered in Section \ref{sec:next_steps}. 

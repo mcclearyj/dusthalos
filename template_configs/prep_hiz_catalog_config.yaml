@@ -20,7 +20,7 @@ paths:
   # general path for catalogs
   catalog_path: '/work/mccleary_group/dusty_halos/catalogs'
   # Where to save outputs
-  output_path: '/work/mccleary_group/dusty_halos/catalogs/prep_cat_v2'
+  output_path: '/work/mccleary_group/dusty_halos/catalogs/prep_cat_csfd'
 
 #
 #
@@ -46,7 +46,7 @@ background_catalog:
     # Set the path to catalog to be matched
     path: '/work/mccleary_group/dusty_halos/catalogs'
     # Name of catalog file
-    filename: 'des_y3_gold_MOF_highpurity_gals.fits'
+    filename: '18176_desy3_gold_gals.fits'
     # Should be 'kw', 'coordinates', or 'random'
     match_type: 'kw'
     # If kw matching, specify
