@@ -20,8 +20,19 @@ class HpMask:
     '''
     This should hold the essential mask information: mask filename,
     NSIDE, whether mask is partial, the coordinate system in which the mask
-    is defined (VERY IMPORTANT!). It should load the mask into memory. Defining
-    the empty or unseen HEALPix pixels could be useful too.
+    is defined (VERY IMPORTANT!). It should load the mask into memory. Also
+    defines the empty or unseen HEALPix pixels.
+
+    Attributes:
+        filepath:  Filepath (relative or absolute) to HEALpix mask
+        partial:  Is mask partial? (boolean; default=False)
+        NSIDE:  HEALPix NSIDE parameter
+        mask:  HpMask map instance
+        mask_header:  Mask header info
+        seen:  Is HEALPixel filled? (1 or 0; default=0 for False)
+        all_nside_hpix:  HEALPix mask, stored as 1 x (12 * NSIDE**2) array
+        coordframe: Celestial reference frame of mask (should be recognized
+                    astropy.coord.SkyCoord kw like icrs, galactic, ...)
     '''
 
     def __init__(self, filepath=None, partial=False, coordframe=None):
@@ -103,7 +114,7 @@ class HpMask:
 
         # Get HEALPixel for each RA, Dec
         hpInd = hp.ang2pix(self.NSIDE, lon, lat, lonlat=lonlat, nest=False)
-        print("using most recent one")
+
         # Identify coordinates that fall into good (unmasked) HEALPixels
         overlap = np.in1d(hpInd, good_map_hpix)
 
@@ -121,6 +132,7 @@ class HpMask:
         if len(gal_ind[overlap]) == 0:
             print('WARNING: No galaxies in input catalog matched to mask')
 
+        # Return indices of galaxies in mask 
         return gal_ind[overlap]
 
     @staticmethod
@@ -192,5 +204,5 @@ class HpMask:
         gal_ind = np.arange(len(coords))
         good_gals = gal_ind[overlap]
 
-        # Return indices and coodinates of galaxies in both masks
+        # Return indices of galaxies in both masks
         return good_gals
