@@ -98,7 +98,12 @@ def main(args):
     # Load foreground catalog
     fg = Correlator(correl_config, ctype='foreground_catalog')
     fg.load(treecorr_patch_centers=bg.treecorrCatalog.patch_centers)
-    mean_fg_z = np.median(fg.Catalog.data[fg.cat_config['z_key']])
+    try:
+        mean_fg_z = np.median(fg.Catalog.data[fg.cat_config['z_key']])
+    except KeyError:
+        print("No redshift column found, setting mean fg redshift to 0")
+        print("Forcing arcminute plot scaling")
+        mean_fg_z = 0; correl_config['use_kpc'] = False
 
     # Load foreground random catalog
     fgr = Correlator(correl_config, ctype='foreground_randoms')
