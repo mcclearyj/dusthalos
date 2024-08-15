@@ -53,7 +53,7 @@ class ExtinctionModel:
         elif model == 'odonnell94':
             self.dmdp = extinction.odonnell94(**kwargs, r_v=r_v)
         elif model == 'fitz99':
-            self.dmdp = extinction.fitz99(**kwargs, r_v=r_v)
+            self.dmdp = extinction.fitzpatrick99(**kwargs, r_v=r_v)
         elif model == 'calzetti00':
             self.dmdp = extinction.calzetti00(**kwargs, r_v=r_v)
             # array([1.65709158, 1.22587063, 0.84134317, 0.59816654, 0.40424546])

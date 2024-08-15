@@ -12,7 +12,7 @@ import numpy as np
 def deredden(catname, wavelengths):
     """ Cat should be a string object """
 
-    # Open catalog, grab stuff 
+    # Open catalog, grab stuff
     cat = fits.open(catname, mode='update', save_backup=True)
     ra = cat[1].data['ra']
     dec = cat[1].data['dec']
@@ -89,7 +89,7 @@ def deredden(catname, wavelengths):
 
 def main():
     # Central wavelengths (spectrum) to model; should match number of bands!
-    wavelengths = [4796.6, 6382.6, 7769.0, 9108.2] * u.AA    
+    wavelengths = [4796.6, 6382.6, 7769.0, 9108.2] * u.AA
 
     cat1 = "/work/mccleary_group/dusty_halos/catalogs/18176_desy3_gold_gals.fits"
     deredden(cat1, wavelengths)
