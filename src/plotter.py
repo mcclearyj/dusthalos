@@ -163,6 +163,7 @@ class DustPlotter(RCParamsMixin):
         fig.savefig(outplotn)
 
         try:
+            pdb.set_trace()
             fig, ax = plt.subplots(figsize=(10,7), tight_layout=True)
 
             ax.plot(theory_r, av, color='tab:red',
@@ -201,7 +202,6 @@ class DustPlotter(RCParamsMixin):
         kpc : if true, plot x-axis in kpc units (default)
         subsample : use special-purpose plotting software
         """
-
         if subsample == True:
             raise AttributeError('subsample plot is deprecated')
             #self._plot_corr_res(outplotn, kpc)
@@ -327,7 +327,8 @@ class OverlapPlotter(RCParamsMixin):
         if projection in ['mollweide', 'aitoff']:
             figsize=(11.5, 6)
         else:
-            figsize=(10, 7)
+            #figsize=(10, 7)
+            figsize=(11.5, 6)
 
         fig, ax = plt.subplots(1,1, figsize=figsize, tight_layout=True, \
                         subplot_kw=dict(projection=projection))

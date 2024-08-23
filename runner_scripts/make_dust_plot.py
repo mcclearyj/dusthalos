@@ -97,6 +97,7 @@ def main(args):
         z_fg = mean_fg_z,
         z_theory = z_theory
     )
+
     plot.plot_res(outplotn=names.fig_output, kpc=correl_config['use_kpc'])
 
 if __name__ == '__main__':
