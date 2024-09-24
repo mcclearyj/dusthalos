@@ -1,0 +1,130 @@
+% $ biblatex auxiliary file $
+% $ biblatex bbl format version 3.2 $
+% Do not modify the above lines!
+%
+% This is an auxiliary file used by the 'biblatex' package.
+% This file may safely be deleted. It will be recreated by
+% biber as required.
+%
+\begingroup
+\makeatletter
+\@ifundefined{ver@biblatex.sty}
+  {\@latex@error
+     {Missing 'biblatex' package}
+     {The bibliography requires the 'biblatex' package.}
+      \aftergroup\endinput}
+  {}
+\endgroup
+
+
+\refsection{0}
+  \datalist[entry]{nty/global//global/global}
+    \entry{Gordon2024}{article}{}
+      \name{author}{1}{}{%
+        {{hash=826cd3952076c590c95a7d3f36f62bca}{%
+           family={Gordon},
+           familyi={G\bibinitperiod},
+           given={Karl\bibnamedelima D.},
+           giveni={K\bibinitperiod\bibinitdelim D\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {The Open Journal}%
+      }
+      \strng{namehash}{826cd3952076c590c95a7d3f36f62bca}
+      \strng{fullhash}{826cd3952076c590c95a7d3f36f62bca}
+      \strng{bibnamehash}{826cd3952076c590c95a7d3f36f62bca}
+      \strng{authorbibnamehash}{826cd3952076c590c95a7d3f36f62bca}
+      \strng{authornamehash}{826cd3952076c590c95a7d3f36f62bca}
+      \strng{authorfullhash}{826cd3952076c590c95a7d3f36f62bca}
+      \field{sortinit}{G}
+      \field{sortinithash}{32d67eca0634bf53703493fb1090a2e8}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Journal of Open Source Software}
+      \field{number}{100}
+      \field{title}{dust\_extinction: Interstellar Dust Extinction Models}
+      \field{volume}{9}
+      \field{year}{2024}
+      \field{pages}{7023}
+      \range{pages}{1}
+      \verb{doi}
+      \verb 10.21105/joss.07023
+      \endverb
+      \verb{urlraw}
+      \verb https://doi.org/10.21105/joss.07023
+      \endverb
+      \verb{url}
+      \verb https://doi.org/10.21105/joss.07023
+      \endverb
+    \endentry
+    \entry{2023ApJ...950...86G}{article}{}
+      \name{author}{7}{}{%
+        {{hash=826cd3952076c590c95a7d3f36f62bca}{%
+           family={{Gordon}},
+           familyi={G\bibinitperiod},
+           given={Karl\bibnamedelima D.},
+           giveni={K\bibinitperiod\bibinitdelim D\bibinitperiod}}}%
+        {{hash=a2d180ca3d52d8a51d326f95f0722151}{%
+           family={{Clayton}},
+           familyi={C\bibinitperiod},
+           given={Geoffrey\bibnamedelima C.},
+           giveni={G\bibinitperiod\bibinitdelim C\bibinitperiod}}}%
+        {{hash=f297a494870ecb9fc4a36d1929ca3745}{%
+           family={{Decleir}},
+           familyi={D\bibinitperiod},
+           given={Marjorie},
+           giveni={M\bibinitperiod}}}%
+        {{hash=664bad26c9998d3d3ae19fa278094b23}{%
+           family={{Fitzpatrick}},
+           familyi={F\bibinitperiod},
+           given={E.\bibnamedelimi L.},
+           giveni={E\bibinitperiod\bibinitdelim L\bibinitperiod}}}%
+        {{hash=76db579f7e08de473b04b29aeaec0ffe}{%
+           family={{Massa}},
+           familyi={M\bibinitperiod},
+           given={Derck},
+           giveni={D\bibinitperiod}}}%
+        {{hash=b9dac6b0e9e31dac6ac5d591951833e3}{%
+           family={{Misselt}},
+           familyi={M\bibinitperiod},
+           given={Karl\bibnamedelima A.},
+           giveni={K\bibinitperiod\bibinitdelim A\bibinitperiod}}}%
+        {{hash=2c9297c18cd80f1e75bce73010d2b80c}{%
+           family={{Tollerud}},
+           familyi={T\bibinitperiod},
+           given={Erik\bibnamedelima J.},
+           giveni={E\bibinitperiod\bibinitdelim J\bibinitperiod}}}%
+      }
+      \strng{namehash}{d2f00f6030978299800b787fde2c926e}
+      \strng{fullhash}{23ea6ee98b19cfbc2604e9cf4c2da6ba}
+      \strng{bibnamehash}{d2f00f6030978299800b787fde2c926e}
+      \strng{authorbibnamehash}{d2f00f6030978299800b787fde2c926e}
+      \strng{authornamehash}{d2f00f6030978299800b787fde2c926e}
+      \strng{authorfullhash}{23ea6ee98b19cfbc2604e9cf4c2da6ba}
+      \field{sortinit}{G}
+      \field{sortinithash}{32d67eca0634bf53703493fb1090a2e8}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{eid}{86}
+      \field{eprintclass}{astro-ph.GA}
+      \field{eprinttype}{arXiv}
+      \field{journaltitle}{Astrophysical Journal}
+      \field{month}{6}
+      \field{number}{2}
+      \field{title}{{One Relation for All Wavelengths: The Far-ultraviolet to Mid-infrared Milky Way Spectroscopic R(V)-dependent Dust Extinction Relationship}}
+      \field{volume}{950}
+      \field{year}{2023}
+      \field{pages}{86}
+      \range{pages}{1}
+      \verb{doi}
+      \verb 10.3847/1538-4357/accb59
+      \endverb
+      \verb{eprint}
+      \verb 2304.01991
+      \endverb
+      \keyw{Interstellar dust,Interstellar extinction,Interstellar dust extinction,Interstellar reddening,Reddened stars,Interstellar medium,Reddening law,Milky Way Galaxy,Ultraviolet extinction,Spectroscopy,836,841,837,853,1376,847,1377,1054,1738,1558,Astrophysics - Astrophysics of Galaxies}
+    \endentry
+  \enddatalist
+\endrefsection
+\endinput
+

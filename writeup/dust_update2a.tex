@@ -1,0 +1,171 @@
+\documentclass[11pt, oneside]{article}   	% use "amsart" instead of "article" for AMSLaTeX format
+\usepackage{geometry}                		% See geometry.pdf to learn the layout options. There are lots.
+\geometry{letterpaper, margin=1.0in}                   		% ... or a4paper or a5paper or ... 
+%\geometry{landscape}                		% Activate for rotated page geometry
+\usepackage[parfill]{parskip}    		% Activate to begin paragraphs with an empty line rather than an indent
+\usepackage{graphicx}				% Use pdf, png, jpg, or eps§ with pdflatex; use eps in DVI mode
+								% TeX will automatically convert eps --> pdf in pdflatex		
+\usepackage{amssymb}
+\usepackage{hyperref}
+\usepackage{comment}
+\usepackage[dvipsnames]{xcolor}
+\usepackage[backend=biber]{biblatex}
+\addbibresource{dust_halos.bib}
+
+%SetFonts
+
+%SetFonts
+
+
+\title{Circumgalactic dust halos update \#2}
+\author{Jacqueline McCleary}
+%\date{}							% Activate to display a given date or no date
+
+\newcommand{\dMdp}{\rm \frac{\partial M}{\partial \rho}} 
+\newcommand{\dMinline}{$\rm \partial M / \partial \rho$~}
+\newcommand{\av}{$A_V$~}
+
+\begin{document}
+\maketitle
+
+\section{Executive Summary}
+
+\begin{enumerate}
+	\item Literature review -- very recent developments in modeling
+	\item Accompanying modeling updates (and code improvements)
+	\item Updated results based on new models -- including fitting power laws! The TL;DR is that while the \textit{slope} for all redMaGiC-based XXX samples XXX is a very close match to the M\'{e}nard result, the \textit{amplitude} is about twice as high. This is something we can and should look into in future work.  
+	\item For the first time, I have also expand our search for extended dust halos to the Northern Sky! I tried a few different SDSS background samples as well as two different foreground samples: WISExSCOS and GWSLC (itself divided by specific star formation rate). foreground samples. While the WISExSCOS x SDSS results tended to be consistent with the redMaGiC samples at \textit{low} impact parameters, at \textit{high} impact parameters ($>$ XX arcminutes), the extinction flattens out and doesn't decrease. Meanwhile, the GWSLC x SDSS extinction has an interesting dip at intermediate impact parameters but agrees with the redMaGiC curves at high and low impact parameters. 
+	\item Also, my talk at the Aspen Center for Physics dust workshop went really well! There were good questions and a lot of interest afterwards. 
+\end{enumerate}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%
+%%%%%%% LITERATURE REVIEW
+%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Literature Review}\label{sec:literature}
+Since I prepared my last update, several exciting and highly germane papers have been published. Results include an interesting hydrosim study of dust survival in the IGM, a new model for dust extinction, and an update to the canonical SFD map. 
+\subsection{Gordon et al. 2023}
+described in \cite{2023ApJ...950...86G}. Implemented with the \texttt{dust\_extinction} software package \cite{Gordon2024}. 
+\subsection{Helena outflow paper}
+\subsection{CSFD}
+\subsection{Dust as a supernova systematic}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%
+%%%%%%% CODE AND MODEL UPDATES
+%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%
+%
+\section{Code and Modeling Updates}\label{sec:code}
+
+
+%%%%
+%%%% COLOR-MATCHED RANDOMS
+%%%%
+
+\subsection{Code updates}
+\subsubsection{Color-matched randoms}
+\begin{itemize}
+	\item describe algorithm, show nice figure
+	\item This didn't significantly affect the result, however.
+\end{itemize}
+
+%%%%
+%%%% RANDOM CATALOG GENERATION OVERHAUL
+%%%%
+\subsubsection{Random catalog generation overhaul}
+\begin{itemize}
+	\item Mention bug of picking healpixels; could even show the bad ra/good ra figures
+	\item Also implemented ability to generate catalogs in galactic coordinates, which made sense for the WISExSCOS catalog
+	\item Based on the redMaGiC ratio of random galaxies to real galaxies, the random catalogs I create are $\sim 20 \times$ the length of their respective data catalogs. For very large galaxy catalogs like SDSS, generating an equivalent random catalog with almost a billion objects is too much for my HPC to handle. (Or, perhaps my code is inefficient.) So, I added a little option to create multiple smaller catalogs and concatenated them. % I feel like this doesn't actually need to be said. 
+\end{itemize}
+
+%%%%
+%%%% RANDOM CATALOG GENERATION OVERHAUL
+%%%%
+\subsubsection{Treecorr variance and misc. utilities}
+\begin{itemize}
+	\item Fixed variance! Used patches and compensated estimates
+	\item \texttt{RADec\_to\_healpixel}
+	\item deredden magnitudes, the script used to incorporate CSFD extinction values into magnitudes.
+	\item fix magnitude (idnr what that is) 
+\end{itemize}
+
+%%%%
+%%%% 
+%%%%
+\subsection{Model improvements}
+
+\subsubsection{Gordon 2023 extinction}
+\begin{itemize}
+	\item At the workshop, Daniella Calzetti told me that she was flattered but that I needed to update the extinction law that I was using. She pointed me to the Gordon 2023 paper referenced above.
+	\item I found the \texttt{dust\_extinction} repository\footnote{\url{https://github.com/karllark/dust_extinction}} and used that.
+	\item It did shift our values, but the changes are irrelevant since the previous values were so out of date!
+\end{itemize}
+
+\subsubsection{CSFD}
+\begin{itemize}
+\item As metioned earlier, Nao pointed me to this CSFD paper, where the amplitude of the residual seemed non-negligible ($10^4$) and so worth implementing. 
+\item I located a nice software package called \texttt{dustmapper}\footnote{\url{https://github.com/gregreen/dustmaps}} to query the CSFD dust map and obtain extinction coefficients for a given set of coordinates. Specifically, there is a handy \texttt{dustmaps.csfd.CSFDQuery} method that takes as input an RA, Dec list in SkyCoords format and returns an array of E(B-V) values. An $R_V$ value is used to convert those into extinction coefficients and then used to de-redden SDSS and DES magnitudes. Using SFD maps to obtain E(B-V) 
+Applying band-specific extinction coefficients to get extinction values.
+\item Subtracting these extinction values A$_{\rm X, CSFD}$ from the observed magnitudes \texttt{MAG\_X} to obtain the dereddened magnitudes:
+\begin{verbatim}
+MAG_X_CORRECTED = MAG_X - A_X_CSFD
+\end{verbatim}
+
+For the DES magnitudes, I used the corrected magnitude prescription of Pandey et al.~2021: 
+\begin{verbatim}
+MAG_CORRECTED = MAG + DELTA_MAG_Y4 + DELTA_MAG_CHROM - A_X_CSFD
+\end{verbatim}
+\item As one might expect, this had a notable effect on the amplitude of the signal. 
+\end{itemize}
+
+
+\begin{comment}
+% Dereddening workflow 
+Load up some coordinates in SkyCoords format
+Get E(B-V) for those galaxies with dustmap package.
+Multiply that  E(B-V) value by RV to get an AV: 0.302*3.1 = 0.9331  
+Use dust_extinction to get the A(X)/A(V) extinction curve as I have always done…
+Multiply extinction curve A(X)/A(V) by the AV I calculated to get AX
+Subtract the AX from magnitudes to get de-reddened magnitudes!
+\end{comment}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%
+%%%%%%% CATALOGS
+%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Catalogs: Round 2}\label{sec:catalogs}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%
+%%%%%%% RESULTS
+%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Results}\label{sec:results}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%
+%%%%%%% DISCUSSION
+%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Discussion and Next Steps}\label{sec:discussion}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%
+%%%%%%% BIBLIOGRAPHY
+%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\printbibliography
+
+\end{document}  
