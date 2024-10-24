@@ -50,6 +50,20 @@ Since I prepared my last update, several exciting and highly germane papers have
 described in \cite{2023ApJ...950...86G}. Implemented with the \texttt{dust\_extinction} software package \cite{Gordon2024}. 
 \subsection{Helena outflow paper}
 \subsection{CSFD}
+\begin{itemize}
+\item I saw this person give a talk on the topic at the Aspen dust workshop, and then Nao Suzuki called my attention to it again at the COSMOS-Web meeting. 
+\item The basic premise of the paper is that the classic Schlegel, Finkbeiner, \& Davis (1998, SFD) dust map has significant contamination from the cosmic infrared background, that is, the two-halo term of large-scale structure. 
+\item Apparently, this fact has been discovered and rediscovered in the literature \cite{10.1093/pasj/59.1.205, 10.1093/pasj/65.2.43}, including by our friend Brice M{\'e}nard \cite{2019ApJ...870..120C}. 
+
+\begin{figure}[htbp]
+\begin{center}
+\includegraphics[width=0.7\textwidth]{figures_update2/CSFD_figure7.png}
+\caption{Stacked images of the SFD $E(B-V)$ (top row) and the CSFD equivalent (bottom row) centered on different types of sources. From left to right, the stacks are centered on Gaia stars, SDSS main sample galaxies, 2MASS galaxies, and Gaia AGNs, respectively. Aside from the stars, the SFD $E(B-V)$ values around all galaxy samples are biased high due to the LSS contamination. This bias is significantly reduced in CSFD. (Caption and figure adapted from \cite{2023ApJ...958..118C}.)}
+\label{default}
+\end{center}
+\end{figure}
+ 
+\end{itemize}
 \subsection{Dust as a supernova systematic}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -67,7 +81,7 @@ described in \cite{2023ApJ...950...86G}. Implemented with the \texttt{dust\_exti
 %%%% COLOR-MATCHED RANDOMS
 %%%%
 
-\subsection{Code updates}
+\subsection{Code updates}\label{sec:codeupdates}
 \subsubsection{Color-matched randoms}
 \begin{itemize}
 	\item describe algorithm, show nice figure
@@ -92,7 +106,7 @@ described in \cite{2023ApJ...950...86G}. Implemented with the \texttt{dust\_exti
 	\item Fixed variance! Used patches and compensated estimates
 	\item \texttt{RADec\_to\_healpixel}
 	\item deredden magnitudes, the script used to incorporate CSFD extinction values into magnitudes.
-	\item fix magnitude (idnr what that is) 
+	%\item fix magnitude (idnr what that is) 
 \end{itemize}
 
 %%%%
@@ -109,9 +123,8 @@ described in \cite{2023ApJ...950...86G}. Implemented with the \texttt{dust\_exti
 
 \subsubsection{CSFD}
 \begin{itemize}
-\item As metioned earlier, Nao pointed me to this CSFD paper, where the amplitude of the residual seemed non-negligible ($10^4$) and so worth implementing. 
-\item I located a nice software package called \texttt{dustmapper}\footnote{\url{https://github.com/gregreen/dustmaps}} to query the CSFD dust map and obtain extinction coefficients for a given set of coordinates. Specifically, there is a handy \texttt{dustmaps.csfd.CSFDQuery} method that takes as input an RA, Dec list in SkyCoords format and returns an array of E(B-V) values. An $R_V$ value is used to convert those into extinction coefficients and then used to de-redden SDSS and DES magnitudes. Using SFD maps to obtain E(B-V) 
-Applying band-specific extinction coefficients to get extinction values.
+\item As mentioned earlier, Nao pointed me to this CSFD paper, where the amplitude of the residual seemed non-negligible ($10^4$) and so worth implementing. 
+\item I located a nice software package called \texttt{dustmapper}\footnote{\url{https://github.com/gregreen/dustmaps}} to query the CSFD dust map and obtain extinction coefficients for a given set of coordinates. Specifically, there is a handy \texttt{dustmaps.csfd.CSFDQuery} method that takes as input an RA, Dec list in SkyCoords format and returns an array of E(B-V) values. An $R_V$ value is used to convert those into extinction coefficients and then used to de-redden SDSS and DES magnitudes. Using SFD maps to obtain E(B-V), then apply band-specific extinction coefficients to get extinction values.
 \item Subtracting these extinction values A$_{\rm X, CSFD}$ from the observed magnitudes \texttt{MAG\_X} to obtain the dereddened magnitudes:
 \begin{verbatim}
 MAG_X_CORRECTED = MAG_X - A_X_CSFD
@@ -121,7 +134,8 @@ For the DES magnitudes, I used the corrected magnitude prescription of Pandey et
 \begin{verbatim}
 MAG_CORRECTED = MAG + DELTA_MAG_Y4 + DELTA_MAG_CHROM - A_X_CSFD
 \end{verbatim}
-\item As one might expect, this had a notable effect on the amplitude of the signal. 
+\item (placeholder for pseudocode of algorithm.)
+\item As one might expect, this had a notable effect on the amplitude of the signal, increasing it by XX\%. 
 \end{itemize}
 
 
@@ -135,6 +149,11 @@ Multiply extinction curve A(X)/A(V) by the AV I calculated to get AX
 Subtract the AX from magnitudes to get de-reddened magnitudes!
 \end{comment}
 
+\subsubsection{Weighted Least-squares fitting.}
+
+To fit models to our results and facilitate comparison to the literature, I have added a function (\texttt{do\_WLS\_fit.py}) to perform weighted least-squares fits to extinction profiles. Surprisingly, we hadn't implemented this yet! The function, partially reproduced in Appendix \ref{appd:wls}, is principally a wrapper for the StatsModel package's weighted least-squares method, with the additional capability to rescale weights for fits in logarithmic space (i.e., power laws). This code was used to generate all fits shown in this report, and weights are based on TreeCorr's estimates of the variance at each point in the extinction profile. 
+%Options exist for both logarithmic (i.e., power law) and non-logarithmic (regular, linear bins) fits
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%
@@ -143,6 +162,55 @@ Subtract the AX from magnitudes to get de-reddened magnitudes!
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Catalogs: Round 2}\label{sec:catalogs}
+\subsection{redMaGiC and WISExSCOS}
+
+\begin{itemize}
+\item I have a note in here about going over magnitude column definitions, but I don't know what that means. Perhaps just the names?
+\item List counts for randoms and reals
+\item The WISExSuperCOSMOS catalog is trimmed to $0 < z < 0.2$, rather than $z < 0.11$ as before, as well as  $17 < bCalCorr < 21$ (really with that last one?)    
+\item To ensure a decent redshift separation between the background and foreground samples, the high-density redMaGiC sample is restricted to $z > 0.5$ (the full redshift range is $0.15 < z < 0.65$?).
+\item There is still no WISExSuperCOSMOS random catalog available, so one is created using the corrected randoms algorithm described in Section \ref{sec:codeupdates} in galactic coordinates to match the original catalog coordinates. 
+\end{itemize}
+
+\subsection{SDSS and GWSLC}
+\begin{itemize}
+\item Detail catalog counts, selections, etc. including magnitude columns.
+\item Show SDSS query, database
+\item GWSLC cuts: used X-2 variant of available catalogs, which combines the deepest of the all-sky, medium, and deep surveys. I had originally hoped to examine dust as a function of galaxy type and that is the recommended catalog. 
+\item Don't forget to tabulate wavelengths! 
+\end{itemize}
+
+\subsection{Systematics testing}
+\begin{itemize}
+\item I am always worried that I am screwing up somehow so to test for systematic error I perform my analysis using star catalogs. 
+\item Stars should have no dust so they make good test catalogs either in foreground or in background.
+\item Randoms: there are strong gradients in density across the fields (makes sense, I guess) which might (seemed to?) affect the results. 
+\item So, to create random catalogs with a matching density gradient, I grabbed larger samples of stars to serve as randoms. 
+\end{itemize}
+
+\subsubsection{Gaia stars}
+\begin{itemize}
+\item This was used as a foreground sample for the redMaGiC catalogs, so it got used for correlations twice: once for the high-density sample, once for the high-luminosity high-redshift sample.   %Editor's note, I have no idea what this means. Maybe because I did redMaGic both samples
+\item I had an oddly tough time narrowing down the survey area on Cosmohub, so I ended up grabbing a fairly large area over the Southern sky and applying the redMaGiC mask. Final count: 478,494 objects.
+\item Detail catalog cuts, which I don't even remember!
+\item Show one of my pretty overlap plots! 
+\end{itemize}
+
+\begin{figure}[htbp]
+\begin{center}
+\includegraphics[width=0.75\textwidth]{figures_update2/masked_gaia_rmz_hiz_overlap_rectilin.png}
+\caption{default}
+\label{default}
+\end{center}
+\end{figure}
+
+\subsubsection{DES Y3 stars}
+\begin{itemize}
+\item This was used as a background sample, standing in for the redMaGiC catalogs in a correlation with WISExSuperCOSMOS 
+\item Show catalog query used, which was taken from \cite{2021ApJS..254...24S}.
+\item Detail catalog cuts made, which include $18 < \rm{mag\_r\_corr} < 21$. 
+\item After masking and the like, there were 824,345 stars in the ``real'' catalog and 9,892,452 randoms. 
+\end{itemize}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%
@@ -152,6 +220,216 @@ Subtract the AX from magnitudes to get de-reddened magnitudes!
 
 \section{Results}\label{sec:results}
 
+\textit{Basic structure of this section}: show correlations and best-fit polynomials typeset as an equation. Have my fit summaries from research notes shown verbatim or maybe as a table. The full printout for fits, including $R^2$, goes in Appendix.
+
+\begin{itemize}
+\item Comments for the individual samples are below, but globally, both the SFD and CSFD results agrees with the \textit{slope} of the \cite{2010MNRAS.406.1815M} power law (Equation 13 in that reference) within one sigma. However, the \textit{amplitude} of the CSFD relationship is twice as high as the \cite{2010MNRAS.406.1815M} result. I am not entirely sure what to make of this, but it is what it is. 
+\item Could discuss the SFD results...
+\end{itemize}
+
+\subsection{RedMaGiC-based results}\label{sec:redmagic_results}
+
+\begin{figure}[htb]
+\begin{center}
+\includegraphics[width=0.75\textwidth]{figures_update2/dustcorrel_redmagic_csfd_newrand_withfits.png}
+\caption{Extinction vs impact parameter for redMaGiC-involved fits. CSFD was used in all cases.}
+\label{fig:redmagicfits}
+\end{center}
+\end{figure}
+
+
+\subsubsection{WISExSuperCOSMOS foreground}
+\begin{itemize}
+\item Comment on broken power law! May want to compare to literature results
+\item For one thing, the knee (300 Mpc?) is not quite where the 1- and 2-halo terms traditionally break (1 Mpc). However, that IS a transition Nick has seen in some of his results for the IA position-orientation correlation functions. What that means, idk.
+\end{itemize}
+
+CSFD results:
+\begin{verbatim}
+Hi-dens WLS fit: 1.14e-02 * (meanr)^-0.84
+Hi-z WLS fit: 1.02e-02 * (meanr)^-0.72
+Combined WLS fit: 1.08e-02 * (meanr)^-0.77
+
+WISExSCOS x redMaGiC high-dens WLS:
+  Const: -4.471e+00 +/- 7.057e-02
+  Slope: -8.402e-01 +/- 4.393e-02
+
+WISExSCOS x redMaGiC high-lum high-z WLS:
+  Const: -4.589e+00 +/- 1.041e-01
+  Slope: -7.240e-01 +/- 5.678e-02
+
+Combined WISExSCOS x redMaGiC WLS:
+  Const: -4.531e+00 +/- 6.808e-02
+  Slope: -7.677e-01 +/- 3.853e-02
+
+\end{verbatim}
+
+Non-CSFD results
+\begin{verbatim}
+Hi-dens WLS fit: 5.86e-03 * (meanr)^-0.62
+Hi-z WLS fit: 9.51e-03 * (meanr)^-0.75
+Combined WLS fit: 8.72e-03 * (meanr)^-0.74
+
+WISExSCOS x redMaGiC high-dens WLS:
+  Const: -5.140e+00 +/- 3.981e-01
+  Slope: -6.177e-01 +/- 1.198e-01
+
+WISExSCOS x redMaGiC high-lum high-z WLS:
+  Const: -4.656e+00 +/- 9.686e-02
+  Slope: -7.525e-01 +/- 3.224e-02
+
+Combined WISExSCOS x redMaGiC WLS:
+  Const: -4.742e+00 +/- 1.444e-01
+  Slope: -7.392e-01 +/- 8.036e-02
+\end{verbatim}
+
+
+\subsubsection{redMaGiC LRG}
+\begin{itemize}
+\item As expected, there is no power at low impact parameters
+\item What's fun is that there *is* lots of power at high impact parameter.
+\item In fact, one COULD argue for the presence of a real 1- to 2-halo transition at about 1 Mpc. 
+\end{itemize}
+
+CSFD results:
+\begin{verbatim}
+
+LRG WLS fit: 8.21e-03 * (meanr)^-0.69
+
+low-z redMaGiC hi-dens x redMaGiC hi-lum hi-z WLS:
+  Const: -4.802e+00 +/- 2.253e-01
+  Slope: -6.872e-01 +/- 5.648e-02
+
+\end{verbatim}
+
+Not CSFD results: had to use a least-squares fit, not weighted least squares, since for whatever reason the WLS just didn't want to produce reasonable fits. 
+
+\begin{verbatim}
+LRG LSQ fit: 6.87e-03 * (meanr)^-0.87
+
+redMaGiC LRG LSQ:
+  Const: -4.981e+00 +/- 3.070e-01
+  Slope: -8.712e-01 +/- 1.417e-01
+\end{verbatim}
+
+\subsubsection{Comparison to SFD}
+
+Given the acknowledged problems of SFD98, the CSFD formulation of XX is the default used here. It may still be interesting to compare the SFD and CSFD outputs. The difference in extinction profiles is shown in Figure \ref{fig:csfdvsnot}.
+
+\begin{figure}[htb]
+\begin{center}
+\includegraphics[width=\textwidth]{figures_update2/dustcorrel_redmagic_csfd_vs_not_all.png}
+\caption{Extinction vs impact parameter for redMaGiC-involved fits. CSFD was used in all cases.}
+\label{fig:csfdvsnot}
+\end{center}
+\end{figure}
+
+
+\subsection{Systematics testing results}\label{sec:systematics_results}
+
+This section summarizes the results of the various systematics tests that I implemented using star catalogs. In general, these are mostly consistent with zero, though with noticeable residuals. Then again, these are $10^{-4}$ results. Note that all of the systematics testing results are based on the CSFD extinction corrections. 
+
+\subsubsection{Gaia foreground x redMaGiC background}
+\begin{itemize}
+\item Show figures
+\item Show the fit results separately
+\item Can discuss the fact that high-density sample has a small residual, though I am not entirely sure why
+\end{itemize}
+
+\begin{figure}[htb]
+\begin{center}
+\includegraphics[width=\textwidth]{figures_update2/Gaia_redmagic_crosscorrel_csfd.png}
+\caption{Gaia star foreground catalog cross-correlated with redMaGiC high-luminosity high-redshift (maroon) and high-density (red) background catalogs. The left panel shows the full impact parameter range; the right panel is cropped to show values at higher impact parameters.} 
+\label{fig:gaiafg}
+\end{center}
+\end{figure}
+
+
+The results of fitting are: 
+\begin{verbatim}
+Gaia x redMaGiC high-dens WLS fit:
+  Const: 3.109e-04 +/- 4.202e-04
+  Slope: -6.730e-05 +/- 8.917e-05
+
+Gaia x redMaGiC high-lum high-z WLS fit:
+  Const: -3.676e-05 +/- 3.589e-04
+  Slope: 1.133e-05 +/- 7.591e-05
+
+Gaia x combined redMaGiC WLS fit:
+  Const: 1.116e-04 +/- 2.646e-04
+  Slope: -2.139e-05 +/- 5.603e-05
+\end{verbatim}
+
+\subsubsection{SuperCOSMOSxWISE x DES Y3 stars}
+\begin{itemize}
+\item Show figures and fit results for this sample
+\item Again, small but mildly significant residual. 
+\end{itemize}
+
+\begin{figure}[htb]
+\begin{center}
+\includegraphics[width=\textwidth]{figures_update2/desstar_crosscorrel_csfd.png}
+\caption{WISExSuperCOSMOS foreground cross-correlated with stars culled from the DES Y3 catalog. The left panel shows the full range of impact parameters considered; the right panel is cropped to show values at higher impact parameters only.} 
+\label{fig:desstars}
+\end{center}
+\end{figure}
+
+\begin{verbatim}
+WISExSCOS updated rand x DES star WLS fit results:
+  Coeff: -5.348e-04 +/- 4.500e-04
+  Slope: 1.770e-04 +/- 1.284e-04
+\end{verbatim}
+
+\subsection{SDSS-based results}
+
+These results are based on two separate foreground catalogs: the same WISExSuperCOSMOS catalog used for the southern sky, DES-based catalogs, and the GWSLC catalog described above. I will go through these results separately. These are certainly interesting to see because so far we hadn't extended the search to the Northern sky. However, I don't consider the results publication-ready. 
+
+That said, may be an argument to be made for publishing only the \textit{low} impact parameter points. given Eric's comments about the significance of a detection of a lot of dust at  significance, They consistently line up quite well with the redMaGiC-based results at these impact parameters, and Eric did note the significance of the detection of extended dust halos in what is really the extended CGM. 
+
+\subsubsection{WISExSuperCOSMOS x SDSS}
+\begin{itemize}
+\item On the one hand, it's cool to see this, especially since this is the same foreground sample we use elsewhere that gave us successful results. 
+\item On the other hand, that fat tail is the stickiest result of all my results. Color cuts on the background galaxies, aggressive masking, etc. do nothing. I had even hoped that CSFD, which is supposedly a superior extinction correction algorithm, would make it go away. No dice!
+\item Since what characterizes the redMaGiC sample is tightness in color space, I also tried to use the eBOSS LRG sample (maybe create one of my own?) but the source density was too low to be used. 
+\end{itemize}
+
+
+
+\begin{figure}[htb]
+\begin{center}
+\includegraphics[width=0.65\linewidth]{figures_update2/compensated_dustcorrel_csfd_4zbins_figure.png}
+\caption{Extinction curve of WISExSuperCOSMOS foreground cross-correlated with SDSS background galaxies, shown as blue points. The M2010 prediction is shown in red.} 
+\label{fig:uglycolor}
+\end{center}
+\end{figure}
+
+\subsubsection{GSWLC x SDSS}
+\begin{itemize}
+\item This DOES look cool, particularly the fact that at higher impact parameters, the slope lines up very nicely with the redMaGiC samples.
+\item I did some testing with sSFR [show my algorithm?] but results were (at the time) mysterious to me. the selection functions are also quite heterogenous between quiescent and star-forming samples. Not sure how significant that latter fact is, but it's there.
+\item Important to mention: they all seem to depend heavily on the NSIDE of the mask I end up creating. This is a possible indication of my mask being incomplete or wrong; in any case this is why I don't 100\% trust the result
+\item Plots to show: the neat spatial overlap plots, as well as the ugly multicolor plot which does a good job of demonstrating relationship between the various results, including this one.
+\end{itemize}
+
+
+\begin{figure}[htb]
+\begin{center}
+\includegraphics[width=0.49\linewidth]{figures_update2/dustcorrel_gwslc_csfd_withfit.png}
+\includegraphics[width=0.49\linewidth]{figures_update2/dustcorrel_all_csfd_withfit_uglycolor.png}
+
+\caption{Extinction curve resulting from cross-correlation of GSWLC foreground and SDSS background galaxies. The GSWLC-SDSS result is shown in isolation in the left panel in red and together with the redMaGiC-based results in the right panel: WISExSuperCOSMOS--high-luminosity high-redshift (blue), WISExSuperCOSMOS--high density (orange), and the redMaGiC LRG fit (green). The M2010 prediction is shown in black in both panels.} 
+\label{fig:uglycolor}
+\end{center}
+\end{figure}
+
+Spatial overlap plot: put this into catalogs. 
+
+\begin{comment}
+%% In case I decide to include his figure caption
+Taken from Figure 12 of Van Alfen et al. (2024). The position–position (left), positions–orientation (middle), and orientation–orientation (right) correlation functions for both IllustrisTNG300-1 and a galaxy catalog build using halotools. The points with error bars show the correlations from IllustrisTNG300-1 and the solid lines show correlations from a galaxy catalog built using halotools with the Bolshoi-Planck (BolPlanck) halo catalog with our alignment component addition.
+\end{comment}
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%
 %%%%%%% DISCUSSION
@@ -159,6 +437,364 @@ Subtract the AX from magnitudes to get de-reddened magnitudes!
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Discussion and Next Steps}\label{sec:discussion}
+\subsection{Comment on results}
+\begin{itemize}
+\item Fact of the matter is that I have been playing with this for years and the results have been consistent.
+\item The long time period has afforded me the opportunity to modernize, like 2023 dust relation, CSFD, WLS, etc. 
+\item The fact that CSFD is high is consistent with the claim of \cite{2023ApJ...958..118C} that ``when SFD is used to derive absolute photometry for sources, Galactic extinction will be overcorrected in a redshift- and spatially-dependent manner following the pattern of the cosmic web.'' Now, which is more believable is at the reader's discretion! 
+\item Also, to some extent, it is to be expected that amplitude of signal is proportional to volume covered in foreground (right?). Then again, volume of M\'{e}nard sample is significantly higher than ours. As far as I know, that study has no selection for red sequence galaxies [Not sure what I meant by this -- ed.] 
+\item To end on a bright note, we know that the redMaGiC galaxies are biased tracers of LSS (by biased here I mean have a high galaxy bias relative to some field galaxy). The presence of dust well into the two-halo regime, while the WISExSuperCOSMOS samples (which presumably include star-forming galaxies) fall off, tells a cool story about redMaGiC as a tracer of LSS and WISExSuperCOSMOS a little more general. 
+\end{itemize}
+
+\subsection{Next steps}
+\begin{itemize}
+\item At this point, I would like to publish. One can fiddle with results ad infinitum, but I've been urged by multiple people to publish so I will. If you all want to start running systematic analyses, you can, but I am not going to wait around.  
+\item I figure this is a beginning, not an end. In follow-on studies, we can do calibration, segregate by galaxy type, etc. (Note that I had tried to do a galaxy type study (motivation for SDSS/GWSLC!) but my results were inconclusive and I haven't redone them since.) 
+\item For northern-sky samples, it might be worth trying Pan-STARRS instead of SDSS, or perhaps KiDS or some other such thing. I don't know what the benefits would be of a more ``modern'' survey over SDSS, but it would be interesting to see. 
+\item Jim, still waiting on your emission study! Also, Eric, could we transfer ownership of main repository to me? Alternatively, I can sync my fork.
+\item My ultimate goal is to make a function or tool that can help calibrate SN extinction along the line of sight as a function of impact parameter. 
+\end{itemize}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%
+%%%%%%% APPENDIX
+%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\appendix 
+
+\section{Appendix: Weighted least-squares fit and results}\label{appd:wls}
+
+The important parts of \texttt{do\_WLS\_fit.py} are reproduced below. 
+
+\begin{verbatim}
+	import statsmodels.api as sm
+	import numpy as np
+	
+def do_WLS_fit(this_dk, dust_rel, name=None, start=None, end=None, log=False):
+    """
+    Perform a weighted least-squares linear regression to
+    data, taking care to transform the variables appropriately.
+
+    Inputs
+        this_dk: should be the `compensated' treecorr output
+        dust_rel: the corrected A_V relationship (dk-dr+rr)
+        name: what are we calling it?
+        start: exclude points with index < 'start' for fitting
+        end: ibidem, but for points with index > 'end'
+        log: if True, fit the relationship in log-space to stabilize the fits.
+             Default is False.
+    """
+    
+    ## If you want to exclude some points at the start/end 
+    dust_rel = dust_rel[start:end]
+    this_dk = this_dk[start:end]
+    
+    ## If doing a logarithmic fit, transform the 
+    ## dependent variable (the fully compensated TreeCorr kappa)
+    if log == True:
+        # Keep positive values only
+        ok = (dust_rel > 0)
+        dust_rel = dust_rel[ok]
+        this_dk = this_dk[ok]
+        
+        # Fitting log of dust relation, so take log
+        Y = np.log(dust_rel)
+        
+        ## Also need to transform the weights!
+        weights_OG = 1/(this_dk[`sigma']**2)
+        #weight_scale = (1/Y)**2
+        weight_scale = (1/(Y+1))**2
+        weights = weights_OG * weight_scale
+    
+    ## If not doing a logarithmic fit, don't transform
+    else:
+        Y = dust_rel
+        weights = 1/(this_dk[`sigma']**2)
+    
+    ## If plotting X on a log-scale, which we are, 
+    ## fit relationship on log scale
+    X = this_dk['meanlogr']
+
+    ## Add intercept to abscissa
+    X = sm.add_constant(X)
+
+    ## Do fit
+    mod_wls = sm.WLS(Y, X, weights=weights)
+    res_wls = mod_wls.fit()
+
+    ## Print results
+    print("")
+    print(f"Fit result: {name}")
+    print("")
+    print(res_wls.summary())
+
+    return(res_wls)\end{verbatim}
+
+
+
+\section*{Appendix: SDSS queries}\label{appd:query}
+
+Does this actually need to be here? Does anyone care?
+
+\section{Full WLS Regression results}
+
+Full printouts of the \texttt{statsmodels.api.WLS} regressions are reproduced below. For real fits (not the systematics tests), the constant term is converted to a coefficient as $e ^ {\rm const}$ in the power law. 
+
+\subsection{WISExSCOS and redMaGiC fits}
+
+The fit results below are based on only the ``flat'' portions of the extinction curves in Figure \ref{fig:redmagicfits}, i.e., 50-1000 kpc for the CSFD fits, and results are based on a high-redshift subset ($z_{\rm redmagic} > 0.5$) of the redMaGiC high-density catalog.  
+
+\begin{verbatim}
+                            WLS Regression Results                            
+==============================================================================
+Dep. Variable:                      y   R-squared:                       0.977
+Model:                            WLS   Adj. R-squared:                  0.975
+Method:                 Least Squares   F-statistic:                     425.4
+Date:                Wed, 02 Oct 2024   Prob (F-statistic):           1.59e-09
+Time:                        18:24:35   Log-Likelihood:                 8.5082
+No. Observations:                  12   AIC:                            -13.02
+Df Residuals:                      10   BIC:                            -12.05
+Df Model:                           1                                         
+Covariance Type:            nonrobust                                         
+==============================================================================
+                 coef    std err          t      P>|t|      [0.025      0.975]
+------------------------------------------------------------------------------
+const         -4.5231      0.065    -69.111      0.000      -4.669      -4.377
+x1            -0.7719      0.037    -20.626      0.000      -0.855      -0.689
+==============================================================================
+Omnibus:                        1.536   Durbin-Watson:                   1.989
+Prob(Omnibus):                  0.464   Jarque-Bera (JB):                1.124
+Skew:                          -0.669   Prob(JB):                        0.570
+Kurtosis:                       2.323   Cond. No.                         5.69
+==============================================================================
+
+Notes:
+[1] Standard Errors assume that the covariance matrix of the errors is correctly specified.
+
+Fit: 1.09e-02 * (meanr)^-0.77
+\end{verbatim}
+
+Below is the full fit result for the redMaGiC LRG sample, i.e., the low-redshift subset ($z_{\rm redmagic} > 0.5$) of the redMaGiC high-density sample cross-correlated with the high-luminosity high-redshift 
+
+\begin{verbatim}
+
+                            WLS Regression Results                            
+==============================================================================
+Dep. Variable:                      y   R-squared:                       0.945
+Model:                            WLS   Adj. R-squared:                  0.939
+Method:                 Least Squares   F-statistic:                     154.3
+Date:                Wed, 02 Oct 2024   Prob (F-statistic):           5.73e-07
+Time:                        18:24:35   Log-Likelihood:                -2.0760
+No. Observations:                  11   AIC:                             8.152
+Df Residuals:                       9   BIC:                             8.948
+Df Model:                           1                                         
+Covariance Type:            nonrobust                                         
+==============================================================================
+                 coef    std err          t      P>|t|      [0.025      0.975]
+------------------------------------------------------------------------------
+const         -4.7991      0.218    -21.971      0.000      -5.293      -4.305
+x1            -0.6874      0.055    -12.424      0.000      -0.813      -0.562
+==============================================================================
+Omnibus:                        7.982   Durbin-Watson:                   1.878
+Prob(Omnibus):                  0.018   Jarque-Bera (JB):                3.358
+Skew:                          -1.113   Prob(JB):                        0.187
+Kurtosis:                       4.540   Cond. No.                         13.2
+==============================================================================
+
+Notes:
+[1] Standard Errors assume that the covariance matrix of the errors is correctly specified.
+[-4.79914455 -0.68744067]
+Fit: 8.24e-03 * (meanr)^-0.69
+\end{verbatim}
+
+\subsection{Gaia x redMaGiC}
+
+Gaia foreground cross-correlated with redMaGiC high-luminosity high-redshift sample. 
+
+\begin{verbatim}
+                            WLS Regression Results                            
+==============================================================================
+Dep. Variable:                      y   R-squared:                       0.002
+Model:                            WLS   Adj. R-squared:                 -0.089
+Method:                 Least Squares   F-statistic:                   0.02226
+Date:                Wed, 02 Oct 2024   Prob (F-statistic):              0.884
+Time:                        18:24:35   Log-Likelihood:                 70.136
+No. Observations:                  13   AIC:                            -136.3
+Df Residuals:                      11   BIC:                            -135.1
+Df Model:                           1                                         
+Covariance Type:            nonrobust                                         
+==============================================================================
+                 coef    std err          t      P>|t|      [0.025      0.975]
+------------------------------------------------------------------------------
+const      -3.676e-05      0.000     -0.102      0.920      -0.001       0.001
+x1          1.133e-05   7.59e-05      0.149      0.884      -0.000       0.000
+==============================================================================
+Omnibus:                        0.812   Durbin-Watson:                   2.270
+Prob(Omnibus):                  0.666   Jarque-Bera (JB):                0.628
+Skew:                           0.015   Prob(JB):                        0.730
+Kurtosis:                       1.923   Cond. No.                         51.2
+==============================================================================
+
+Notes:
+[1] Standard Errors assume that the covariance matrix of the errors is correctly specified.
+[-3.67571632e-05  1.13261201e-05]
+
+Gaia x redMaGiC hi-lum hi-z WLS fit:
+  Const: -3.676e-05 +/- 3.589e-04
+  Slope: 1.133e-05 +/- 7.591e-05
+\end{verbatim}
+
+Gaia foreground cross-correlated with redMaGiC high-density sample.
+
+\begin{verbatim}
+
+Fit result: Gaia x high-dens
+
+                            WLS Regression Results                            
+==============================================================================
+Dep. Variable:                      y   R-squared:                       0.049
+Model:                            WLS   Adj. R-squared:                 -0.037
+Method:                 Least Squares   F-statistic:                    0.5696
+Date:                Wed, 02 Oct 2024   Prob (F-statistic):              0.466
+Time:                        18:24:35   Log-Likelihood:                 69.030
+No. Observations:                  13   AIC:                            -134.1
+Df Residuals:                      11   BIC:                            -132.9
+Df Model:                           1                                         
+Covariance Type:            nonrobust                                         
+==============================================================================
+                 coef    std err          t      P>|t|      [0.025      0.975]
+------------------------------------------------------------------------------
+const          0.0003      0.000      0.740      0.475      -0.001       0.001
+x1          -6.73e-05   8.92e-05     -0.755      0.466      -0.000       0.000
+==============================================================================
+Omnibus:                        0.378   Durbin-Watson:                   3.063
+Prob(Omnibus):                  0.828   Jarque-Bera (JB):                0.490
+Skew:                          -0.175   Prob(JB):                        0.783
+Kurtosis:                       2.115   Cond. No.                         36.3
+==============================================================================
+
+Notes:
+[1] Standard Errors assume that the covariance matrix of the errors is correctly specified.
+[ 3.10942951e-04 -6.72977081e-05]
+
+Gaia x redMaGiC high-dens WLS fit:
+  Const: 3.109e-04 +/- 4.202e-04
+  Slope: -6.730e-05 +/- 8.917e-05
+  
+\end{verbatim}
+
+Finally, Gaia foreground cross-correlated with the combined redMaGiC galaxy sample. 
+
+\begin{verbatim}
+Fit result: Gaia x combined redMaGiC
+
+                            WLS Regression Results                            
+==============================================================================
+Dep. Variable:                      y   R-squared:                       0.006
+Model:                            WLS   Adj. R-squared:                 -0.035
+Method:                 Least Squares   F-statistic:                    0.1458
+Date:                Wed, 02 Oct 2024   Prob (F-statistic):              0.706
+Time:                        18:24:35   Log-Likelihood:                 138.85
+No. Observations:                  26   AIC:                            -273.7
+Df Residuals:                      24   BIC:                            -271.2
+Df Model:                           1                                         
+Covariance Type:            nonrobust                                         
+==============================================================================
+                 coef    std err          t      P>|t|      [0.025      0.975]
+------------------------------------------------------------------------------
+const          0.0001      0.000      0.422      0.677      -0.000       0.001
+x1         -2.139e-05    5.6e-05     -0.382      0.706      -0.000    9.42e-05
+==============================================================================
+Omnibus:                        1.496   Durbin-Watson:                   2.023
+Prob(Omnibus):                  0.473   Jarque-Bera (JB):                0.966
+Skew:                          -0.059   Prob(JB):                        0.617
+Kurtosis:                       2.063   Cond. No.                         45.5
+==============================================================================
+
+Notes:
+[1] Standard Errors assume that the covariance matrix of the errors is correctly specified.
+[ 1.11602366e-04 -2.13928514e-05]
+
+Gaia x combined redMaGiC WLS fit:
+  Const: 1.116e-04 +/- 2.646e-04
+  Slope: -2.139e-05 +/- 5.603e-05
+\end{verbatim}
+
+\subsection{WISExSuperCOSMOS x DES stars}
+
+Standard WISExSuperCOSMOS foreground sample cross-correlated with DES Y3 star sample background. The \texttt{rand2} refers to the new random-catalog generation algorithm I used, which 
+
+\begin{verbatim}
+Fit result: WISExSCOS rand2 x DES star
+
+                            WLS Regression Results                            
+==============================================================================
+Dep. Variable:                      y   R-squared:                       0.147
+Model:                            WLS   Adj. R-squared:                  0.070
+Method:                 Least Squares   F-statistic:                     1.900
+Date:                Wed, 02 Oct 2024   Prob (F-statistic):              0.195
+Time:                        18:24:36   Log-Likelihood:                 69.816
+No. Observations:                  13   AIC:                            -135.6
+Df Residuals:                      11   BIC:                            -134.5
+Df Model:                           1                                         
+Covariance Type:            nonrobust                                         
+==============================================================================
+                 coef    std err          t      P>|t|      [0.025      0.975]
+------------------------------------------------------------------------------
+const         -0.0005      0.000     -1.188      0.260      -0.002       0.000
+x1             0.0002      0.000      1.378      0.195      -0.000       0.000
+==============================================================================
+Omnibus:                        0.407   Durbin-Watson:                   1.947
+Prob(Omnibus):                  0.816   Jarque-Bera (JB):                0.509
+Skew:                          -0.268   Prob(JB):                        0.775
+Kurtosis:                       2.193   Cond. No.                         7.93
+==============================================================================
+
+Notes:
+[1] Standard Errors assume that the covariance matrix of the errors is correctly specified.
+[-0.00053476  0.000177  ]
+
+WISExSCOS updated rand x DES star WLS fit results:
+  Coeff: -5.348e-04 +/- 4.500e-04
+  Slope: 1.770e-04 +/- 1.284e-04
+\end{verbatim}
+
+\subsection{GWSLC x SDSS}
+This is the fit result for a subset of the GWSLC X-2 foreground catalog cross-correlated with a background catalog selected from SDSS. In this case, 
+
+\begin{verbatim}
+Fit result: partial GWSLC x SDSS
+
+                            WLS Regression Results                            
+==============================================================================
+Dep. Variable:                      y   R-squared:                       0.969
+Model:                            WLS   Adj. R-squared:                  0.961
+Method:                 Least Squares   F-statistic:                     124.3
+Date:                Tue, 15 Oct 2024   Prob (F-statistic):           0.000368
+Time:                        09:08:29   Log-Likelihood:                0.91149
+No. Observations:                   6   AIC:                             2.177
+Df Residuals:                       4   BIC:                             1.761
+Df Model:                           1                                         
+Covariance Type:            nonrobust                                         
+==============================================================================
+                 coef    std err          t      P>|t|      [0.025      0.975]
+------------------------------------------------------------------------------
+const         -4.2028      0.264    -15.926      0.000      -4.935      -3.470
+x1            -0.7612      0.068    -11.148      0.000      -0.951      -0.572
+==============================================================================
+Omnibus:                          nan   Durbin-Watson:                   1.677
+Prob(Omnibus):                    nan   Jarque-Bera (JB):                0.340
+Skew:                           0.319   Prob(JB):                        0.844
+Kurtosis:                       2.025   Cond. No.                         10.5
+==============================================================================
+
+Notes:
+[1] Standard Errors assume that the covariance matrix of the errors is correctly specified.
+[-4.20276501 -0.7611631 ]
+
+GWSLC x SDSS Fit:     1.45e-02 * (meanr)^-0.75
+partial GWSLC x SDSS Fit:     1.50e-02 * (meanr)^-0.76
+\end{verbatim}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%
