@@ -264,26 +264,6 @@ Combined WISExSCOS x redMaGiC WLS:
 
 \end{verbatim}
 
-Non-CSFD results
-\begin{verbatim}
-Hi-dens WLS fit: 5.86e-03 * (meanr)^-0.62
-Hi-z WLS fit: 9.51e-03 * (meanr)^-0.75
-Combined WLS fit: 8.72e-03 * (meanr)^-0.74
-
-WISExSCOS x redMaGiC high-dens WLS:
-  Const: -5.140e+00 +/- 3.981e-01
-  Slope: -6.177e-01 +/- 1.198e-01
-
-WISExSCOS x redMaGiC high-lum high-z WLS:
-  Const: -4.656e+00 +/- 9.686e-02
-  Slope: -7.525e-01 +/- 3.224e-02
-
-Combined WISExSCOS x redMaGiC WLS:
-  Const: -4.742e+00 +/- 1.444e-01
-  Slope: -7.392e-01 +/- 8.036e-02
-\end{verbatim}
-
-
 \subsubsection{redMaGiC LRG}
 \begin{itemize}
 \item As expected, there is no power at low impact parameters
@@ -302,19 +282,10 @@ low-z redMaGiC hi-dens x redMaGiC hi-lum hi-z WLS:
 
 \end{verbatim}
 
-Not CSFD results: had to use a least-squares fit, not weighted least squares, since for whatever reason the WLS just didn't want to produce reasonable fits. 
-
-\begin{verbatim}
-LRG LSQ fit: 6.87e-03 * (meanr)^-0.87
-
-redMaGiC LRG LSQ:
-  Const: -4.981e+00 +/- 3.070e-01
-  Slope: -8.712e-01 +/- 1.417e-01
-\end{verbatim}
 
 \subsubsection{Comparison to SFD}
 
-Given the acknowledged problems of SFD98, the CSFD formulation of XX is the default used here. It may still be interesting to compare the SFD and CSFD outputs. The difference in extinction profiles is shown in Figure \ref{fig:csfdvsnot}.
+Given the acknowledged problems of SFD98, the CSFD formulation of XX is the default used here. It may still be interesting to compare the SFD and CSFD outputs. The difference in extinction profiles is shown in Figure \ref{fig:csfdvsnot}. I noticed a couple of interesting trends here. First, there didn't seem to be much of an effect for the high-density sample, but using the SFD extinction correction, the high-lum high-z sample has more extinction at high impact parameters. Put differently, it appears that the SFD prescription added too much extinction at high impact parameters, and with CSFD they are consistent. The interesting/puzzling piece was the redMaGiC LRG 
 
 \begin{figure}[htb]
 \begin{center}
@@ -323,6 +294,31 @@ Given the acknowledged problems of SFD98, the CSFD formulation of XX is the defa
 \label{fig:csfdvsnot}
 \end{center}
 \end{figure}
+
+Not CSFD results: had to use a least-squares fit for the LRG, not weighted least squares, since for whatever reason the WLS just didn't want to produce reasonable fits for that sample. 
+
+\begin{verbatim}
+Hi-dens WLS fit: 5.86e-03 * (meanr)^-0.62
+Hi-z WLS fit: 9.51e-03 * (meanr)^-0.75
+Stacked redMaGiC WLS fit: 8.72e-03 * (meanr)^-0.74
+LRG LSQ fit: 6.87e-03 * (meanr)^-0.87
+
+WISExSCOS x redMaGiC high-dens WLS:
+  Const: -5.140e+00 +/- 3.981e-01
+  Slope: -6.177e-01 +/- 1.198e-01
+
+WISExSCOS x redMaGiC high-lum high-z WLS:
+  Const: -4.656e+00 +/- 9.686e-02
+  Slope: -7.525e-01 +/- 3.224e-02
+
+Combined WISExSCOS x redMaGiC WLS:
+  Const: -4.742e+00 +/- 1.444e-01
+  Slope: -7.392e-01 +/- 8.036e-02
+  
+redMaGiC LRG LSQ:
+  Const: -4.981e+00 +/- 3.070e-01
+  Slope: -8.712e-01 +/- 1.417e-01
+\end{verbatim}
 
 
 \subsection{Systematics testing results}\label{sec:systematics_results}
@@ -345,7 +341,8 @@ This section summarizes the results of the various systematics tests that I impl
 \end{figure}
 
 
-The results of fitting are: 
+Excluding the first two points, which seemed to skew the fits, the results of fitting are shown below. I decided to go with least-squares fitting because I liked the look of it better. 
+
 \begin{verbatim}
 Gaia x redMaGiC high-dens WLS fit:
   Const: 3.109e-04 +/- 4.202e-04
@@ -358,6 +355,18 @@ Gaia x redMaGiC high-lum high-z WLS fit:
 Gaia x combined redMaGiC WLS fit:
   Const: 1.116e-04 +/- 2.646e-04
   Slope: -2.139e-05 +/- 5.603e-05
+  
+Gaia x redMaGiC high-dens LSQ fit:
+  Const: -4.060e-04 +/- 1.817e-03
+  Slope: 1.351e-04 +/- 6.427e-04
+
+Gaia x redMaGiC high-lum high-z LSQ fit:
+  Const: -5.246e-04 +/- 1.517e-03
+  Slope: 9.423e-05 +/- 5.368e-04
+
+Gaia x stacked redMaGiC LSQ fit:
+  Const: -4.653e-04 +/- 1.123e-03
+  Slope: 1.146e-04 +/- 3.974e-04
 \end{verbatim}
 
 \subsubsection{SuperCOSMOSxWISE x DES Y3 stars}
@@ -374,10 +383,16 @@ Gaia x combined redMaGiC WLS fit:
 \end{center}
 \end{figure}
 
+I decided to go with the least-squares, because the weighted least squares looked like nonsense for this fit. Much bigger slope than made any sense. 
+
 \begin{verbatim}
 WISExSCOS updated rand x DES star WLS fit results:
   Coeff: -5.348e-04 +/- 4.500e-04
   Slope: 1.770e-04 +/- 1.284e-04
+
+WISExSCOS updated rand x DES Y3 stars LSQ:
+  Const: 1.878e-04 +/- 1.265e-03
+  Slope: -3.150e-05 +/- 4.713e-04
 \end{verbatim}
 
 \subsection{SDSS-based results}
@@ -547,64 +562,69 @@ The fit results below are based on only the ``flat'' portions of the extinction 
 \begin{verbatim}
                             WLS Regression Results                            
 ==============================================================================
-Dep. Variable:                      y   R-squared:                       0.977
-Model:                            WLS   Adj. R-squared:                  0.975
-Method:                 Least Squares   F-statistic:                     425.4
-Date:                Wed, 02 Oct 2024   Prob (F-statistic):           1.59e-09
-Time:                        18:24:35   Log-Likelihood:                 8.5082
-No. Observations:                  12   AIC:                            -13.02
-Df Residuals:                      10   BIC:                            -12.05
+Dep. Variable:                      y   R-squared:                       0.975
+Model:                            WLS   Adj. R-squared:                  0.973
+Method:                 Least Squares   F-statistic:                     397.0
+Date:                Wed, 23 Oct 2024   Prob (F-statistic):           2.23e-09
+Time:                        18:59:41   Log-Likelihood:                 8.2589
+No. Observations:                  12   AIC:                            -12.52
+Df Residuals:                      10   BIC:                            -11.55
 Df Model:                           1                                         
 Covariance Type:            nonrobust                                         
 ==============================================================================
                  coef    std err          t      P>|t|      [0.025      0.975]
 ------------------------------------------------------------------------------
-const         -4.5231      0.065    -69.111      0.000      -4.669      -4.377
-x1            -0.7719      0.037    -20.626      0.000      -0.855      -0.689
+const         -4.5308      0.068    -66.556      0.000      -4.683      -4.379
+x1            -0.7677      0.039    -19.925      0.000      -0.853      -0.682
 ==============================================================================
-Omnibus:                        1.536   Durbin-Watson:                   1.989
-Prob(Omnibus):                  0.464   Jarque-Bera (JB):                1.124
-Skew:                          -0.669   Prob(JB):                        0.570
-Kurtosis:                       2.323   Cond. No.                         5.69
+Omnibus:                        1.628   Durbin-Watson:                   2.041
+Prob(Omnibus):                  0.443   Jarque-Bera (JB):                1.154
+Skew:                          -0.692   Prob(JB):                        0.562
+Kurtosis:                       2.373   Cond. No.                         6.06
 ==============================================================================
 
 Notes:
 [1] Standard Errors assume that the covariance matrix of the errors is correctly specified.
-
-Fit: 1.09e-02 * (meanr)^-0.77
+[-4.53082712 -0.7676558 ]
+Fit: 1.08e-02 * (meanr)^-0.77
 \end{verbatim}
+
 
 Below is the full fit result for the redMaGiC LRG sample, i.e., the low-redshift subset ($z_{\rm redmagic} > 0.5$) of the redMaGiC high-density sample cross-correlated with the high-luminosity high-redshift 
 
 \begin{verbatim}
 
+ Fit result: redmagic LRG
+
                             WLS Regression Results                            
 ==============================================================================
-Dep. Variable:                      y   R-squared:                       0.945
-Model:                            WLS   Adj. R-squared:                  0.939
-Method:                 Least Squares   F-statistic:                     154.3
-Date:                Wed, 02 Oct 2024   Prob (F-statistic):           5.73e-07
-Time:                        18:24:35   Log-Likelihood:                -2.0760
-No. Observations:                  11   AIC:                             8.152
-Df Residuals:                       9   BIC:                             8.948
+Dep. Variable:                      y   R-squared:                       0.943
+Model:                            WLS   Adj. R-squared:                  0.936
+Method:                 Least Squares   F-statistic:                     148.0
+Date:                Wed, 23 Oct 2024   Prob (F-statistic):           6.85e-07
+Time:                        18:59:41   Log-Likelihood:                -2.4161
+No. Observations:                  11   AIC:                             8.832
+Df Residuals:                       9   BIC:                             9.628
 Df Model:                           1                                         
 Covariance Type:            nonrobust                                         
 ==============================================================================
                  coef    std err          t      P>|t|      [0.025      0.975]
 ------------------------------------------------------------------------------
-const         -4.7991      0.218    -21.971      0.000      -5.293      -4.305
-x1            -0.6874      0.055    -12.424      0.000      -0.813      -0.562
+const         -4.8020      0.225    -21.318      0.000      -5.312      -4.292
+x1            -0.6872      0.056    -12.166      0.000      -0.815      -0.559
 ==============================================================================
-Omnibus:                        7.982   Durbin-Watson:                   1.878
-Prob(Omnibus):                  0.018   Jarque-Bera (JB):                3.358
-Skew:                          -1.113   Prob(JB):                        0.187
-Kurtosis:                       4.540   Cond. No.                         13.2
+Omnibus:                        7.605   Durbin-Watson:                   1.874
+Prob(Omnibus):                  0.022   Jarque-Bera (JB):                3.122
+Skew:                          -1.072   Prob(JB):                        0.210
+Kurtosis:                       4.487   Cond. No.                         13.8
 ==============================================================================
 
 Notes:
 [1] Standard Errors assume that the covariance matrix of the errors is correctly specified.
-[-4.79914455 -0.68744067]
-Fit: 8.24e-03 * (meanr)^-0.69
+[-4.80200583 -0.68720111]
+
+Fit: 8.21e-03 * (meanr)^-0.69
+
 \end{verbatim}
 
 \subsection{Gaia x redMaGiC}
@@ -612,13 +632,15 @@ Fit: 8.24e-03 * (meanr)^-0.69
 Gaia foreground cross-correlated with redMaGiC high-luminosity high-redshift sample. 
 
 \begin{verbatim}
+Fit result: Gaia x hi-lum hi-z
+
                             WLS Regression Results                            
 ==============================================================================
 Dep. Variable:                      y   R-squared:                       0.002
 Model:                            WLS   Adj. R-squared:                 -0.089
 Method:                 Least Squares   F-statistic:                   0.02226
-Date:                Wed, 02 Oct 2024   Prob (F-statistic):              0.884
-Time:                        18:24:35   Log-Likelihood:                 70.136
+Date:                Wed, 23 Oct 2024   Prob (F-statistic):              0.884
+Time:                        18:48:14   Log-Likelihood:                 70.136
 No. Observations:                  13   AIC:                            -136.3
 Df Residuals:                      11   BIC:                            -135.1
 Df Model:                           1                                         
@@ -634,14 +656,6 @@ Prob(Omnibus):                  0.666   Jarque-Bera (JB):                0.628
 Skew:                           0.015   Prob(JB):                        0.730
 Kurtosis:                       1.923   Cond. No.                         51.2
 ==============================================================================
-
-Notes:
-[1] Standard Errors assume that the covariance matrix of the errors is correctly specified.
-[-3.67571632e-05  1.13261201e-05]
-
-Gaia x redMaGiC hi-lum hi-z WLS fit:
-  Const: -3.676e-05 +/- 3.589e-04
-  Slope: 1.133e-05 +/- 7.591e-05
 \end{verbatim}
 
 Gaia foreground cross-correlated with redMaGiC high-density sample.
@@ -655,8 +669,8 @@ Fit result: Gaia x high-dens
 Dep. Variable:                      y   R-squared:                       0.049
 Model:                            WLS   Adj. R-squared:                 -0.037
 Method:                 Least Squares   F-statistic:                    0.5696
-Date:                Wed, 02 Oct 2024   Prob (F-statistic):              0.466
-Time:                        18:24:35   Log-Likelihood:                 69.030
+Date:                Wed, 23 Oct 2024   Prob (F-statistic):              0.466
+Time:                        18:48:14   Log-Likelihood:                 69.030
 No. Observations:                  13   AIC:                            -134.1
 Df Residuals:                      11   BIC:                            -132.9
 Df Model:                           1                                         
@@ -673,14 +687,6 @@ Skew:                          -0.175   Prob(JB):                        0.783
 Kurtosis:                       2.115   Cond. No.                         36.3
 ==============================================================================
 
-Notes:
-[1] Standard Errors assume that the covariance matrix of the errors is correctly specified.
-[ 3.10942951e-04 -6.72977081e-05]
-
-Gaia x redMaGiC high-dens WLS fit:
-  Const: 3.109e-04 +/- 4.202e-04
-  Slope: -6.730e-05 +/- 8.917e-05
-  
 \end{verbatim}
 
 Finally, Gaia foreground cross-correlated with the combined redMaGiC galaxy sample. 
