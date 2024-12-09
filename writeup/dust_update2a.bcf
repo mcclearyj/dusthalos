@@ -2345,24 +2345,29 @@
   </bcf:bibdata>
   <bcf:section number="0">
     <bcf:citekey order="1">2023ApJ...950...86G</bcf:citekey>
-    <bcf:citekey order="2">Gordon2024</bcf:citekey>
+    <bcf:citekey order="2">2024ApJ...974...81R</bcf:citekey>
     <bcf:citekey order="3">10.1093/pasj/59.1.205</bcf:citekey>
     <bcf:citekey order="3">10.1093/pasj/65.2.43</bcf:citekey>
     <bcf:citekey order="4">2019ApJ...870..120C</bcf:citekey>
     <bcf:citekey order="5">2023ApJ...958..118C</bcf:citekey>
     <bcf:citekey order="6">2023ApJ...958..118C</bcf:citekey>
-    <bcf:citekey order="7">2021ApJS..254...24S</bcf:citekey>
-    <bcf:citekey order="8">2010MNRAS.406.1815M</bcf:citekey>
-    <bcf:citekey order="9">2010MNRAS.406.1815M</bcf:citekey>
-    <bcf:citekey order="10">2023ApJ...958..118C</bcf:citekey>
-    <bcf:citekey order="11">2023ApJ...950...86G</bcf:citekey>
-    <bcf:citekey order="12">Gordon2024</bcf:citekey>
-    <bcf:citekey order="13">10.1093/pasj/59.1.205</bcf:citekey>
-    <bcf:citekey order="14">10.1093/pasj/65.2.43</bcf:citekey>
-    <bcf:citekey order="15">2019ApJ...870..120C</bcf:citekey>
-    <bcf:citekey order="16">2023ApJ...958..118C</bcf:citekey>
-    <bcf:citekey order="17">2021ApJS..254...24S</bcf:citekey>
-    <bcf:citekey order="18">2010MNRAS.406.1815M</bcf:citekey>
+    <bcf:citekey order="7">2023arXiv231112098R</bcf:citekey>
+    <bcf:citekey order="8">Gordon2024</bcf:citekey>
+    <bcf:citekey order="9">2023ApJ...958..118C</bcf:citekey>
+    <bcf:citekey order="10">2021ApJS..254...24S</bcf:citekey>
+    <bcf:citekey order="11">2010MNRAS.406.1815M</bcf:citekey>
+    <bcf:citekey order="12">2010MNRAS.406.1815M</bcf:citekey>
+    <bcf:citekey order="13">2023ApJ...958..118C</bcf:citekey>
+    <bcf:citekey order="14">2023ApJ...950...86G</bcf:citekey>
+    <bcf:citekey order="15">2024ApJ...974...81R</bcf:citekey>
+    <bcf:citekey order="16">10.1093/pasj/59.1.205</bcf:citekey>
+    <bcf:citekey order="17">10.1093/pasj/65.2.43</bcf:citekey>
+    <bcf:citekey order="18">2019ApJ...870..120C</bcf:citekey>
+    <bcf:citekey order="19">2023ApJ...958..118C</bcf:citekey>
+    <bcf:citekey order="20">2023arXiv231112098R</bcf:citekey>
+    <bcf:citekey order="21">Gordon2024</bcf:citekey>
+    <bcf:citekey order="22">2021ApJS..254...24S</bcf:citekey>
+    <bcf:citekey order="23">2010MNRAS.406.1815M</bcf:citekey>
   </bcf:section>
   <!-- SORTING TEMPLATES -->
   <bcf:sortingtemplate name="nty">

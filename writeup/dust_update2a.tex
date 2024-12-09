@@ -24,19 +24,34 @@
 \newcommand{\dMdp}{\rm \frac{\partial M}{\partial \rho}} 
 \newcommand{\dMinline}{$\rm \partial M / \partial \rho$~}
 \newcommand{\av}{$A_V$~}
-
+\newcommand{\m}{\ {\rm m}}
+\newcommand{\s}{\ {\rm s}}
+\newcommand{\kg}{\ {\rm kg}}
+\newcommand{\K}{\ {\rm K}}
+\newcommand{\km}{\ {\rm km}}
+\newcommand{\AU}{\ {\rm AU}}
+\newcommand{\rad}{\ {\rm radian}}
+\newcommand{\Watt}{\ {\rm W}}
+\newcommand{\ee}[1]{\times 10^{#1}}
+\newcommand{\Msol}{M$_\odot$ }
+\newcommand{\hinv}{$h^{-1}$}
 \begin{document}
+
 \maketitle
 
 \section{Executive Summary}
 
+This new report is organized as follows:
+
 \begin{enumerate}
-	\item Literature review -- very recent developments in modeling
-	\item Accompanying modeling updates (and code improvements)
-	\item Updated results based on new models -- including fitting power laws! The TL;DR is that while the \textit{slope} for all redMaGiC-based XXX samples XXX is a very close match to the M\'{e}nard result, the \textit{amplitude} is about twice as high. This is something we can and should look into in future work.  
+	\item Literature review ($\S$\ref{sec:literature}): timely (like, from 2023-2024) advances in modeling and theory have added new relevance to our results. These include a new extinction law, a new model for dust self-shielding motivated by a need to explain the M\'{e}nard result, and an improved galactic extinction model.  
+	\item A description of  modeling updates and code improvements. 
+	\item Updated results based on new models, including the fitting of power laws! The TL;DR is that while the \textit{slope} for all redMaGiC-based fits is a close match to the M\'{e}nard result, the \textit{amplitude} is about twice as high. This is something we can and should look into in future work.  
 	\item For the first time, I have also expand our search for extended dust halos to the Northern Sky! I tried a few different SDSS background samples as well as two different foreground samples: WISExSCOS and GWSLC (itself divided by specific star formation rate). foreground samples. While the WISExSCOS x SDSS results tended to be consistent with the redMaGiC samples at \textit{low} impact parameters, at \textit{high} impact parameters ($>$ XX arcminutes), the extinction flattens out and doesn't decrease. Meanwhile, the GWSLC x SDSS extinction has an interesting dip at intermediate impact parameters but agrees with the redMaGiC curves at high and low impact parameters. 
 	\item Also, my talk at the Aspen Center for Physics dust workshop went really well! There were good questions and a lot of interest afterwards. 
 \end{enumerate}
+
+In general, I have tried to keep this kind of brief as an exercise for synthesizing the intense work of the last year as a prelude to writing up the paper.  
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%
@@ -45,15 +60,19 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Literature Review}\label{sec:literature}
-Since I prepared my last update, several exciting and highly germane papers have been published. Results include an interesting hydrosim study of dust survival in the IGM, a new model for dust extinction, and an update to the canonical SFD map. 
+Since my last update over a year ago, several exciting and highly germane papers have been published. Results include an interesting hydrosim study of dust survival in the IGM, a new model for dust extinction, and an update to the canonical SFD map. 
 \subsection{Gordon et al. 2023}
-described in \cite{2023ApJ...950...86G}. Implemented with the \texttt{dust\_extinction} software package \cite{Gordon2024}. 
+My previous results were based on dust models published around 2000, like Calzetti et al.~2000 and Fitzpatrick 1999. When I presented these results at the Aspen Center for Physics workshop, Daniella Calzetti told me that she was flattered that I was using her extinction law but that it was out of date. She pointed me to an updated model published by Karl Gordon et al.~2023, hereafter G23 \cite{2023ApJ...950...86G}). Using four independent spectroscopically measured dust extinction curves and dozens of individual sightlines, G23 presents a single $R_V$-dependent extinction relation from 912 \AA to 32 microns. In their words, the main advance of their approach is that ``all previous R(V) relationships were based on a combination of spectroscopic and photometric measurements and/or did not cover the full wavelength range.'' Their principal result, the $A_\lambda/A_V$ relation, is shown in Figure 8 of that paper. 
+Their extinction relation, shown in Figure 8 of that paper, is obtained by first fitting a linear $A_\lambda/A_V$ at each wavelength; polynomials are then fit to the resulting coefficients piecewise in five wavelength regimes (FUV, NUV, optical, near- and mid-IR); the polynomials are smoothed at the boundaries to obtain a continuous function (see Equation 5 of that paper).They find that the characteristic FUV rise and $2175 {\rm \AA}$ bump are dependent on $R_V$, but that 10 and 20 micron features are not. The largest offsets between their extinction laws and other, comparable studies are in the FUV and the NIR (cf. Figure 8, lower panels). Interestingly, their extinction relation lies in the middle of the older studies' extinction relations. In other words, the G23 result appears to be a ``golden mean." 
+
 \subsection{Helena outflow paper}
+
+At the Aspen dust conference, I reconnected with an old friend from the UC Santa Cruze High Performance Astrophysical Computing Center (HiPACC) summer school in 2010. He is now a professor at UVa, and his graduate student Helena Richie gave a presentation of hydrodynamical simulations of dust evolution in galactic outflows, which is described in \cite{2024ApJ...974...81R}. Specifically, they use the Cholla code to set up ``wind tunnel'' simulations of cool, dusty clouds driven into the hot halo by star formation activity. They find that that 60\% of 0.1-micron sized dust grains entrained in these galactic outflows could survive to populate both the hot and cool phases of the halo. Meanwhile, grains smaller than 0.01 microns cannot withstand hot-phase exposure and must be created in situ. 
+
 \subsection{CSFD}
-\begin{itemize}
-\item I saw this person give a talk on the topic at the Aspen dust workshop, and then Nao Suzuki called my attention to it again at the COSMOS-Web meeting. 
-\item The basic premise of the paper is that the classic Schlegel, Finkbeiner, \& Davis (1998, SFD) dust map has significant contamination from the cosmic infrared background, that is, the two-halo term of large-scale structure. 
-\item Apparently, this fact has been discovered and rediscovered in the literature \cite{10.1093/pasj/59.1.205, 10.1093/pasj/65.2.43}, including by our friend Brice M{\'e}nard \cite{2019ApJ...870..120C}. 
+I saw Chiang  give a talk on this topic at the Aspen dust workshop, and then my COSMOS-Web colleague Nao Suzuki called my attention to this result again at the Tokyo meeting. The basic premise of the paper is that the classic Schlegel, Finkbeiner, \& Davis (1998, SFD) dust map has significant contamination from the cosmic infrared background, that is, the two-halo term of large-scale structure. Apparently, this fact has been discovered and rediscovered in the literature \cite{10.1093/pasj/59.1.205, 10.1093/pasj/65.2.43}, including by our friend Brice M{\'e}nard \cite{2019ApJ...870..120C}. 
+
+
 
 \begin{figure}[htbp]
 \begin{center}
@@ -62,9 +81,11 @@ described in \cite{2023ApJ...950...86G}. Implemented with the \texttt{dust\_exti
 \label{default}
 \end{center}
 \end{figure}
- 
-\end{itemize}
+
 \subsection{Dust as a supernova systematic}
+
+Additionally, intergalactic dust introduces significant scatter to Type 1a supernova (SN 1a) distance estimates. According to \cite{2023arXiv231112098R}, dust is the second-largest source of uncertainty in SNe Type 1a cosmological parameter constraints, accounting for 11.5\% of the total variance. Current SNe analyses include intergalactic dust reddening as a function of wavelength and SN redshift in the systematic error budget, but because the magnitude of the effect is somewhat uncertain, do not correct the distance measures themselves. My COSMOS-Web colleague, Nao Suzuki, pointed out that if we can differentiate extinction laws according to foreground galaxy properties, as we appear to do, then we could derive a more precise calibration for foreground reddening of supernovae. 
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%
@@ -115,15 +136,12 @@ described in \cite{2023ApJ...950...86G}. Implemented with the \texttt{dust\_exti
 \subsection{Model improvements}
 
 \subsubsection{Gordon 2023 extinction}
-\begin{itemize}
-	\item At the workshop, Daniella Calzetti told me that she was flattered but that I needed to update the extinction law that I was using. She pointed me to the Gordon 2023 paper referenced above.
-	\item I found the \texttt{dust\_extinction} repository\footnote{\url{https://github.com/karllark/dust_extinction}} and used that.
-	\item It did shift our values, but the changes are irrelevant since the previous values were so out of date!
-\end{itemize}
+The G23 extinction model is available through the \texttt{dust\_extinction} software package \cite{Gordon2024}.\footnote{\url{https://github.com/karllark/dust_extinction}}. Implementing it in the code was very simple and amounted to adding an import statement for this newer \texttt{dust\_extinction} package in the \texttt{src/extinction\_model.py}. Both G23 and the older CCM89 models are available in \texttt{dust\_extinction}; the \texttt{extinction} Python package is still imported in case someone wants to see results with other old models: Calzetti00, odonnell94, fitz99. As before, the default $R_V$ is 3.1 but any reasonable value is available. 
+
 
 \subsubsection{CSFD}
 \begin{itemize}
-\item As mentioned earlier, Nao pointed me to this CSFD paper, where the amplitude of the residual seemed non-negligible ($10^4$) and so worth implementing. 
+\item As mentioned earlier, Nao pointed me to this CSFD paper \cite{2023ApJ...958..118C}. Since the amplitude of the residual seemed non-negligible ($10^{-4}$) it was worth implementing. 
 \item I located a nice software package called \texttt{dustmapper}\footnote{\url{https://github.com/gregreen/dustmaps}} to query the CSFD dust map and obtain extinction coefficients for a given set of coordinates. Specifically, there is a handy \texttt{dustmaps.csfd.CSFDQuery} method that takes as input an RA, Dec list in SkyCoords format and returns an array of E(B-V) values. An $R_V$ value is used to convert those into extinction coefficients and then used to de-redden SDSS and DES magnitudes. Using SFD maps to obtain E(B-V), then apply band-specific extinction coefficients to get extinction values.
 \item Subtracting these extinction values A$_{\rm X, CSFD}$ from the observed magnitudes \texttt{MAG\_X} to obtain the dereddened magnitudes:
 \begin{verbatim}
@@ -220,7 +238,6 @@ To fit models to our results and facilitate comparison to the literature, I have
 
 \section{Results}\label{sec:results}
 
-\textit{Basic structure of this section}: show correlations and best-fit polynomials typeset as an equation. Have my fit summaries from research notes shown verbatim or maybe as a table. The full printout for fits, including $R^2$, goes in Appendix.
 
 \begin{itemize}
 \item Comments for the individual samples are below, but globally, both the SFD and CSFD results agrees with the \textit{slope} of the \cite{2010MNRAS.406.1815M} power law (Equation 13 in that reference) within one sigma. However, the \textit{amplitude} of the CSFD relationship is twice as high as the \cite{2010MNRAS.406.1815M} result. I am not entirely sure what to make of this, but it is what it is. 
@@ -232,60 +249,51 @@ To fit models to our results and facilitate comparison to the literature, I have
 \begin{figure}[htb]
 \begin{center}
 \includegraphics[width=0.75\textwidth]{figures_update2/dustcorrel_redmagic_csfd_newrand_withfits.png}
-\caption{Extinction vs impact parameter for redMaGiC-involved fits. CSFD was used in all cases.}
+\caption{Extinction vs impact parameter for WISExSuperCOSMOS (blue points) and redMaGiC LRGs (maroon points). Results are based on the CSFD extinction correction.}
 \label{fig:redmagicfits}
 \end{center}
 \end{figure}
 
 
 \subsubsection{WISExSuperCOSMOS foreground}
-\begin{itemize}
-\item Comment on broken power law! May want to compare to literature results
-\item For one thing, the knee (300 Mpc?) is not quite where the 1- and 2-halo terms traditionally break (1 Mpc). However, that IS a transition Nick has seen in some of his results for the IA position-orientation correlation functions. What that means, idk.
-\end{itemize}
 
-CSFD results:
-\begin{verbatim}
-Hi-dens WLS fit: 1.14e-02 * (meanr)^-0.84
-Hi-z WLS fit: 1.02e-02 * (meanr)^-0.72
-Combined WLS fit: 1.08e-02 * (meanr)^-0.77
+The extinction profiles of WISExSuperCOSMOS galaxies as measured with redMaGiC background galaxies are shown in Figure \ref{fig:redmagicfits}: the result from cross-correlation with the $z > 0.5$ high-density redMaGiC sample is shown in dark blue; the result from cross-correlation with the high-redshift redMaGiC sample is shown in light blue. In both cases, the extinction profiles follow a broken power law, with a rapid decrease from $A_V \sim 0.3$ to $A_V \sim 0.02$ in the inner 50 kpc \hinv, then a slower decline to $A_V \sim 0.02$ at 1 Mpc \hinv . At the transition to the 2-halo regime ($r \gtrsim 2$ Mpc \hinv), the extinction profiles rapidly diminish to below our detection threshold ($A_V \sim 10^{-5}$). 
 
-WISExSCOS x redMaGiC high-dens WLS:
-  Const: -4.471e+00 +/- 7.057e-02
-  Slope: -8.402e-01 +/- 4.393e-02
+I fit power laws to the WISExSuperCOSMOS extinction profiles within the 1-halo regime (50 kpc \hinv $ < r < 1$ Mpc \hinv); the inner limit is set to the point where the redMaGiC LRG extinction is non-zero and the outer limit to the points where the extinction begins to roll off. 
 
-WISExSCOS x redMaGiC high-lum high-z WLS:
-  Const: -4.589e+00 +/- 1.041e-01
-  Slope: -7.240e-01 +/- 5.678e-02
+The best-fit power law to the extinction profile obtained with the $z > 0.5$ high-density redMaGiC sample is given by Equation \ref{eqn:hidens}: 
+% Equation 1
+\begin{equation}
+A_V(r) = \left(1.14 \pm 0.08\right) \times 10^{-2} \left( \frac{r}{h^{-1}\, \mathrm{kpc}} \right)^{-0.84 \pm 0.04}\label{eqn:hidens}
+\end{equation}
 
-Combined WISExSCOS x redMaGiC WLS:
-  Const: -4.531e+00 +/- 6.808e-02
-  Slope: -7.677e-01 +/- 3.853e-02
+Similarly, for the extinction profile obtained with the $z > 0.5$ high-lum high-$z$ redMaGiC sample is given by Equation \ref{eqn:hiz}:
+% Equation 2
+\begin{equation}
+A_V(r) = \left(1.02 \pm 0.11\right) \times 10^{-2} \left( \frac{r}{h^{-1}\, \mathrm{kpc}} \right)^{-0.72 \pm 0.06}\label{eqn:hiz}
+\end{equation}
 
-\end{verbatim}
+Combining the two WISExSuperCOSMOS $\times$ redMaGiC profiles, the best fit power law is Equation \ref{eqn:stacked}; this is the result I plan to publish.  
+% Equation 3
+\begin{equation}
+A_V(r) = \left(1.08 \pm 0.07\right) \times 10^{-2} \left( \frac{r}{h^{-1}\, {\rm kpc}} \right)^{-0.77 \pm 0.04}\label{eqn:stacked}
+\end{equation}
+
+
 
 \subsubsection{redMaGiC LRG}
-\begin{itemize}
-\item As expected, there is no power at low impact parameters
-\item What's fun is that there *is* lots of power at high impact parameter.
-\item In fact, one COULD argue for the presence of a real 1- to 2-halo transition at about 1 Mpc. 
-\end{itemize}
 
-CSFD results:
-\begin{verbatim}
+The extinction profile of the LRG galaxy sample ($z < 0.45$ high-density redMaGiC galaxies cross-correlated with the high-luminosity high-redshift redMaGiC catalog) is shown in maroon in Figure \ref{fig:redmagicfits}. As might be expected for this foreground population, there is little extinction at the lowes impact parameters ($r < 50 kpc$). While qualitatively similar to the SuperCOMSOS-based results in the one-halo regime, the LRG sample shows significant extinction well into the two-halo regime. The best-fit power law to this profile is given by Equation \ref{eqn:lrg}:
 
-LRG WLS fit: 8.21e-03 * (meanr)^-0.69
+\begin{equation}
+A_V(r) = \left(0.82 \pm 0.19\right) \times 10^{-2} \left( \frac{r}{h^{-1}\, \mathrm{kpc}} \right)^{-0.69 \pm 0.06}\label{eqn:lrg}
+\end{equation}
 
-low-z redMaGiC hi-dens x redMaGiC hi-lum hi-z WLS:
-  Const: -4.802e+00 +/- 2.253e-01
-  Slope: -6.872e-01 +/- 5.648e-02
-
-\end{verbatim}
-
+The slope and amplitude of Equation \ref{eqn:lrg} agree with the combined redMaGiC fit of Equation \ref{eqn:combined} to within about 1 $\sigma$ through the one-halo regime ($r \lesssim 1 Mpc$).  
 
 \subsubsection{Comparison to SFD}
 
-Given the acknowledged problems of SFD98, the CSFD formulation of XX is the default used here. It may still be interesting to compare the SFD and CSFD outputs. The difference in extinction profiles is shown in Figure \ref{fig:csfdvsnot}. I noticed a couple of interesting trends here. First, there didn't seem to be much of an effect for the high-density sample, but using the SFD extinction correction, the high-lum high-z sample has more extinction at high impact parameters. Put differently, it appears that the SFD prescription added too much extinction at high impact parameters, and with CSFD they are consistent. The interesting/puzzling piece was the redMaGiC LRG 
+Given the acknowledged problems of SFD98, the CSFD formulation is the default Milky Way extinction correction. It may still be of interest to compare the profiles obtained with the SFD and CSFD prescriptions; this is shown for the three redMaGiC-based profiles in Figure \ref{fig:csfdvsnot}. I noticed a couple of interesting trends here. First, there didn't seem to be much of an effect for the high-density background catalog, but using the SFD extinction correction, the high-lum high-z sample has more extinction at high impact parameters. Put differently, it appears that the SFD prescription added too much extinction at high impact parameters, and with CSFD the two redMaGiC catalogs produce consistent results for WISExSuperCOSMOS. On the other hand, compared to the SFD98 prescription, the CSFD prescription added a significant amount of dust at higher impact parameters for the redMaGIC LRG sample, leading to significant reddening past 1 Mpc \hinv. Although quite different from the effect for the WISExSuperCOSMOS result, this behavior for LRG is consistent with the idea that SFD98 overcorrected foreground extinction due to contamination from the LSS. If one assumes that the LRG is a particularly biased tracer of the LSS<, then it makes sense that the CSFD prescription adds some reddening back in. 
 
 \begin{figure}[htb]
 \begin{center}
@@ -295,40 +303,43 @@ Given the acknowledged problems of SFD98, the CSFD formulation of XX is the defa
 \end{center}
 \end{figure}
 
-Not CSFD results: had to use a least-squares fit for the LRG, not weighted least squares, since for whatever reason the WLS just didn't want to produce reasonable fits for that sample. 
+For the sake of comparison, I also fit power laws to extinction profiles resulting from the SFD98 Milky Way foreground prescription. The best-fit power law to the extinction profile obtained with the $z > 0.5$ high-density redMaGiC sample is given by Equation \ref{eqn:hidenssfd}: 
 
-\begin{verbatim}
-Hi-dens WLS fit: 5.86e-03 * (meanr)^-0.62
-Hi-z WLS fit: 9.51e-03 * (meanr)^-0.75
-Stacked redMaGiC WLS fit: 8.72e-03 * (meanr)^-0.74
-LRG LSQ fit: 6.87e-03 * (meanr)^-0.87
+% Equation 1
+\begin{equation}
+A_V(r) = \left(5.9 \pm 2.3\right) \times 10^{-3} \left( \frac{r}{h^{-1}\, \mathrm{kpc}} \right)^{-0.62 \pm 0.12}\label{eqn:hidenssfd}
+\end{equation}
 
-WISExSCOS x redMaGiC high-dens WLS:
-  Const: -5.140e+00 +/- 3.981e-01
-  Slope: -6.177e-01 +/- 1.198e-01
+The best-fit power law to the extinction profile obtained with the high-lum high-$z$ redMaGiC sample is given by Equation \ref{eqn:hizsfd}: 
+% Equation 2
+\begin{equation}
+A_V(r) = \left(9.5 \pm 0.9\right) \times 10^{-3} \left( \frac{r}{h^{-1}\, \mathrm{kpc}} \right)^{-0.75 \pm 0.03}\label{eqn:hizsfd}
+\end{equation}
 
-WISExSCOS x redMaGiC high-lum high-z WLS:
-  Const: -4.656e+00 +/- 9.686e-02
-  Slope: -7.525e-01 +/- 3.224e-02
+The result of a fit to the combined WISExSuperCOSMOS x redMaGIC samples is
+% Equation 3
+\begin{equation}
+A_V(r) = \left(8.7 \pm 1.3\right) \times 10^{-3} \left( \frac{r}{h^{-1}\, \mathrm{kpc}} \right)^{-0.74 \pm 0.08}\label{eqn:stackedsfd}
+\end{equation}
 
-Combined WISExSCOS x redMaGiC WLS:
-  Const: -4.742e+00 +/- 1.444e-01
-  Slope: -7.392e-01 +/- 8.036e-02
-  
-redMaGiC LRG LSQ:
-  Const: -4.981e+00 +/- 3.070e-01
-  Slope: -8.712e-01 +/- 1.417e-01
-\end{verbatim}
+As above, Equations \ref{eqn:hidenssfd}--\ref{eqn:stackedsfd} describe the flatter parts of the profiles (50 kpc \hinv $ < r < 1$ Mpc \hinv). 
+Finally, the LRG profile is best fit by Equation \ref{eqn:lrgsfd}
+% Equation 4
+\begin{equation}
+A_V(r) = \left(6.9 \pm 2.1\right) \times 10^{-3} \left( \frac{r}{h^{-1}\, \mathrm{kpc}} \right)^{-0.87 \pm 0.14}\label{eqn:lrgsfd}
+\end{equation}
+
+For this last profile, my WLS algorithm just would not produce a reasonable fit, which forced me to adopt a conventional least-squares algorithm for the LRG fit. The amplitude of Equation \ref{eqn:lrgsfd} matches the fit of Equation \ref{eqn:lrg} within error bars, however, the slopes are in a 3 $\sigma$ disagreement. Meanwhile, the fits of Equations \ref{eqn:hidenssfd}--\ref{eqn:stackedsfd} agree with \ref{eqn:hidens}--\ref{eqn:stacked} within 1 $\sigma$.
+
 
 
 \subsection{Systematics testing results}\label{sec:systematics_results}
 
-This section summarizes the results of the various systematics tests that I implemented using star catalogs. In general, these are mostly consistent with zero, though with noticeable residuals. Then again, these are $10^{-4}$ results. Note that all of the systematics testing results are based on the CSFD extinction corrections. 
+This section summarizes the results of the systematics tests that I implemented. star catalogs. In general, these are mostly consistent with zero, though with noticeable residuals. Then again, these are $10^{-4}$ results. All systematics testing results are based on the CSFD extinction corrections. 
 
 \subsubsection{Gaia foreground x redMaGiC background}
 \begin{itemize}
-\item Show figures
-\item Show the fit results separately
+\item Show the fit results for hi-lum and separately
 \item Can discuss the fact that high-density sample has a small residual, though I am not entirely sure why
 \end{itemize}
 
@@ -340,10 +351,40 @@ This section summarizes the results of the various systematics tests that I impl
 \end{center}
 \end{figure}
 
+% Equation 1
+\begin{equation}
+A_V(r) = \left(3.1 \pm 4.2\right) \times 10^{-4} \left( \frac{r}{h^{-1}\, \mathrm{kpc}} \right)^{-6.7 \times 10^{-5} \pm 8.9 \times 10^{-5}}
+\end{equation}
+
+% Equation 2
+\begin{equation}
+A_V(r) = \left(-3.7 \pm 3.6\right) \times 10^{-5} \left( \frac{r}{h^{-1}\, \mathrm{kpc}} \right)^{1.1 \times 10^{-5} \pm 7.6 \times 10^{-5}}
+\end{equation}
+
+% Equation 3
+\begin{equation}
+A_V(r) = \left(1.1 \pm 2.6\right) \times 10^{-4} \left( \frac{r}{h^{-1}\, \mathrm{kpc}} \right)^{-2.1 \times 10^{-5} \pm 5.6 \times 10^{-5}}
+\end{equation}
+
+% Equation 4
+\begin{equation}
+A_V(r) = \left(-4.1 \pm 1.8\right) \times 10^{-4} \left( \frac{r}{h^{-1}\, \mathrm{kpc}} \right)^{1.4 \times 10^{-4} \pm 6.4 \times 10^{-4}}
+\end{equation}
+
+% Equation 5
+\begin{equation}
+A_V(r) = \left(-5.2 \pm 1.5\right) \times 10^{-4} \left( \frac{r}{h^{-1}\, \mathrm{kpc}} \right)^{9.4 \times 10^{-5} \pm 5.4 \times 10^{-4}}
+\end{equation}
+
+% Equation 6
+\begin{equation}
+A_V(r) = \left(-4.7 \pm 1.1\right) \times 10^{-4} \left( \frac{r}{h^{-1}\, \mathrm{kpc}} \right)^{1.1 \times 10^{-4} \pm 4.0 \times 10^{-4}}
+\end{equation}
+
 
 Excluding the first two points, which seemed to skew the fits, the results of fitting are shown below. I decided to go with least-squares fitting because I liked the look of it better. 
 
-\begin{verbatim}
+\begin{comment}
 Gaia x redMaGiC high-dens WLS fit:
   Const: 3.109e-04 +/- 4.202e-04
   Slope: -6.730e-05 +/- 8.917e-05
@@ -367,7 +408,7 @@ Gaia x redMaGiC high-lum high-z LSQ fit:
 Gaia x stacked redMaGiC LSQ fit:
   Const: -4.653e-04 +/- 1.123e-03
   Slope: 1.146e-04 +/- 3.974e-04
-\end{verbatim}
+\end{comment}
 
 \subsubsection{SuperCOSMOSxWISE x DES Y3 stars}
 \begin{itemize}
@@ -385,7 +426,18 @@ Gaia x stacked redMaGiC LSQ fit:
 
 I decided to go with the least-squares, because the weighted least squares looked like nonsense for this fit. Much bigger slope than made any sense. 
 
-\begin{verbatim}
+% Equation 1
+\begin{equation}
+A_V(r) = \left(-5.3 \pm 4.5\right) \times 10^{-4} \left( \frac{r}{h^{-1}\, \mathrm{kpc}} \right)^{1.8 \times 10^{-4} \pm 1.3 \times 10^{-4}}
+\end{equation}
+
+% Equation 2
+\begin{equation}
+A_V(r) = \left(1.9 \pm 1.3\right) \times 10^{-4} \left( \frac{r}{h^{-1}\, \mathrm{kpc}} \right)^{-3.2 \times 10^{-5} \pm 4.7 \times 10^{-4}}
+\end{equation}
+
+
+\begin{comment}
 WISExSCOS updated rand x DES star WLS fit results:
   Coeff: -5.348e-04 +/- 4.500e-04
   Slope: 1.770e-04 +/- 1.284e-04
@@ -393,7 +445,7 @@ WISExSCOS updated rand x DES star WLS fit results:
 WISExSCOS updated rand x DES Y3 stars LSQ:
   Const: 1.878e-04 +/- 1.265e-03
   Slope: -3.150e-05 +/- 4.713e-04
-\end{verbatim}
+\end{comment}
 
 \subsection{SDSS-based results}
 
