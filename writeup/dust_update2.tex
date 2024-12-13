@@ -103,7 +103,9 @@ For the first time in this project, I have expanded our analysis to galaxies in 
 
 XXX more details about query used would go here XXX 
 
-The WISExSCOS catalog is all-sky and covers the SDSS area, so that was used as to construct a foreground sample for the SDSS background galaxy catalog. I also expanded to using the GALEX-WISE-SDSS Legacy Catalog (GSWLC), with physical properties for almost 660,000 galaxies at redshifts $0.01 < z < 0.3$, as a foreground.\footnote{https://salims.pages.iu.edu/gswlc/} Several GSWLC variants are available; this analysis uses the GSWLC-X2, which combines the deepest areas of the GSWLC-A, M and D catalogs and covers 90\% of the SDSS area (Salim et al.~2016). The GSWLC-X2 also features more accurate star formation rates than the first generation of the catalog thanks to joint UV, optical, and mid-IR SED fitting (Salim, Boquien \& Lee 2018). The full GSWLC-X2 contains 659,229 galaxies; as recommended by the authors, we restrict our analysis to the 610,518 that are included in the Sloan Digital Sky Survey main galaxy sample (\texttt{flag\_mgs = 1}, see Figure \ref{fig:gwslc}). 
+The WISExSuperCOSMOS catalog covers the whole sky and thus the SDSS area, so that was the first foreground sample constructed for analysis with the SDSS background galaxy catalog. I also expanded to using the GALEX-WISE-SDSS Legacy Catalog (GSWLC), with physical properties for almost 660,000 galaxies at redshifts $0.01 < z < 0.3$, as a foreground.\footnote{https://salims.pages.iu.edu/gswlc/} Several GSWLC variants are available; this analysis uses the GSWLC-X2, which combines the deepest areas of the GSWLC-A, M and D catalogs and covers 90\% of the SDSS area (Salim et al.~2016). The GSWLC-X2 also features more accurate star formation rates than the first generation of the catalog thanks to joint UV, optical, and mid-IR SED fitting (Salim, Boquien \& Lee 2018). The full GSWLC-X2 contains 659,229 galaxies; as recommended by the authors, we restrict our analysis to the 610,518 that are included in the Sloan Digital Sky Survey main galaxy sample (\texttt{flag\_mgs = 1}, see Figure \ref{fig:gwslc}). 
+
+
 
 \begin{figure}
 \begin{center}
@@ -204,7 +206,7 @@ colors for the real catalogs, I join them with their counterparts in the Y3 GOLD
 \item Assign the $g$, $r$, $i$, $z$ magnitudes of galaxies in the photometry catalog to the corresponding entries in the random-galaxy catalog elementwise.
 \end{enumerate}
 
-The result is shown in Figure \ref{fig:colormag}. Note that the photometry catalogs used for this procedure are the color-augmented redMaGiC galaxy catalogs, not the full Y3 GOLD catalog. Using the full Y3 GOLD catalog produces a mismatch in colors, which is attributable to the fact that the redMaGiC galaxies are not a representative sample! 
+The result is shown in Figure \ref{fig:redshiftmatch}. Note that the photometry catalogs used for this procedure are the color-augmented redMaGiC galaxy catalogs, not the full Y3 GOLD catalog. Using the full Y3 GOLD catalog produces a mismatch in colors, which is attributable to the fact that the redMaGiC galaxies are not a representative sample! 
 
 %It should be noted that this change did not visibly affect extinction profiles. --> not 100% sure about that. 
 
@@ -280,7 +282,7 @@ array([XX, XX, XX, XX, XX])
 
 \section{Updated Results}\label{sec:results}
 
-Figures and tables in this section summarize the results of the $A_V$ estimation with the the two redMaGiC galaxy catalogs and the cross-correlation with galaxy counts in WISExSCOS. The number of redshift bins for the $A_V$ estimator calculation were chosen to balance bias and variance in the results. Five redshift slices were used for the high-luminosity, high-redshift redMaGiC sample, and fifteen redshift slices for the high-density redMaGiC sample. 
+Figures and tables in this section summarize the results of the $A_V$ estimation with the two redMaGiC galaxy catalogs and the cross-correlation with galaxy counts in WISExSCOS. The number of redshift bins for the $A_V$ estimator calculation were chosen to balance bias and variance in the results. Five redshift slices were used for the high-luminosity, high-redshift redMaGiC sample, and fifteen redshift slices for the high-density redMaGiC sample. 
 
 Where relevant and for ease of comparison, extinction profiles calculated with a previous generation of code and the code current as of March 2024 are juxtaposed.
 
