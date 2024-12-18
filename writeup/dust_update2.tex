@@ -148,7 +148,7 @@ After all catalog joining, selections and survey masking operations, there remai
 
 \section{Analysis Fixes and Improvements}\label{sec:code}
 
-Since update \#1, there have been several useful upgrades and bug fixes to the analysis codebase. Changes to catalog processing are summarized in Section \ref{sec:code:catalogs} and changes to extinction and correlation calculations are summarized in Section \ref{sec:code:analysis}.
+Since update \#1, there have been several useful upgrades and bug fixes to the analysis codebase and improvements to the models used based on recent literature. Changes to catalog processing are summarized in Section \ref{sec:code:catalogs} and changes to extinction and correlation calculations are summarized in Section \ref{sec:code:analysis}.
 
 \subsection{Catalog processing updates}\label{sec:code:catalogs}
 
@@ -178,7 +178,7 @@ radec2healpixels(filename=catname, Nside=Nside, ra_col=ra_col, dec_col=dec_col)
 \end{verbatim}
 \normalsize
 
-\subsubsection{Random catalog creation}\label{sec:code:randoms}
+\subsubsection{Random catalog generation overhaul}\label{sec:code:randoms}
 
 As I described in the first update, for cases where random catalogs are not available, I developed a class called FgRandom (defined in \texttt{fg\_random.py}). In the first release, FgRandom used a seeded random number generator and the survey mask's HEALPix \texttt{NSIDE} parameter to randomly select HEALPixels and converting those to RA, Dec using the HEALPy library's \texttt{pix2ang()} function. 
 
@@ -191,7 +191,7 @@ As I described in the first update, for cases where random catalogs are not avai
     \end{center}
  \end{figure}
 
-An example of a random catalog generated with the original version FgRandom is shown in the top panel of Figure \ref{fig:overlap3}. I originally stated that the moir\'{e} effect was an artifact of projection and not present in the catalog itself. However, it never quite sat right with me, and my original statement turned out \textit{not} to be true! It should have been obvious earlier, but 
+An example of a random catalog generated with the original version FgRandom is shown in the top panel of Figure \ref{fig:overlap3}. I originally stated that the moir\'{e} effect was an artifact of projection and not present in the catalog itself. However, it never quite sat right with me, and my original statement turned out \textit{not} to be true! It should have been obvious earlier, but the random point will always sit in the center of the HEALPixel. For large NSIDE values, this is less evident, since each cell is quite small. For small NSIDE values, where each cell is large, the layout of points will be decidedly non-random. 
 
 
 \subsubsection{Redshift-matched photometry for random catalogs}\label{sec:code:photom}
@@ -391,6 +391,11 @@ Before too much time passes, we should also strategize about what to put in the 
 
 \section{Bonus: updates from Aspen dust workshop}\label{sec:aspen}
 
-My talk at ``The Physics and Impact of Astrophysical Dust: from Star Formation through Cosmology'' Aspen Center for Physics Winter Conference went really well! For your reference, the slides are attached. I got some good questions and suggestions, including to update the dust extinction law in the $A_V$ calculations (see Section \ref{sec:analysis:extinction}). I learned about current hydrodynamical simulation efforts to understand the entrainment and survival of dust in the IGM -- specifically the work of Paul Torrey's group. Some good references are here \url{https://academic.oup.com/mnras/article/503/1/336/6134059} and here \url{https://arxiv.org/abs/2403.03711}. He offered to give some theoretical comment on our findings when we are ready to publish, which is great! The conference also offered the opportunity to reconnect with Brandon Hensley. This was definitely one of the more scientifically productive (and pleasant) conferences I have attended. 
-%\appendix
+My talk at ``The Physics and Impact of Astrophysical Dust: from Star Formation through Cosmology'' Aspen Center for Physics Winter Conference went really well! For your reference, the slides are attached. I got some good questions and suggestions, including to update the dust extinction law in the $A_V$ calculations (see Section \ref{sec:analysis:extinction}). I learned about current hydrodynamical simulation efforts to understand the entrainment and survival of dust in the IGM -- specifically the work of Paul Torrey's group, 
+an old friend from the UC Santa Cruz High Performance Astrophysical Computing Center (HiPACC) summer school that I attended in 2010. He is now a professor at UVa, and his graduate student Helena Richie gave a presentation of hydrodynamical simulations of dust evolution in galactic outflows, which is described in \cite{2024ApJ...974...81R}. Specifically, they use the Cholla code to set up ``wind tunnel'' simulations of cool, dusty clouds driven into the hot halo by star formation activity. They find that that 60\% of 0.1-micron sized dust grains entrained in these galactic outflows could survive to populate both the hot and cool phases of the halo. Meanwhile, grains smaller than 0.01 microns cannot withstand hot-phase exposure and must be created in situ. Another good reference is here \url{https://academic.oup.com/mnras/article/503/1/336/6134059}. %He offered to give some theoretical comment on our findings when we are ready to publish, which is great! 
+
+The conference also offered the opportunity to reconnect with Brandon Hensley. This was definitely one of the more scientifically productive (and pleasant) conferences I have attended. 
+
+
+A
 \end{document}  
