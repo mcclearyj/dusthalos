@@ -3373,6 +3373,67 @@
       \endverb
       \keyw{Interstellar dust,Interstellar extinction,Interstellar dust extinction,Interstellar reddening,Reddened stars,Interstellar medium,Reddening law,Milky Way Galaxy,Ultraviolet extinction,Spectroscopy,836,841,837,853,1376,847,1377,1054,1738,1558,Astrophysics - Astrophysics of Galaxies}
     \endentry
+    \entry{2021MNRAS.503..336K}{article}{}
+      \name{author}{6}{}{%
+        {{hash=6854e4c889b46ee5159e21d16acec0f5}{%
+           family={{Kannan}},
+           familyi={K\bibinitperiod},
+           given={R.},
+           giveni={R\bibinitperiod}}}%
+        {{hash=b88608a3cf44fea67e6bbcabd97914be}{%
+           family={{Vogelsberger}},
+           familyi={V\bibinitperiod},
+           given={M.},
+           giveni={M\bibinitperiod}}}%
+        {{hash=d28f50623bcd673c9c3c133284146834}{%
+           family={{Marinacci}},
+           familyi={M\bibinitperiod},
+           given={F.},
+           giveni={F\bibinitperiod}}}%
+        {{hash=c89083bebe63f27c5a84ecbf6ac08f49}{%
+           family={{Sales}},
+           familyi={S\bibinitperiod},
+           given={L.\bibnamedelimi V.},
+           giveni={L\bibinitperiod\bibinitdelim V\bibinitperiod}}}%
+        {{hash=0a9472cab299bcfa0f98ad47022cfb02}{%
+           family={{Torrey}},
+           familyi={T\bibinitperiod},
+           given={P.},
+           giveni={P\bibinitperiod}}}%
+        {{hash=a2d60675539f9efe0bcd81b1cce60910}{%
+           family={{Hernquist}},
+           familyi={H\bibinitperiod},
+           given={L.},
+           giveni={L\bibinitperiod}}}%
+      }
+      \strng{namehash}{913194f5203674403e68951b70d1cce3}
+      \strng{fullhash}{5ddf48821f4280eee3f7b8acb8cd4a4f}
+      \strng{bibnamehash}{913194f5203674403e68951b70d1cce3}
+      \strng{authorbibnamehash}{913194f5203674403e68951b70d1cce3}
+      \strng{authornamehash}{913194f5203674403e68951b70d1cce3}
+      \strng{authorfullhash}{5ddf48821f4280eee3f7b8acb8cd4a4f}
+      \field{sortinit}{K}
+      \field{sortinithash}{c02bf6bff1c488450c352b40f5d853ab}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{eprintclass}{astro-ph.GA}
+      \field{eprinttype}{arXiv}
+      \field{journaltitle}{\mnras}
+      \field{month}{5}
+      \field{number}{1}
+      \field{title}{{Dust entrainment in galactic winds}}
+      \field{volume}{503}
+      \field{year}{2021}
+      \field{pages}{336\bibrangedash 343}
+      \range{pages}{8}
+      \verb{doi}
+      \verb 10.1093/mnras/stab416
+      \endverb
+      \verb{eprint}
+      \verb 2002.01933
+      \endverb
+      \keyw{radiative transfer,dust,extinction,ISM: general,galaxies: ISM,Astrophysics - Astrophysics of Galaxies}
+    \endentry
     \entry{10.1093/pasj/65.2.43}{article}{}
       \name{author}{3}{}{%
         {{hash=1556ff520baac37eb59ace9ab5678b39}{%

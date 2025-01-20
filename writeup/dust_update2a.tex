@@ -49,27 +49,28 @@ This is a follow-up to the comprehensive ``Circumgalactic dust halos update'' do
 \begin{enumerate}
 	\item Implementation of major modeling updates and code improvements ($\S$\ref{sec:code}), including: 
 		\begin{enumerate}
-		\item Implemented redshift-based matching for augmenting redMaGiC random catalogs with galaxy colors.% (Figure \ref{fig:redshiftmatch}). 
-		\item Fixed a bug in the generation of random (foreground) catalogs; my previous algorithm, which randomly sampled HEALPixels and then calculated the central RA and Dec of said HEALPixel, did not uniformly cover the survey area. The change led to nicer-looking results, especially for the high-z redMaGiC catalog. 
-		\item Implemented a patch-based approach to variance estimation in correlation function calculations, as strongly recommended in TreeCorr documentation. 
-		\item Implemented a new dust extinction law taken from Gordon et al. 2023; the one I had been using dated from 2000 and was due for an update. 
-		\item Started using the CSFD map recommended in Yi-Kuan Chiang 2023, as CIB contamination in the canonical SFD98 extinction map leads to $10^{-3}-10^{-4}$ mag excesses in E(B-V) (the magnitude of our signal).
-		\item Added code to fit power laws to all \av profiles.
+		\item Redshift-based matching for augmenting redMaGiC random catalogs with galaxy colors.% (Figure \ref{fig:redshiftmatch}). 
+		\item Bug fix in the generation of random (foreground) catalogs; my previous algorithm, which randomly sampled HEALPixels and then calculated the central RA and Dec of said HEALPixel, did not uniformly cover the survey area. The change led to nicer-looking results, especially for the high-z redMaGiC catalog. 
+		\item Patch-based variance estimation in the correlation function calculations, as strongly recommended in TreeCorr documentation. 
+		\item A new dust extinction law taken from Gordon et al. 2023; the one I had been using dated from 2000 and was due for an update. 
+		\item Migrating to the CSFD map recommended in Yi-Kuan Chiang 2023, as CIB contamination in the canonical SFD98 extinction map leads to $10^{-3}-10^{-4}$ mag excesses in E(B-V) (the magnitude of our signal).
+		\item CoXde to fit power laws to all \av profiles.
 		\end{enumerate}
-	\item Fit extinction profiles to the updated redMaGiC-background extinction profiles ($\S$\ref{sec:redmagic_results}). The \textit{exponents} are close match to the M\'{e}nard et al.~2010 (M10) result but the \textit{amplitude} is about twice as high. Additionally, we consistently observe a sharp increase in \av at $r < 50$ \hinv kpc that is altogether absent in the  M\'{e}nard result. 
+	\item Fit extinction profiles to the updated redMaGiC-background extinction profiles ($\S$\ref{sec:redmagic_results}). The \textit{exponents} are close match to the M\'{e}nard et al.~2010 (M10) result but the \textit{amplitude} is about two to three times as high. Additionally, we consistently observe a sharp increase in \av at $r < 50$ \hinv kpc that is altogether absent in the  M\'{e}nard result. 
 	\item Tested for systematics using Gaia and DES Y3 star catalogs, both of which yielded quite good results; see $\S$\ref{sec:systematics_results}. 
-	\item Expanded analysis to galaxies in the Sloan Digital Sky Survey and GALEX-WISE-SDSS Legacy Catalog! The results aren't as amazing as one would hope, but aren't complete messes either. While the WISExSCOS x SDSS results tended to be consistent with the redMaGiC samples at \textit{low} impact parameters, at larger impact parameters ($>$ 10 arcminutes), the extinction flattens out and doesn't decrease. Meanwhile, the GSWLC x SDSS extinction has an interesting dip at intermediate impact parameters but agrees with the redMaGiC curves at high and low impact parameters (Figure \ref{fig:uglycolor}).
-	\item Started paper draft! I have a couple of asks of you both, see below. 
+	\item Expanded analysis to galaxies in the Sloan Digital Sky Survey and GALEX-WISE-SDSS Legacy Catalog! The results aren't as amazing as one would hope, but aren't complete messes either ($\S$\ref{sec:sdss}). While the WISExSCOS x SDSS results tended to be consistent with the redMaGiC samples at \textit{low} impact parameters, at larger impact parameters ($>$ 10 arcminutes), the extinction flattens out and doesn't decrease. Meanwhile, the GSWLC x SDSS extinction has an interesting dip at intermediate impact parameters but agrees with the redMaGiC curves at high and low impact parameters (Figure \ref{fig:uglycolor}).
+	\item \textbf{I have finally started a paper draft!} You should all now be invited to the project linked \href{https://www.overleaf.com/project/67627b2dec68007293195d47}{here}. As I prepare the paper, I have a few requests of you all; please see below. 
+	\item A Northeastern Future Faculty Fellow, Bryanne McDonough, joined my group this year. She has extensive expertise in hydrodynamic simulations of galaxy formation and evolution, particularly star formation and the CGM, and we are planning to embark on a dust project in the spring of 2025 ($\S$\ref{sec:bryanne}).  
 \end{enumerate}
 
-I treated this report as an exercise for synthesizing the intense work of the last year as a prelude to writing up the paper, which I believe are now ready to do. Although it seems rather long, half of the page count is appendices with information like full printouts for the power law fits, extra results, and assorted algorithms. You can probably skip it! 
+This report was a means of synthesizing the intense work of the last year as a prelude to writing up the paper, which I believe are now ready to do. Although it seems rather long, half of the page count is appendices with information like full printouts for the power law fits, extra results, and assorted algorithms. You can safely skip it if you are pressed for time. 
 
 \textbf{Asks}: 
 \begin{itemize}
 \item Eric, you had mentioned something about the inner \av profile ($r < 50$ \hinv kpc) being a potentially significant result, but I do not recall the gist of the argument. Could you please leave some notes in the discussion section of the paper draft? 
 \item Brandon, do you have any theoretical comment to make on our result? Even if that comment is ``this result defies the laws of physics and that's not a compliment,'' would you mind jotting it down in the discussion section of the paper draft? 
 \item Jim, whatever happened with the emission dust study? Is this something we should reference? If so, jot it down someplace in the paper draft. Alternatively, if you know of any relevant dust-emission literature results, please drop those in as well!   
-\item All: I'd appreciate feedback on how to pitch these results. I am still struggling to think of a decent title!
+\item All: I'd appreciate feedback on how to pitch these results! Also, please update the author list of the paper with your ORCIDs and affiliations.
 \end{itemize}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -81,19 +82,22 @@ I treated this report as an exercise for synthesizing the intense work of the la
 \section{Literature Review}\label{sec:literature}
 Since my last update over a year ago, several exciting and highly germane papers have been published. Results include an interesting hydrosim study of dust survival in the IGM, a new model for dust extinction, and an interesting new update to the canonical SFD98 extinction map. 
 \subsection{Gordon et al. 2023}
-My previous results were based on dust models published around 2000, like Calzetti et al.~2000 and Fitzpatrick 1999. When I presented these results at the Aspen Center for Physics workshop, Daniella Calzetti told me that she was flattered that I was using her extinction law but that it was out of date. She pointed me to an updated model published by Karl Gordon et al.~2023, hereafter G23 \cite{2023ApJ...950...86G}). Using four independent spectroscopically measured dust extinction curves and dozens of individual sightlines, G23 presents a single $R_V$-dependent extinction relation from 912 \AA to 32 microns. In their words, the main advance of their approach is that ``all previous R(V) relationships were based on a combination of spectroscopic and photometric measurements and/or did not cover the full wavelength range.'' Their principal result, the $A_\lambda/A_V$ relation, is shown in Figure 8 of that paper. 
-Their extinction relation, shown in Figure 8 of that paper, is obtained by first fitting a linear $A_\lambda/A_V$ at each wavelength; polynomials are then fit to the resulting coefficients piecewise in five wavelength regimes (FUV, NUV, optical, near- and mid-IR); the polynomials are smoothed at the boundaries to obtain a continuous function (see Equation 5 of that paper).They find that the characteristic FUV rise and $2175 {\rm \AA}$ bump are dependent on $R_V$, but that 10 and 20 micron features are not. The largest offsets between their extinction laws and other, comparable studies are in the FUV and the NIR (cf. Figure 8, lower panels). Interestingly, their extinction relation lies in the middle of the older studies' extinction relations. In other words, the G23 result appears to be a ``golden mean." 
+My previous results were based on dust models published around 2000, like Calzetti et al.~2000 and Fitzpatrick 1999. When I presented these results at the Aspen Center for Physics workshop, Daniella Calzetti told me that she was flattered that I was using her extinction law but that it was out of date. She pointed me to an updated model published by Karl Gordon et al.~2023 (G23, \cite{2023ApJ...950...86G}). Using four independent spectroscopically measured dust extinction curves and dozens of individual sightlines, G23 presents a single $R_V$-dependent extinction relation from 912 \AA~to 32 microns. In their words, the main advance of their approach is that ``all previous R(V) relationships were based on a combination of spectroscopic and photometric measurements and/or did not cover the full wavelength range.'' Their principal result, an updated $A_\lambda/A_V$ relation, is shown in Figure 8 of G23. 
+They obtain this relation by first fitting a linear $A_\lambda/A_V$ at each wavelength; polynomials are then fit to the resulting coefficients piecewise in five wavelength regimes (FUV, NUV, optical, near- and mid-IR); the polynomials are smoothed at the boundaries to obtain a continuous function (see Equation 5 of that paper).They find that the characteristic FUV rise and $2175 {\rm \AA}$ bump are dependent on $R_V$, but that 10 and 20 micron features are not. The largest offsets between their extinction laws and other, comparable studies are in the FUV and the NIR (cf. Figure 8, lower panels). Interestingly, their extinction relation lies in the middle of the older studies' extinction relations. In other words, the G23 result appears to be a ``golden mean." 
 
-\begin{figure}[htbp]
+\begin{figure}[htb]
 \begin{center}
 \includegraphics[width=0.7\linewidth]{figures_update2/CSFD_figure7.png}
 \caption{Stacked images of the SFD $E(B-V)$ (top row) and the CSFD equivalent (bottom row) centered on different types of sources. From left to right, the stacks are centered on Gaia stars, SDSS main sample galaxies, 2MASS galaxies, and Gaia AGNs, respectively. Aside from the stars, the SFD $E(B-V)$ values around all galaxy samples are biased high due to the LSS contamination. This bias is significantly reduced in CSFD. (Caption and figure adapted from \cite{2023ApJ...958..118C}.)}
-\label{default}
+\label{fig:csfd}
 \end{center}
 \end{figure}
 
 \subsection{CSFD}
-I saw Yun-Ki Chiang give a talk on this topic at the Aspen dust workshop, and then my COSMOS-Web colleague Nao Suzuki called my attention to this result again at the Tokyo meeting. The basic premise of the paper is that the classic Schlegel, Finkbeiner, \& Davis (1998, SFD) dust map has significant contamination from the cosmic infrared background, that is, the two-halo term of large-scale structure. This fact has been discovered and rediscovered in the literature \cite{10.1093/pasj/65.2.43, 10.1093/pasj/59.1.205}, including by Brice M{\'e}nard \cite{2019ApJ...870..120C} and our old friend Daniel Lenz \cite{2017ApJ...846...38L}.
+I saw Yun-Ki Chiang give a talk on this topic at the Aspen dust workshop, and then my COSMOS-Web colleague Nao Suzuki called my attention to this result again at the COSMOS 2024 meeting in Tokyo. The basic premise of the paper is that the classic Schlegel, Finkbeiner, \& Davis (1998, SFD) dust map has significant contamination from the cosmic infrared background, that is, the two-halo term of large-scale structure. This fact has been discovered and rediscovered in the literature \cite{10.1093/pasj/65.2.43, 10.1093/pasj/59.1.205}, including by Chiang and Brice M{\'e}nard themselves \cite{2019ApJ...870..120C} and our old friend Daniel Lenz \cite{2017ApJ...846...38L}.
+The \cite{10.1093/pasj/65.2.43} finding is particularly interesting to me, as they show that the surface number density of SDSS galaxies increases with the value of the E(B-V) selective extinction in SFD. This is the opposite of the effect one would expect in areas of high extinction but is consistent with LSS contamination in the SFD map. 
+
+To remove the traces of LSS from the SFD map, Chiang first creates a tomographic map of the LSS using generic tracers like quasars or galaxies, computes the angular cross-correlation these with $E(B-V)$ to produce an LSS extinction map $I_{LSS}(\phi)$ and then reconstructs this $I_{LSS}(\phi)$ map with a large number of empirical templates $T_{LSS, i}(\phi)$. The $T_{LSS, i}(\phi)$ are ``sky maps of density contrast built from generic extragalactic tracers'' like quasars or galaxies, and their combination, or rather the reconstructed $I_{LSS}(\phi)$, is then subtracted from the canonical SFD map to produce a new map cleaned of LSS contamination (so-called CSFD). Full details of the production of CSFD may be found in Chiang's 2023 paper \cite{2023ApJ...958..118C}; an example SFD-CSFD comparison is shown in Figure \ref{fig:csfd}.  
 
 
 \subsection{Dust as a supernova systematic}
@@ -111,8 +115,7 @@ As we all know, intergalactic dust introduces significant scatter to Type Ia sup
 \subsection{Bonus: cluster duster}
 %Copypasta from AAG
 As you all know, I am heavily involved in SuperBIT galaxy cluster gravitational lensing analysis. The methods we use to study circumgalactic dust 
-also allow us to gain a ``stratospheric perspective'' on intracluster dust, which is known to trace intracluster light and provide a significant source of cooling in the ICM \cite{2022Univ....8..212S}. Inspired by the analysis of the GUViCS study of dust in the Virgo cluster \cite{2020A&A...633L...7L} which used only 12,000 background galaxies, I would like to cross-correlate excess reddening of background galaxies with SuperBIT galaxy cluster members, obtaining results qualitatively similar to Figure \ref{fig:clusterdust}. This would be a lot of fun to try out at some point... I don't know off-hand whether there are any SuperBIT clusters that lie in the DES survey area, but it would be very convenient if they did! 
-
+also allow us to gain a ``stratospheric perspective'' on intracluster dust, which is known to trace intracluster light and provide a significant source of cooling in the ICM \cite{2022Univ....8..212S}. Inspired by the analysis of the GUViCS study of dust in the Virgo cluster \cite{2020A&A...633L...7L} which used only 12,000 background galaxies, I would like to cross-correlate excess reddening of background galaxies with SuperBIT galaxy cluster members, obtaining results qualitatively similar to Figure \ref{fig:clusterdust}. This would be a lot of fun to try out at some point... A handful of SuperBIT clusters do lie in the DES survey area, so this measurement seems quite feasible even with the catalogs that we already have. 
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -125,7 +128,7 @@ also allow us to gain a ``stratospheric perspective'' on intracluster dust, whic
 %
 \section{Code and Modeling Updates}\label{sec:code}
 
-Since update \#1, there have been several useful upgrades and bug fixes to the analysis codebase and improvements to the models used. The major code changes include: mitigation of a bug in random catalog generation; implementing redshift-based matching for assigning photometry to random catalogs; and creating survey masks when not pre-supplied. Model changes were motivated by recent advances in the literature and mainly consist of adopting the CSFD Milky Way extinction correction and an updated dust extinction relation. Code upgrades are summarized in Section \ref{sec:codeupdates}, and upgrades to modeling choices are summarized in Section \ref{sec:modelupdates}.
+Since update \#1, there have been several useful upgrades and bug fixes to the \texttt{dusthalos} codebase and improvements to the models used therein. The major code changes include: mitigation of a bug in random catalog generation; implementing redshift-based matching for assigning photometry to random catalogs; and creating survey masks when not pre-supplied. Model changes were motivated by recent advances in the literature and mainly consist of adopting the CSFD Milky Way extinction correction and the G23 dust extinction relation. Code upgrades are summarized in Section \ref{sec:codeupdates}, and upgrades to modeling choices are summarized in Section \ref{sec:modelupdates}.
 
 %%%%
 %%%% COLOR-MATCHED RANDOMS
@@ -139,14 +142,14 @@ Since update \#1, there have been several useful upgrades and bug fixes to the a
    \centering
    \includegraphics[width=0.65\linewidth]{figures_update2/color_redshift_redmagic_hidens_resamp.png}\\
    \includegraphics[width=0.65\linewidth]{figures_update2/color_redshift_redmagic_hiz_resamp.png}
-   \caption{Color-redshift relation for the two redMaGiC catalogs (shown as small, dark red points) and the random galaxy catalogs (shown as large, bright red points connected by a solid line). The top row of figures shows the high density galaxy sample, the bottom row shows the high-luminosity high-redshift sample. In all cases, random galaxies' colors overlap well with the real galaxy colors.}
+   \caption{Color-redshift relation for the two redMaGiC catalogs (shown as small, dark red points) and the random galaxy catalogs (shown as large, bright red points connected by a solid line). The top row of figures shows the high density galaxy sample, the bottom row shows the high-luminosity high-redshift sample. The random galaxies' colors generally overlap with the real galaxy colors well.}
    \label{fig:redshiftmatch}
 \end{figure}
 
 
 The redMaGiC catalogs (both real and random) have positions and redshifts, but not magnitudes. To obtain 
 colors for the real catalogs, I join them with their counterparts in the Y3 GOLD catalog on the 
-\texttt{COADD\_OBJECT\_ID} parameter. To do the same for the random galaxy catalogs, these objects were originally assigned photometry from the Y3 GOLD catalog randomly, with no regard for redshift. Concerned that this might introduce systematic error, I implemented redshift-based matching of random galaxies. The steps of the algorithm are relatively simple:
+\texttt{COADD\_OBJECT\_ID} parameter. To do the same for the random galaxy catalogs, these objects were originally assigned photometry from the Y3 GOLD catalog randomly, with no regard for redshift. Concerned that this might introduce systematic error, I implemented redshift-based matching of random galaxies. The algorithm is fairly simple:
 
 \begin{enumerate}
 \item Generate some number of redshift bins (I chose seventeen) and digitize the photometry and random-galaxy catalogs accordingly. 
@@ -154,7 +157,9 @@ colors for the real catalogs, I join them with their counterparts in the Y3 GOLD
 \item Assign the $g$, $r$, $i$, $z$ magnitudes of galaxies in the photometry catalog to the corresponding entries in the random-galaxy catalog elementwise.
 \end{enumerate}
 
-The result is shown in Figure \ref{fig:redshiftmatch}. Note that the photometry catalogs used for this procedure are the color-augmented redMaGiC galaxy catalogs, not the full Y3 GOLD catalog. Using the full Y3 GOLD catalog produces a mismatch in colors, which is attributable to the fact that the redMaGiC galaxies are not a representative sample! It should be noted that this change did not visibly affect extinction profiles. 
+The result is shown in Figure \ref{fig:redshiftmatch}. Aside from the last two bins of the $i-z$ color space for the high-redshift sample, the match appears pretty good.  Note that the photometry catalogs used for this procedure are the color-augmented redMaGiC galaxy catalogs, not the full Y3 GOLD catalog. Using the full Y3 GOLD catalog produced a mismatch in colors, which is attributable to redMaGiC galaxies occupying a rather unique color space. 
+
+It should be noted that adopting color-matched randoms change did not visibly affect extinction profiles.  
 
 
 %%%%
@@ -163,9 +168,9 @@ The result is shown in Figure \ref{fig:redshiftmatch}. Note that the photometry 
 
 \subsubsection{Random catalog generation overhaul}\label{sec:code:randoms}
 
-As I described in the first update, for cases where random catalogs are not available, I developed a class called FgRandom (defined in \texttt{fg\_random.py}). In the first release, FgRandom used a seeded random number generator and the survey mask's HEALPix \texttt{NSIDE} parameter to randomly select HEALPixels and converting those to RA, Dec using the HEALPy library's \texttt{pix2ang()} function. 
+As I described in the first update, for cases where random catalogs are not available, I developed a class called FgRandom (defined in \texttt{fg\_random.py}). In the first release, FgRandom used a seeded random number generator and the survey mask's HEALPix \texttt{NSIDE} parameter to randomly select HEALPixels and converting those to RA, Dec using the HEALPy library's \texttt{pix2ang()} function. An example of a random catalog generated with the Fall 2023 version of FgRandom is shown in the top panel of Figure \ref{fig:fgrand}. I originally stated that the moir\'{e} effect was an artifact of projection and not present in the catalog itself. However, it never quite sat right with me, and my original statement turned out \textit{not} to be true! It should have been obvious earlier, but a point selected in this way will always sit in the center of the HEALPixel. For large NSIDE values, the final layout will still look OK, since each cell is quite small. For small NSIDE values, where each cell is large, the layout of points will be decidedly non-random. 
 
-\begin{figure}
+\begin{figure}[hbt]
     \begin{center}
     \includegraphics[width=0.49\linewidth]{figures_update2/bad_masked_scos_randoms_aitoff_crop.png}
     \includegraphics[width=0.49\linewidth]{figures_update2/good_double_masked_scos_randoms_aitoff.png}\\
@@ -177,7 +182,7 @@ As I described in the first update, for cases where random catalogs are not avai
     \end{center}
  \end{figure}
 
-An example of a random catalog generated with the Fall 2023 version of FgRandom is shown in the top panel of Figure \ref{fig:fgrand}. I originally stated that the moir\'{e} effect was an artifact of projection and not present in the catalog itself. However, it never quite sat right with me, and my original statement turned out \textit{not} to be true! It should have been obvious earlier, but a point selected in this way will always sit in the center of the HEALPixel. For large NSIDE values, the final layout will still look OK, since each cell is quite small. For small NSIDE values, where each cell is large, the layout of points will be decidedly non-random. %NSIDE=256 (as is the case for the WISExSuperCOSMOS mask) corresponds to 189 arcminutes per pixel That’s a lot!
+%NSIDE=256 (as is the case for the WISExSuperCOSMOS mask) corresponds to 189 arcminutes per pixel That’s a lot!
 I now build random catalogs with a more boring but less buggy method: sample a large number of points uniformly in $(\alpha,\, \sin\delta)$ (not uniformly in $\alpha, \delta$!), then apply the supplied HEALPixel mask. The result is shown in Figure \ref{fig:fgrand}. I also added the option to sample randomly in galactic coordinates $(l, \, b)$, which makes sense for survey masks that are defined in galactic coordinates, like the WISExSuperCOSMOS one. 
 
 A final note on very large random catalogs: based on the redMaGiC ratio of random galaxies to real galaxies, the random catalogs I create are $\sim 20 \times$ the length of their respective data catalogs. For very large galaxy catalogs like SDSS, generating an equivalent random catalog with almost a billion objects in one go is too much for my high-performance computing cluster to handle, at least with my sloppy astronomer code. So, I wrote \texttt{job\_scripts/job\_loop\_randoms.sh}, a little bash script to create multiple smaller randoms catalogs and concatenate them. While not immediately useful, since I don't think we will be publishing the SDSS results, this may be helpful later.
@@ -187,11 +192,13 @@ A final note on very large random catalogs: based on the redMaGiC ratio of rando
 %%%%
 \subsubsection{TreeCorr variance upgrade}
 
-The TreeCorr package is the backbone of our analysis, so implementing it correctly is crucial if we are to trust our results. Error bars on \av profiles in update \#1 represent the default \texttt{TreeCorr} shot-noise estimate of the covariance, which for \texttt{NKCorrelation} includes Poisson statistics of counting (N) and the ``point variance'' of scalar quantities (K). 
+%The TreeCorr package is the backbone of our analysis, so implementing it correctly is crucial if we are to trust our results. 
+Error bars on \av profiles in update \#1 represented the default \texttt{TreeCorr} shot-noise estimate of the covariance. For \texttt{NKCorrelation} (our main correlator), this includes Poisson statistics of counting (N) and the ``point variance'' of scalar quantities (K). 
 % this is pretty close to TreeCorr copypasta. 
-However, this default does not capture \textit{sample} variance, the variation of the signal across the survey area. One should not ignore its contribution, as per the TreeCorr documentation, sample variance generally dominates the total variance at large scales.  Sample variance can be estimated by partitioning the survey area into contiguous patches, performing the measurement separately in each, and then quantifying the variation in the results across the patches.
+However, this value underestimates the true uncertainty: the default TreeCorr covariance does not capture \textit{sample} variance, the variation of the signal across the survey area. Its contribution should not be ignored; per the TreeCorr documentation, sample variance generally dominates the total variance at large spatial scales. Sample variance can be estimated by partitioning the survey area into contiguous patches, performing the measurement separately in each, and then quantifying the variation in the results across the patches.
 
-TreeCorr offers access to this calculation through its \texttt{sample}, \texttt{bootstrap}, and \texttt{marked\_bootstrap} methods for covariance estimation, which are specified in the the \texttt{var\_method} parameter of the \texttt{NKCorrelation} constructor. All of these estimation methods are now accessible in our code via the \texttt{treecorr\_params} block of the \texttt{dust\_calc\_runner.py} configuration file, i.e., \texttt{dust\_calc\_config.yaml}.\footnote{The \texttt{bootstrap} and \texttt{marked\_bootstrap} methods also take a \texttt{num\_bootstrap} parameter that sets the number of bootstrap estimates.} The number of patches into which to divide the survey area is set through \texttt{treecorr\_npatch} in the \texttt{background\_catalog} block of the \texttt{dust\_calc\_runner.py} config, which is passed to the ``signal'' (real background galaxy catalog) \texttt{treecorr.Catalog()} constructor. Since consistency in sample variance estimates across all terms in the reddening estimator requires that the sky patch centers be the same, patch centers for the foreground and random catalogs' \texttt{treecorr.Catalog()} instances are set to the values in the signal.
+TreeCorr offers access to this calculation through its \texttt{sample}, \texttt{bootstrap}, and \texttt{marked\_bootstrap} methods for covariance estimation.%, which can be specified in the \texttt{NKCorrelation} constructor through the \texttt{var\_method} parameter. 
+All of these estimation methods are now accessible in our code via the \texttt{treecorr\_params} block of the \texttt{dust\_calc\_runner.py} configuration file, i.e., \texttt{dust\_calc\_config.yaml}.\footnote{The \texttt{bootstrap} and \texttt{marked\_bootstrap} methods also take a \texttt{num\_bootstrap} parameter that sets the number of bootstrap estimates.} The number of patches into which to divide the survey area is set through \texttt{treecorr\_npatch} in the \texttt{background\_catalog} block of the \texttt{dust\_calc\_runner.py} config, which is passed to the ``signal'' (real background galaxy catalog) \texttt{treecorr.Catalog()} constructor. Since consistency in sample variance estimates across all terms in the reddening estimator requires that the sky patch centers be the same, patch centers for the foreground and random catalogs' \texttt{treecorr.Catalog()} instances are set to the values in the signal \texttt{treecorr.Catalog()}.
 
 All results presented in this update use the \texttt{sample} covariance estimation method.
 
@@ -200,8 +207,7 @@ All results presented in this update use the \texttt{sample} covariance estimati
 
 Survey masks are essential for constructing catalogs matched to one another in sky coverage. Failure to properly implement proper masking for both real and random catalogs may artificially boost or suppress correlation signal. 
 % This is the robot speaking, need ti make it my own. 
-``The correlation function effectively measures the clustering relative to a random field. If the "random" field does not have the same exclusion zones, then where the data has zeros (in the masked areas), the random field has non-zero values.'' 
-
+%``The correlation function effectively measures the clustering relative to a random field. If the "random" field does not have the same exclusion zones, then where the data has zeros (in the masked areas), the random field has non-zero values.'' 
 For those cases where survey masks are not supplied for a particular catalog, I added a function to the source code called \texttt{radec2healpixels} that creates a HEALPix mask from the catalog itself by converting celestial coordinates to HEALPix pixel indices. The function can be called with a runner script, e.g.,  
 
 \small
@@ -210,12 +216,12 @@ For those cases where survey masks are not supplied for a particular catalog, I 
 from src.radec2healpixels import radec2healpixels
 
 ## Define variables
-catname = `dusty_halos/catalogs/gaia_stars_southern_full.fits'
+filename = `dusty_halos/catalogs/gaia_stars_southern_full.fits'
 ra_col = `ra'; dec_col = `dec'
 Nside = 2048
 
 ## Run
-radec2healpixels(filename=catname, Nside=Nside, ra_col=ra_col, dec_col=dec_col)
+radec2healpixels(filename=filename, Nside=Nside, ra_col=ra_col, dec_col=dec_col)
 
 \end{verbatim}
 \normalsize
@@ -226,26 +232,48 @@ radec2healpixels(filename=catname, Nside=Nside, ra_col=ra_col, dec_col=dec_col)
 %%%%
 \subsection{Model improvements}\label{sec:modelupdates}
 
-\subsubsection{Gordon 2023 extinction}
-The G23 extinction model is available through the \texttt{dust\_extinction} software package \cite{Gordon2024}.\footnote{\url{https://github.com/karllark/dust_extinction}}. Implementing it in the code was very simple and amounted to adding an import statement for this newer \texttt{dust\_extinction} package in the \texttt{src/extinction\_model.py}. Both G23 and the older CCM89 models are available in \texttt{dust\_extinction}; the \texttt{extinction} Python package is still imported in case someone wants to see results with other old models: Calzetti00, odonnell94, fitz99. As before, the default $R_V$ is 3.1 but any reasonable value is available. 
+\subsubsection{Reddening calculation: G23 extinction and weighted average color}
+The G23 extinction model is available through the \texttt{dust\_extinction} software package \cite{Gordon2024}.\footnote{\url{https://github.com/karllark/dust_extinction}}. Implementing it in the code was very simple and amounted to adding an import statement for this newer \texttt{dust\_extinction} package in the \texttt{src/extinction\_model.py}. Both G23 and the older CCM89 models are available in \texttt{dust\_extinction}; the \texttt{extinction} Python package is still imported in case someone wants to see results with other old models: calzetti00, odonnell94, fitz99. As before, the default $R_V$ is 3.1 but any value can be specified in the \texttt{dust\_calc\_runner.py} config. 
 
+Additionally, in the \av calculation of \texttt{reddening\_calc.py}, the mean galaxy color in each redshift bin is now computed with a \textit{weighted} average, not a straight arithmetic mean as was done before. De-meaning the galaxy colors before calculation of our \av is an essential part of the analysis, and I thought that adopting a weighted average would make a bigger difference than it did. However, the effect on the results was minor, probably because redMaGiC galaxies are all big and bright and occupy a tight color locus, so the unweighted mean color is a good guess for the weighted mean color. The new code is reproduced below: 
+
+\small
+\begin{verbatim}
+# Stack the extracted magnitudes and uncertainties into 2D arrays
+data = np.vstack(data_list)
+errors = np.vstack(error_list)
+
+# Compute the average in each band, weighting by the inverse
+# of the square of the uncertainties
+weights = 1 / errors**2
+weighted_avg = np.average(data, weights=weights, axis=1)
+
+# De-mean the galaxy magnitudes in each redshift bin
+colors = (data.T - weighted_avg).T
+
+\end{verbatim}
+\normalsize
 
 \subsubsection{CSFD}
 
-As mentioned earlier, Nao pointed me to this CSFD paper \cite{2023ApJ...958..118C}. Since the amplitude of the residual seemed non-negligible ($10^{-4}$) it was worth implementing. I located a nice software package called \texttt{dustmapper}\footnote{\url{https://github.com/gregreen/dustmaps}} to query the CSFD dust map and obtain extinction coefficients for a given set of coordinates. Specifically, there is a handy \texttt{dustmaps.csfd.CSFDQuery} method that takes as input an RA, Dec list in SkyCoords format and returns an array of E(B-V) values. An $R_V$ value is used to convert those into extinction coefficients and then used to de-redden SDSS and DES magnitudes. Using SFD maps to obtain E(B-V), then apply band-specific extinction coefficients to get extinction values.
-Subtracting these extinction values A$_{\rm X,\, CSFD}$ from the observed magnitudes \texttt{MAG\_X} to obtain the dereddened magnitudes:
+As mentioned earlier, Nao pointed me to this CSFD paper \cite{2023ApJ...958..118C}. Since the amplitude of the $E(B-V)$ residual was non-negligible ($10^{-4}$), the update to CSFD seemed worth implementing. I located a nice software package called \texttt{dustmapper}\footnote{\url{https://github.com/gregreen/dustmaps}} to query the CSFD dust map and obtain extinction coefficients for a given set of coordinates. Specifically, there is a handy \texttt{dustmaps.csfd.CSFDQuery} method that takes as input an RA, Dec list in SkyCoords format and returns an array of E(B-V) values. An $R_V$ value is used to convert those into extinction coefficients and then used to de-redden SDSS and DES magnitudes. 
+%Using SFD maps to obtain E(B-V), then apply band-specific extinction coefficients to get extinction values.
+Subtracting these extinction values A$_{\rm X,\, CSFD}$ from the observed magnitudes \texttt{MAG\_X}, we may obtain the dereddened magnitudes:
+\small
 \begin{verbatim}
 MAG_X_CORRECTED_CSFD = MAG_X - A_X_CSFD
 \end{verbatim}
+\normalsize
 
-For the DES magnitudes, I used the corrected magnitude prescription of Pandey et al.~2021, replacing $A_{X,\mathrm{SFD98}}$ with the equivalent CSFD: 
+For the DES magnitudes, I adapted the magnitude prescription of Pandey et al.~2021, replacing the previous $A_{X,\mathrm{SFD98}}$ with the equivalent CSFD value: 
+\small
 \begin{verbatim}
 MAG_X_CORRECTED_CSFD = MOF_CM_MAG + DELTA_MAG_Y4 + DELTA_MAG_CHROM - A_X_CSFD
 \end{verbatim}
-These magnitude corrections are implemented in \texttt{src/deredden\_magnitudes.py} and \\
-\texttt{src/deredden\_sdss\_magnitudes.py}; the gist of the algorithm is shown in Appendix \ref{appx:deredden}. 
+\normalsize
 
-Note that to calculate extinction values correctly, the per-magnitude \av values were multiplied by a factor of 0.78, as described in the Sevilla-Noarbe et al.~2021 \cite{2021ApJS..254...24S}, and the effective wavelengths of each bandpass were rescaled as prescribed in Table 6 of Schlafly \& Finkbeiner 2011 \cite{2011ApJ...737..103S}. As a sanity check, I compared the \texttt{a\_sed\_sfd98\_g} $g$-band extinction value provided in the Y3 GOLD catalog with the value obtained with \texttt{dustmaps.SFD} for one of the redMaGiC galaxy samples. The difference between the two was quite minimal ($-1.86\ee{-9}$), which is reassuring. 
+Note that to calculate extinction values correctly, the per-magnitude \av values were multiplied by a factor of 0.78, as described in the Sevilla-Noarbe et al.~2021 \cite{2021ApJS..254...24S}, and the effective wavelengths of each bandpass were rescaled as prescribed in Table 6 of Schlafly \& Finkbeiner 2011 \cite{2011ApJ...737..103S}. These magnitude corrections are implemented in \texttt{src/deredden\_magnitudes.py} and \\
+\texttt{src/deredden\_sdss\_magnitudes.py}; the gist of the algorithm is shown in Appendix \ref{appx:deredden}. For a sanity check, I compared the \texttt{a\_sed\_sfd98\_g} $g$-band extinction value provided in the Y3 GOLD catalog with the value obtained with \texttt{dustmaps.SFD} for one of the redMaGiC galaxy samples. The difference between the two was reassuringly small ($-1.86\ee{-9}$). 
 
 As one might expect, the switch to CSFD had a notable effect on the amplitude of the signal and varied by sample type. For the WISExSuperCOSMOS foreground, CSFD had the effect of decreasing signal amplitude at large impact parameters. For the redMaGiC LRG sample, it had the effect of increasing the extinction at high impact parameters. Details can be found in $\S$\ref{sec:csfdvsnot}.  
 
@@ -256,7 +284,7 @@ Looking through the Sevilla-Noarbe et al. 2021 paper, they do a more sophisticat
 
 \subsubsection{Weighted least-squares fitting to profiles.}
 
-To fit models to our results and facilitate comparison to the literature, I have added a function (\texttt{do\_WLS\_fit.py}) to perform weighted least-squares fits to extinction profiles. Surprisingly, we hadn't implemented this yet! The function, partially reproduced in Appendix \ref{appd:wls}, is principally a wrapper for the StatsModel package's weighted least-squares method, with the additional capability to rescale weights for fits in logarithmic space (i.e., power laws). This code was used to generate all fits shown in this report, and weights are based on TreeCorr's estimates of the variance at each point in the extinction profile. 
+To fit models to our results and facilitate comparison to the literature, I have added a function (\texttt{do\_WLS\_fit.py}) to perform weighted least-squares fits to extinction profiles. Surprisingly, we hadn't implemented this yet! This code, partially reproduced in Appendix \ref{appd:wls}, is essentially a wrapper for the StatsModel package's weighted least-squares method, with the additional capability to rescale weights for fits in logarithmic space (i.e., power laws). It was used to generate all fits shown in this report, with input weights based on TreeCorr covariances.
 %Options exist for both logarithmic (i.e., power law) and non-logarithmic (regular, linear bins) fits
 
 
@@ -269,9 +297,9 @@ To fit models to our results and facilitate comparison to the literature, I have
 \section{Catalogs: Round 2}\label{sec:catalogs}
 
 \subsection{Southern sky: redMaGiC \& WISExSCOS}
-In the first update, all results presented were made using the WISExSuperCOSMOS (or WISExSCOS) photometric redshift catalog as a foreground and the Dark Energy Survey redMaGiC catalogs \cite{2016MNRAS.461.1431R} as background catalogs. Since that time, there have been a few minor changes to the way these three catalogs are constructed for our analysis. First, the redshift cut for the foreground WISExSCOS catalog galaxies is now $z < 0.2$ from $z < 0.15$, and I have implemented a $17 < bCalCorr < 21$ to minimize stellar confusion at the faint end. Second, a cut of $z > 0.5$ is placed on the high-density redMaGiC sample to ensure adequate foreground-background separation (the full redshift range is $0.15 < z < 0.65$). As before, I also create a $z < 0.45$ subsample of the high-density redMaGiC catalog to investigate the extended CGM of the redMaGiC luminous red galaxies (LRGs). 
+All results presented in update \#1 were made with the WISExSuperCOSMOS (aka WISExSCOS) catalog as a foreground and the Dark Energy Survey redMaGiC catalogs \cite{2016MNRAS.461.1431R} as backgrounds. Since that time, there have been a couple of minor changes to the way these catalogs are implemented in our analysis. First, the redshift cut for the WISExSCOS catalog is now $z < 0.2$ from $z < 0.15$, and I have implemented an additional cut of $17 < bCalCorr < 21$ to minimize stellar confusion at the faint end. Second, a cut of $z > 0.5$ is placed on the high-density redMaGiC sample to ensure adequate foreground-background separation (the full redshift range is $0.15 < z < 0.65$). I also created a $z < 0.45$ subsample of the high-density redMaGiC catalog to investigate the extended CGM of the redMaGiC luminous red galaxies (LRGs).
 
-To add photometry to the redMaGiC catalogs, I select ``good'' DES Y3 GOLD galaxies with the {Cosmohub}\footnote{\url{https://cosmohub.pic.es/home}} \cite{TALLADA2020100391,2017ehep.confE.488C} query below, then join the two catalogs on the \texttt{COADD\_OBJECT\_ID} parameter. 
+To add photometry to the redMaGiC catalogs, I select ``good'' DES Y3 GOLD galaxies with the {Cosmohub}\footnote{\url{https://cosmohub.pic.es/home}} \cite{2017ehep.confE.488C,TALLADA2020100391} query below, then join the two catalogs on the \texttt{COADD\_OBJECT\_ID} parameter. The \texttt{mof\_cm\_mag\_X} magnitudes used in the first iteration of the analysis have now been replaced with CSFD-corrected magnitudes (\texttt{mof\_cm\_mag\_X\_corr\_csfd}).
 
 \small
 \begin{verbatim}
@@ -283,11 +311,11 @@ To add photometry to the redMaGiC catalogs, I select ``good'' DES Y3 GOLD galaxi
 \end{verbatim}
 \normalsize
 
-In addition, CSFD-corrected magnitudes (\texttt{mof\_cm\_mag\_X\_corr\_csfd}) are added to the joined DES Y3 GOLD-redMaGiC background catalogs and replace the \texttt{mof\_cm\_mag\_X} magnitudes used in the first iteration of the analysis.
+ %are added to the joined DES Y3 GOLD-redMaGiC background catalogs and replace 
 %
-As stated in the first update, no random catalog is currently available for the WISExSuperCOSMOS surveym and so I create one myself using the updated algorithm described in Section \ref{sec:codeupdates}. This updated WISExSuperCOSMOS random catalog is created in galactic coordinates to match the original catalog format. 
+As stated in the first update, no random catalog is currently available for the WISExSuperCOSMOS survey, and so I create one myself using the updated algorithm described in Section \ref{sec:codeupdates}. This updated WISExSuperCOSMOS random catalog is created in galactic coordinates to match the original catalog format. 
 
-The final catalog sizes are: 1,293,547 galaxies in the southern sky WISExSuperCOSMOS catalog; 871,556 galaxies at $z > 0.5$ in the high-density background redMaGiC catalog; 34,711,359 objects in the $z > 0.5$ high-density background redMaGiC random catalog; 816,204 galaxies in the high-luminosity high-redshift background redMaGiC catalog; 32,597,284 objects in the high-luminosity high-redshift background redMaGiC random catalog; 660,074 galaxies in the foreground $z < 0.45$ high-density redMaGiC catalog; and 26,306,402 galaxies in the foreground $z < 0.45$ redMaGiC catalog. 
+The final catalog sizes are: 1,293,547 galaxies in the southern sky WISExSuperCOSMOS catalog; 871,556 galaxies at $z > 0.5$ in the high-density background redMaGiC catalog; 34,711,359 objects in the $z > 0.5$ random high-density redMaGiC catalog; 816,204 galaxies in the high-luminosity high-redshift  redMaGiC catalog; 32,597,284 objects in the random high-luminosity high-redshift redMaGiC catalog; 660,074 galaxies in the $z < 0.45$ high-density redMaGiC catalog; and 26,306,402 objects in the random $z < 0.45$ redMaGiC catalog. 
 
 \subsection{Northern Sky: SDSS and GSWLC}
 
@@ -306,9 +334,9 @@ A preliminary SDSS background sample is retrieved with the SciServer query below
 \normalsize
 
 %Double-check the numbers!
-After masking to match the WISExSuperCOSMOS catalog and a color cut to simplify the color-redshift space (see $\S$\ref{sec:sdss}), an impressive 16,839,045 galaxies remain. De-reddened magnitudes for our extinction profile analysis are obtained using the CSFD procedure described above. 
+After masking to match the WISExSuperCOSMOS catalog and a color cut to simplify the color-redshift space (see $\S$\ref{sec:sdss}), 16,839,045 galaxies remain. De-reddened magnitudes for the extinction profile analysis are obtained using the CSFD procedure described in $\S$\ref{sec:modelupdates}. 
 
-The WISExSuperCOSMOS catalog covers the whole sky and thus the SDSS area, so that was the first foreground sample constructed for analysis with the SDSS background galaxy catalog. After masking, 1,708,255 WISExSuperCOSMOS galaxies are used as a Northern sky foreground catalog. 
+The WISExSuperCOSMOS catalog covers the whole sky and thus the SDSS area, so that was the first foreground sample I constructed for use with the SDSS background galaxy catalog. After masking, the Northern WISExSCOS catalog contains 1,708,255 galaxies. 
 
 As I was interested in examining the relationship between dust and galaxy properties, I also created a foreground catalog from the GALEX-SDSS-WISE Legacy Catalog (GSWLC), which has physical properties for almost 660,000 galaxies at redshifts $0.01 < z < 0.3$.\footnote{https://salims.pages.iu.edu/gswlc/} Several GSWLC variants are available; this analysis uses the GSWLC-X2, which combines the deepest areas of the GSWLC-A, M and D catalogs and covers 90\% of the SDSS area \cite{2016ApJS..227....2S}. The GSWLC-X2 also features more accurate star formation rates than the first generation of the catalog thanks to joint UV, optical, and mid-IR SED fitting \cite{2018ApJ...859...11S}). The full GSWLC-X2 contains 659,229 galaxies; as recommended by the authors, we restrict our analysis to the 610,518 that are included in the Sloan Digital Sky Survey main galaxy sample (\texttt{flag\_mgs = 1}, see Figure \ref{fig:gswlc}). After masking and a redshift cut at $z < 0.18$ to ensure adequate foreground-background separation, the GSWLC catalog used in this analysis contains 550,060 galaxies. A different subset of the SDSS catalog was created as a background catalog for GSWLC with a total of 18,452,187 galaxies. 
 
@@ -320,10 +348,10 @@ As I was interested in examining the relationship between dust and galaxy proper
 \end{center}
 \end{figure}
 
-Random galaxy catalogs are not readily available for either GSWLC or SDSS and so I create them using the updated algorithm described in Section \ref{sec:codeupdates}. The resulting random SDSS catalog has 247,369,950 objects; the random GSWLC catalog contains 167,257,476 objects; and the random WISExSuperCOSMOS catalog for the Northern sky has 5,865,639 objects. 
+Random galaxy catalogs are not readily available for either GSWLC or SDSS, so I create them using the algorithm described in $\S$ \ref{sec:codeupdates}. The resulting random SDSS catalog has 247,369,950 objects; the random GSWLC catalog contains 167,257,476 objects; and the random Northern WISExSuperCOSMOS catalog has 5,865,639 objects. 
 
 \subsection{Star catalogs for systematics testing}
-Beyond new galaxy catalogs, since update \#1 I have also constructed star catalogs to test for systematic errors in our analysis. The rationale for using star catalogs is thus: unless embedded in a star-forming region, stars do not have extended halos of dust---certainly not at megaparsec scales! Similarly, stars embedded in the Milky Way should not display dust-induced color gradients as a function of projected distance from galaxies outside the Milky Way. So, using star catalogs as both foreground and background samples in the extinction calculation offers a valuable null test of our pipeline. My intuition is that a stellar foreground catalog helps validate the analysis as a whole, while a stellar background catalog with magnitude columns that match the main background sample (i.e., redMaGiC) helps to validate the reddening estimator in particular, or at least the pipeline. 
+Beyond new galaxy catalogs, since update \#1 I have also constructed star catalogs to test for systematic errors in our analysis. The rationale for using star catalogs is thus: unless embedded in a star-forming region, stars do not have extended halos of dust---certainly not at megaparsec scales! Similarly, stars embedded in the Milky Way should not display dust-induced color gradients as a function of projected distance from galaxies outside the Milky Way. So, using star catalogs as both foreground and background samples in the extinction calculation offers a valuable null test of our pipeline. My intuition is that a stellar foreground catalog helps validate the analysis as a whole, while a stellar background catalog with the same magnitudes as the background sample (i.e., redMaGiC) helps to validate the reddening estimator, or at least the pipeline. 
 
 \begin{figure}[htbp]
 \begin{center}
@@ -335,7 +363,7 @@ Beyond new galaxy catalogs, since update \#1 I have also constructed star catalo
 
 % I believe that the background catalog of stars allows us to validate our extinction estimator. 
 
-Foreground star catalogs (for cross-correlation with the redMaGiC background catalogs) are selected from the Gaia Data Release 3 database \cite{2023A&A...674A...1G}, accessd via Cosmohub. As elsewhere, overlapping regions are obtained by calculating the intersection of masks for Gaia and DES. As the Gaia collaboration does not make a survey mask readily available, I create one using a simple function (\texttt{radec2healpixels}) described in Section \ref{sec:code:healpix}. The final on-sky overlap between the Gaia and redMaGiC catalogs is shown in Figure \ref{fig:gaiaoverlap}. (Incidentally, the same procedure is carried out to make masks for SDSS and GSWLC catalogs, neither of which have readily available survey masks.) 
+Foreground star catalogs (for cross-correlation with the redMaGiC background catalogs) are selected from the Gaia Data Release 3 database \cite{2023A&A...674A...1G}, accessd via Cosmohub. As elsewhere, overlapping regions are obtained by calculating the intersection of masks for Gaia and DES. Because the Gaia collaboration does not make a survey mask readily available, I create one using the simple (\texttt{radec2healpixels}) function described in Section \ref{sec:code:healpix}. The final on-sky overlap between the Gaia and redMaGiC catalogs is shown in Figure \ref{fig:gaiaoverlap}. (Incidentally, the same procedure is carried out to make masks for SDSS and GSWLC catalogs, neither of which have readily available survey masks.) 
 
 Figure \ref{fig:gaiaoverlap} also displays the gradient in the number density of stars across the DES field of view towards the galactic plane. Failing to account for this variation in source density in random catalogs might bias the resulting correlation measurement. Accordingly, both ``signal'' and ``random'' star catalogs are independent, random subsamples ($\sim 478,000$ objects) of the full Gaia Data Release 3 catalog.
 
@@ -369,10 +397,10 @@ A_V(r) = \left(4.4 \pm 1.1\right) \times 10^{-3} \left( \frac{r}{h^{-1}\, \mathr
 \end{equation}
 
 
-This finding wasn't guaranteed and is certainly cool to see. However, we also have a couple of new and surprising results: 
+This match was not guaranteed and is certainly cool to see. However, we also have a couple of new and surprising results: 
 
 \begin{enumerate}
-\item For all foreground samples analyzed save the redMaGiC LRG, the \av at $r < 50 h^{-1} kpc$ actually follows a significantly steeper power law than the rest of the profiles. This broken power law result has been consistent since the first preliminary experiments in 2018, so it's no fluke! 
+\item For all foreground samples considered save the redMaGiC LRG, the \av at $r < 50$ \hinv kpc actually follows a significantly steeper power law than the rest of the profiles. This broken power law result has been consistent since our first experiments in 2018, so it is no fluke! 
 \item The WISExSuperCOSMOS extinction profiles taper/roll off after about 3 \hinv Mpc, consistent with an earlier literature result cited in update \#1.
 \item Although the exponents are roughly the same as M10, the \textit{amplitude} of our \av profiles is 2-3 times higher than the M10 result. 
 \end{enumerate}
@@ -392,9 +420,9 @@ Comments for the individual samples follow.
 
 \subsubsection{WISExSuperCOSMOS foreground}
 
-The extinction profiles of WISExSuperCOSMOS galaxies as measured with redMaGiC background galaxies are shown in Figure \ref{fig:redmagicfits}: the result from cross-correlation with the $z > 0.5$ high-density redMaGiC sample is shown in dark blue; the result from cross-correlation with the high-redshift redMaGiC sample is shown in light blue. In both cases, the extinction profiles follow a broken power law, with a rapid decrease from $A_V \sim 0.3$ to $A_V \sim 0.02$ in the inner 50 \hinv kpc, then a slower decline to $A_V \sim 0.02$ at 1 \hinv Mpc . At the transition to the 2-halo regime ($r \gtrsim 2$ \hinv Mpc), the extinction profiles rapidly diminish to below our detection threshold ($A_V \sim 10^{-5}$). 
+The extinction profiles of WISExSuperCOSMOS galaxies as measured with redMaGiC background galaxies are shown in Figure \ref{fig:redmagicfits}: the result from cross-correlation with the $z > 0.5$ high-density redMaGiC sample is shown in dark blue, and the result from cross-correlation with the high-redshift redMaGiC sample is shown in light blue. Both extinction profiles follow a broken power law, with a rapid decrease from $A_V \sim 0.3$ to $A_V \sim 0.02$ in the inner 50 \hinv kpc, then a slower decline to $A_V \sim 0.02$ at 1 \hinv Mpc . At the transition to the 2-halo regime ($r \gtrsim 2$ \hinv Mpc), the extinction profiles rapidly diminish to below our detection threshold ($A_V \sim 10^{-5}$). 
 
-I fit power laws to the WISExSuperCOSMOS extinction profiles in the 1-halo regime (50 \hinv kpc $ < r < 1$ \hinv Mpc); the inner limit is set to the point where the redMaGiC LRG extinction and WISExSuperCOSMOS profiles intersect, and the outer limit to the points where the extinction begins to roll off. 
+I fit power laws to the WISExSuperCOSMOS extinction profiles in the 1-halo regime (50 \hinv kpc $ < r < 1$ \hinv Mpc); the inner limit is set to the point where the redMaGiC LRG and WISExSuperCOSMOS extinction profiles intersect, and the outer limit to the points where the extinction begins to roll off. 
 
 The best-fit power law to the extinction profile obtained with the $z > 0.5$ high-density redMaGiC sample is given by Equation \ref{eqn:hidens}: 
 % Equation 1
@@ -428,7 +456,7 @@ The exponent and amplitude of Equation \ref{eqn:lrg} agree with the combined red
 
 \subsubsection{Comparison to SFD}\label{sec:csfdvsnot}
 
-Given the acknowledged problems of SFD98, the CSFD formulation is the default Milky Way extinction correction employed in this work. It may still be of interest to compare the profiles obtained with the SFD and CSFD prescriptions; this is shown for the three redMaGiC-based profiles in Figure \ref{fig:csfdvsnot}. I noticed a couple of interesting trends here. First, there didn't seem to be much of an effect for the high-density background catalog, but using the SFD extinction correction, the high-lum high-z profile has more extinction at high impact parameters. Put differently, it appears that the SFD prescription added too much extinction at high impact parameters, and with CSFD the two redMaGiC catalogs produce consistent results for WISExSuperCOSMOS. On the other hand, compared to the SFD98 prescription, the CSFD prescription added a significant amount of dust at higher impact parameters for the redMaGIC LRG sample, leading to significant reddening past 1 \hinv Mpc. Although quite different from the effect for the WISExSuperCOSMOS result, this behavior for LRG is consistent with the idea that SFD98 overcorrected foreground extinction due to contamination from the LSS. If one assumes that the LRG is a particularly biased tracer of the LSS, then it makes sense that the CSFD prescription adds some reddening back in. 
+Given the acknowledged problems of SFD, the CSFD formulation is the default Milky Way extinction correction used in this work. It may nevertheless be of interest to compare the profiles obtained with the SFD and CSFD prescriptions; this is shown for the three redMaGiC-based samples in Figure \ref{fig:csfdvsnot}. I noticed a couple of interesting trends here. First, using the SFD extinction correction didn't seem to produce much of an effect for the high-density background catalog but noticeably decreased the amplitude of the high-lum high-z profile at high impact parameters. Put differently, it appears that the SFD prescription added too much extinction at high impact parameters, and with CSFD the two redMaGiC catalogs produce consistent results for WISExSuperCOSMOS. On the other hand, compared to the SFD prescription, the CSFD prescription added a significant amount of dust at higher impact parameters for the redMaGIC LRG sample, leading to significant reddening past 1 \hinv Mpc. Although quite different from the effect for the WISExSuperCOSMOS result, this behavior for LRG is consistent with the idea that SFD overcorrected foreground extinction due to contamination from the LSS. If one assumes that the LRG is a particularly biased tracer of the LSS, then it makes sense that the CSFD prescription adds some reddening back in. 
 
 \begin{figure}[htb]
 \begin{center}
@@ -438,7 +466,7 @@ Given the acknowledged problems of SFD98, the CSFD formulation is the default Mi
 \end{center}
 \end{figure}
 
-For the sake of comparison, I also fit power laws to extinction profiles resulting from the SFD98 Milky Way foreground prescription. The best-fit power law to the extinction profile obtained with the $z > 0.5$ high-density redMaGiC sample is given by Equation \ref{eqn:hidenssfd}: 
+For the sake of comparison, I also fit power laws to extinction profiles resulting from the SFD Milky Way foreground prescription. The best-fit power law to the extinction profile obtained with the $z > 0.5$ high-density redMaGiC sample is given by Equation \ref{eqn:hidenssfd}: 
 
 % Equation 1
 \begin{equation}
@@ -500,7 +528,7 @@ $-3.2\, \pm \, 47$ \\
 The top row of Figure \ref{fig:systematics} shows the the extinction profile resulting from the cross-correlation of the Gaia star foreground catalog with the redMaGiC high-luminosity high-redshift sample (maroon points) and high-density sample (red points). The left panel shows the full impact parameter range; the right panel is cropped to show values at higher impact parameters. 
 
 %Excluding the first two points, which seemed to skew the fits, 
-The exponents and prefactors of best-fit power laws to these two profiles, plus the fit to the stacked redMaGiC profiles, are tabulated in the first three rows of Table \ref{tab:systematics}. The best-fit power law to the stacked high-dens and high-lum high-z profiles is overplotted in Figure \ref{fig:systematics} as a medium-red dashed line. In all fits, the amplitude is consistent with 1 and the exponent is one ten-thousandth of the size of the signal (!). This result sounds incredible, but the full fit printout in $\S$\ref{appx:gaiafg} seems to back up the assertion. So, this is a strong confirmation of the validity of our results. 
+The exponents and prefactors of best-fit power laws to these two profiles, plus the fit to the stacked redMaGiC profiles, are tabulated in the first three rows of Table \ref{tab:systematics}. The best-fit power law to the stacked high-dens and high-lum high-z profiles is overplotted in Figure \ref{fig:systematics} as a medium-red dashed line. In all fits, the amplitude is consistent with 1 and the exponent is one ten-thousandth of the magnitude of the signal (!). This result sounds incredible, but the full fit printout in $\S$\ref{appx:gaiafg} seems to back up the assertion. So, this is a strong confirmation of the validity of our results. 
 
 \begin{figure}[htb]
 \begin{center}
@@ -511,7 +539,7 @@ The exponents and prefactors of best-fit power laws to these two profiles, plus 
 \end{center}
 \end{figure}
 
-Similarly, the bottom row of Figure \ref{fig:systematics} shows the \av profile resulting from the cross-correlation of the WISExSuperCOSMOS foreground with the background catalog created from DES Y3 stars (see $\S$\ref{sec:catalogs} for details). The best-fit power law to this profile is overplotted as a dashed maroon line and the parameters of this fit are tabulated in the bottom row of Table \ref{tab:systematics}. Note that for this particular fit, I decided to use the result of an unweighted least-squares result, not the WLS used elsewhere. The justification is essentially aesthetic: while the WLS fit yielded an exponent essentially consistent with zero ($1.78 \ee{-4} \pm 1.28 \ee{-4}$), the exponent was ten times larger than exponents from the WLS-based Gaia foreground fits, which in turn made the DES background \av plots look far worse than they were. Meanwhile, the LSQ fits yielded a much smaller value, albeit with a large error bar ($-3.15 \ee{-5} \pm 4.71 \ee{-4}$). Regardless, even in the pessimistic case of the WLS, the OOM of the exponent is less than one-thousandth of the OOM of the galaxy \av profiles. The WLS and regular LSQ fits are compared below, and the full WLS fit results may be found in Appendix \ref{appx:desfit}.  
+Similarly, the bottom row of Figure \ref{fig:systematics} shows the \av profile resulting from the cross-correlation of the WISExSuperCOSMOS foreground with the background catalog created from DES Y3 stars (see $\S$\ref{sec:catalogs} for details). The best-fit power law to this profile is overplotted as a dashed maroon line and its parameters are tabulated in the bottom row of Table \ref{tab:systematics}. Note that for this particular fit, I decided to plot the result of an unweighted least-squares result, not the WLS used elsewhere. The justification is essentially aesthetic: while the WLS fit yielded an exponent essentially consistent with zero ($1.78 \ee{-4} \pm 1.28 \ee{-4}$), the exponent was ten times larger than exponents from the WLS-based Gaia foreground fits, which in turn made the DES star \av plots look far worse than they were. Meanwhile, the LSQ fits yielded a much smaller exponent, albeit with a large error bar ($-3.15 \ee{-5} \pm 4.71 \ee{-4}$). The WLS and regular LSQ fits are compared below, and the full WLS fit results may be found in Appendix \ref{appx:desfit}. Regardless of fit type, the OOM of the exponent is less than one-thousandth of the OOM of the galaxy \av profiles, which is again a nice confirmation of our results.
 
 %% I may have skipped the first two points? And these are certainly
 %% based on the updated galactic-coord randoms. 
@@ -528,12 +556,12 @@ WISExSCOS x DES Y3 stars LSQ:
 
 \subsection{BONUS: SDSS-based results}\label{sec:sdss}
 
-These results are based on two separate foreground catalogs: the same WISExSuperCOSMOS catalog used for the southern sky and the GSWLC catalog described above. I will go through these results separately. These are certainly interesting to see because so far we hadn't extended the search to the Northern sky. However, these results probably aren't publication-ready: the WISExSCOS \x SDSS \av profile doesn't fall off with distance but flattens out, and while the GSWLC \x SDSS profile is actually a pretty decent match to the other profiles at low and high impact parameters, there is an odd dip at the middle that depends on the NSIDE of the mask. 
+These results are based on two separate foreground catalogs: the same WISExSuperCOSMOS catalog used for the southern sky and the GSWLC catalog described above. I will go through these results separately. These are certainly interesting to see because so far we hadn't extended the search to the Northern sky. However, these results probably aren't publication-ready: the WISExSCOS \x SDSS \av profile doesn't fall off with distance but flattens out instead, and while the GSWLC \x SDSS profile is actually a pretty decent match to the other profiles at low and high impact parameters, there is an odd dip at the middle that depends on the NSIDE of the mask. 
 
 That said, may be an argument to be made for publishing just \textit{low} impact parameter points. Those points consistently line up quite well with the redMaGiC-based results at these impact parameters, and Eric did note the significance of the detection of extended dust halos in what is really the extended CGM. But, we can discuss this.
 
 \subsubsection{WISExSuperCOSMOS x SDSS}
-The \av profile resulting from cross-correlation of the WISExSuperCOSMOS foreground catalog with an SDSS catalog is shown in Figure \ref{fig:sdss}. I had really wanted this one to work, since this is the same foreground sample we use elsewhere that gave us successful results. And at impact parameters of less than 100 \hinv kpc (2-3 arcminutes), the profile qualitatively matches the redMaGiC-background \av profiles of Figure \ref{fig:redmagicfits}. However, that fat tail past 3 arcminutes is the stickiest result of all of my results. Color cuts on the background galaxies, aggressive masking, etc. do nothing. I had even hoped that CSFD, which is supposedly a superior extinction correction algorithm, would make it go away, but all to no avail. 
+The \av profile resulting from cross-correlation of the WISExSuperCOSMOS foreground catalog with an SDSS catalog is shown in Figure \ref{fig:sdss}. I had really wanted this one to work, since this is the same foreground sample we use elsewhere that gave us successful results. And at impact parameters of less than 100 \hinv kpc (2-3 arcminutes), the profile qualitatively matches the redMaGiC-background \av profiles of Figure \ref{fig:redmagicfits}. However, that fat tail past 3 arcminutes is the stickiest result of all of my results. Color cuts on the background galaxies, aggressive masking, etc. do nothing. I had even hoped that CSFD, which is supposedly a superior extinction correction algorithm, would make it go away, but to no avail. 
 
 \begin{figure}[htb] %  figure placement: here, top, bottom, or page
   \centering
@@ -545,7 +573,7 @@ The \av profile resulting from cross-correlation of the WISExSuperCOSMOS foregro
    \label{fig:sdsscolorredshift}
 \end{figure}
 
-Figure \ref{fig:sdsscolorredshift} shows the color-redshift space of the SDSS galaxies used in this analysis, as well as the color-redshift of the random catalogs I created following the procedure outlined above. Even with quality cuts and an $i - z > -0.103$ selection, the color space is clearly quite complicated. Since what characterizes the redMaGiC sample is tightness in color space, I also tried to use the \href{https://www.sdss4.org/science/final-bao-and-rsd-measurements/}{eBOSS LRG sample}. Unfortunately, the source density was too low to be used: 377,458 galaxies in LRG sample spread out over tens of thousands of square degrees. So, the results (with the SFD98 extinction!) didn't look like much. 
+Figure \ref{fig:sdsscolorredshift} shows the color-redshift space of the SDSS galaxies used in this analysis, as well as the color-redshift of the random catalogs I created following the procedure outlined above. Even with quality cuts and an $i - z > -0.103$ selection, the color space is clearly quite complicated. Since what characterizes the redMaGiC sample is tightness in color space, I also tried to use the \href{https://www.sdss4.org/science/final-bao-and-rsd-measurements/}{eBOSS LRG sample}. Unfortunately, the source density was too low to be used: 377,458 galaxies in LRG sample spread out over tens of thousands of square degrees. So, the results (at least with the SFD extinction!) didn't look like much. 
 
 \begin{figure}[htb]
 \begin{center}
@@ -558,15 +586,13 @@ Figure \ref{fig:sdsscolorredshift} shows the color-redshift space of the SDSS ga
 \subsubsection{GSWLC x SDSS}
 As discussed above, I also tried to get a fit with GSWLC-X2, since that catalog has star-formation information and would allow us to assess the difference in dust halos between quiescent and star-forming galaxies. The resulting \av for the GSWLC-X2 foreground catalog cross-correlated with a color-cut SDSS catalog is shown in red in Figure \ref{fig:uglycolor}. 
 
-I find this result to be quite interesting: at low impact parameters (r $<$ 50 \hinv kpc) \textit{and} at high impact parameter/the two-halo regime (r $>$ 1 \hinv Mpc), the \av profile lines up very nicely with the redMaGiC samples, with an amplitude somewhere between redMaGiC LRG and WISExSuperCOSMOS. However, that dip in the middle is somewhat mysterious to me. Its exact location also seems to depend heavily on the NSIDE of the HEALPix mask I create for the catalog. his is a possible indication of my mask being incomplete or wrong; this is why I don't 100\% trust the result. For the sake of completeness, I decided to fit a power law to the outermost six points of this GSWLC \x SDSS extinction profile, with the result shown in Equation \ref{eqn:gswlc}:
+I find this result to be quite interesting: at low impact parameters (r $<$ 50 \hinv kpc) \textit{and} at high impact parameter/the two-halo regime (r $>$ 1 \hinv Mpc), the \av profile lines up very nicely with the redMaGiC samples, with an amplitude somewhere between redMaGiC LRG and WISExSuperCOSMOS. However, that dip in the middle is somewhat mysterious to me. Its exact location also seems to depend heavily on the NSIDE of the HEALPix mask I create for the catalog. This may indicate that the mask I create is incomplete or wrong; regardless, it's I don't 100\% trust the result. For the sake of completeness, I decided to fit a power law to the outermost six points of this GSWLC \x SDSS extinction profile, with the result shown in Equation \ref{eqn:gswlc}. As one might expect from Figure \ref{fig:uglycolor}, this relationship agrees very nicely with Equations \ref{eqn:stacked} and \ref{eqn:lrg}.
 
 \begin{equation}
 A_V(r) = \left(1.5 \pm 0.4\right) \times 10^{-2} \left( \frac{r}{h^{-1}\, \mathrm{kpc}} \right)^{-0.76 \pm 0.07}\label{eqn:gswlc}
 \end{equation}
 
-As one might expect from Figure \ref{fig:uglycolor}, this relationship agrees very nicely with Equations \ref{eqn:stacked} and \ref{eqn:lrg}.
-
-\textbf{Quiescent vs. star-forming dust profiles}. Around May of 2024, I experimented with calculating extinction profiles on GSWLC-X2 data segregated by specific star formation rates (sSFR). I was very curious to see the difference in \av between quiescent galaxies, defined by the GSWLC group as having $\log_{10}\mathrm{sSFR} < -11.5 $ in the M or D GSWLC UV sub-sample, and star-forming galaxies with $\log_{10}\mathrm{sSFR} > -11.5$ in any GSWLC UV sub-sample.\footnote{https://salims.pages.iu.edu/gswlc/}. With a cut at $z < 0.2$, there were about 187,000 quiescent galaxies and 208,000 actively star-forming galaxies (Figure \ref{fig:gswlcMstarHist}). The results are shown in Appendix \ref{appx:gswlc} and Figure \ref{fig:gswlcMstarHist} in particular. While cool, Figure \ref{fig:gswlcMstarHist} left me a little bemused, particularly the large dip in the middle of the profiles. Moreover, the selection functions and sky coverage are also quite heterogenous between the quiescent and star-forming samples, which surely complicates the interpretation of the result. As an additional caveat, these results are based on the out-of-date SFD98 correction, as the CSFD Milky Way extinction correction scheme had not yet been implemented in the code. Since I wasn't even sure I understood the whole GSWLC sample result, redoing this complicated quiescent versus star-forming analysis didn't seem worth it. But complications aside, this is an interesting line of inquiry, so we can pick it up again after submission. 
+\textbf{Quiescent vs. star-forming dust profiles}. Around May of 2024, I experimented with calculating extinction profiles on GSWLC-X2 data segregated by specific star formation rates (sSFR). I was very curious to see the difference in \av between quiescent galaxies, defined by the GSWLC group as having $\log_{10}\mathrm{sSFR} < -11.5 $ in the M or D GSWLC UV sub-sample, and star-forming galaxies with $\log_{10}\mathrm{sSFR} > -11.5$ in any GSWLC UV sub-sample.\footnote{https://salims.pages.iu.edu/gswlc/} With a cut at $z < 0.2$, there were about 187,000 quiescent galaxies and 208,000 actively star-forming galaxies (Figure \ref{fig:gswlcMstarHist}). The results are shown in Figure \ref{fig:gswlcMstarHist} of Appendix \ref{appx:gswlc}. While cool, Figure \ref{fig:gswlcMstarHist} left me a little bemused, particularly the extra-large dip in the middle of the profiles. Moreover, the selection functions and sky coverage are also quite heterogenous between the quiescent and star-forming samples, which surely complicates the interpretation of the result. As an additional caveat, these results are based on the out-of-date SFD extinction correction, as the CSFD Milky Way extinction correction scheme had not yet been implemented in the code. Since I wasn't even sure I understood the whole GSWLC sample result, redoing this complicated quiescent versus star-forming analysis with CSFD didn't seem worth it. Nevertheless, this is an interesting line of inquiry, so we can pick it up again after submission. 
 
 \begin{figure}[htb]
 \begin{center}
@@ -593,9 +619,9 @@ Taken from Figure 12 of Van Alfen et al. (2024). The position–position (left),
 \section{Discussion and Next Steps}\label{sec:discussion}
 \subsection{Comment on results}
 
-As discussed above, the major results are the consistency of the \av profile slope in the one-ish halo regime with M10 across all samples but the significantly larger-than-predicted amplitude. The fact that CSFD-based profiles have slighly higher \av values than SFD-based profiles is consistent with the claim of \cite{2023ApJ...958..118C} that ``when SFD is used to derive absolute photometry for sources, Galactic extinction will be overcorrected in a redshift- and spatially-dependent manner following the pattern of the cosmic web.'' Now, whether the CSFD result is more believable than SFD is at the reader's discretion! The saving grace here is the pretty great results of the star-based systematics tests, which suggests that our analysis can't be a complete fluke. 
+As discussed above, the major takeaway is the consistency of our \av profile slopes with M10 across all samples but the significantly larger-than-predicted amplitude. The fact that CSFD-based profiles have slighly higher \av values than SFD-based profiles is consistent with the claim of \cite{2023ApJ...958..118C} that ``when SFD is used to derive absolute photometry for sources, Galactic extinction will be overcorrected in a redshift- and spatially-dependent manner following the pattern of the cosmic web.'' Now, whether the CSFD result is more believable than SFD is at the reader's discretion! The saving grace is the star-based systematics tests, whose pretty great results suggest that our analysis isn't completely off. 
 
-The sharp increase in \av at $r < 50$ \hinv kpc for WISExSuperCOSMOS, SDSS, and GSWLC is also interesting. I imagine that region is really the extended disk of the galaxies and probably consists of material stripped from infalling satellites or galactic outflows, as at least some of those galaxies must be star-forming. Conversely, the lack of extinction about redMaGiC LRGs at low impact parameters region jibes with the idea of quiescent galaxies not having a lot of dusty outflows. 
+The sharp increase in \av at $r < 50$ \hinv kpc for WISExSuperCOSMOS, SDSS, and GSWLC is also interesting. I imagine that region is really the extended disk of the galaxies and probably consists of material stripped from infalling satellites or galactic outflows, as at least some of those galaxies must be star-forming. Conversely, the lack of extinction about redMaGiC LRGs at low impact parameters region jibes with the idea of quiescent galaxies not having a lot of dusty outflows. I am open to other interpretations, though.
 
 In a similar vein, we know that the redMaGiC galaxies are biased tracers of LSS (by biased here I mean have a high galaxy bias relative to some field galaxy). RedMaGiC LRG extinction persisting well into the two-halo regime, where the WISExSuperCOSMOS extinction is tapering off, tells a cool story about redMaGiC galaxies as tracers of LSS, while WISExSuperCOSMOS galaxies are a little more dispersed. 
 
@@ -610,22 +636,25 @@ In a similar vein, we know that the redMaGiC galaxies are biased tracers of LSS 
 
 \subsection{Next steps}
 
-At this point, I believe that we are ready to publish. One can fiddle with results ad infinitum or try to add new ones, but I am not sure we will gain much.%If you all want to start running systematic analyses, you can, but I am not going to wait around. 
-So, I think I'm going to start writing! 
+At this point, I believe that we are ready to publish. One can fiddle with existing results ad infinitum, and I have, but I am not sure we will gain much more. %If you all want to start running systematic analyses, you can, but I am not going to wait around. 
+So, I'm going to start writing! 
 
-As I work on the draft I would really appreciate suggestions on how to pitch these results. This estimator is novel but the finding is not fundamentally new (unless you count weirdly high \av as new). So, what is the improvement we are making over the state of the art? What have we learned about dust that we didn't know before? Are our findings incompatible with existing dust models? My attempts to link galaxy type and CGM were an attempt to get at some of that deeper knowledge, but those experiments didn't yield satisfactory conclusions and will need to be revisited later. 
+As I work on the draft \textbf{I would really appreciate suggestions on how to pitch these results}. Eric's estimator is novel but the finding is not fundamentally new (unless you count weirdly high \av as new). So, what is the improvement we are making over the state of the art? What have we learned about dust that we didn't know before? Are our findings incompatible with existing dust models? My attempts to link galaxy type and CGM were an attempt to gain this deeper knowledge, but those experiments didn't yield satisfactory conclusions and will need to be revisited later. 
 
 Our work here is hopefully a beginning, not an end! A wide range of follow-on investigations are possible, including finer systematics calibrations, figuring out what's going on in our Northern sky samples, and further investigating dust halos by galaxy type. I had really wanted to compare extinction profiles by galaxy type (red vs. blue), which informs models of differences in the larger-scale environments these galaxies inhabit. Even though I didn't manage to get useable results with the GSWLC-X2 catalog, Figure \ref{fig:colorcolor} shows that this could in principle be done with the WISExSuperCOSMOS catalog alone. 
 
 For northern-sky samples, it might be worth trying Pan-STARRS instead of SDSS, or perhaps KiDS or some other such thing. I don't know what the benefits would be of a more ``modern'' survey over SDSS, but it would be interesting to see. At some point, I would also like to selecting a foreground catalog from the Galaxy and Mass Assembly (GAMA) catalog, which in DR4 provides stellar mass, morphological classification, and  other physical characteristics for over 330,000 galaxies across four regions of the sky (G09, G12, G15, and G23) totaling 250 deg$^2$ \cite{2011MNRAS.413..971D, 2022MNRAS.513..439D}. 
 
+\subsection{Planned project with Bryanne McDonough}\label{sec:bryanne}
+
+Finally, my Future Faculty Fellow Bryanne McDonough and I are going to embark upon a new dust project in Spring 2025 that will unite our expertise. The goal is to generate predictions for how the characteristics of cold gas and dust in the circumgalactic medium vary between simulated field and cluster galaxies drawn from the IllustrisTNG hydrodynamic simulation suite. Bryanne knows the gory details of the IllustrisTNG analysis far better than I do, but essentially she will determine the sizes, shapes, and density profiles of circumgalactic dust and cool gas halos. We will then examine the dependence of these characteristics on properties of the host galaxy, such as redshift, mass, luminosity, star formation activity, and local galaxy overdensity. This work will result in a set of predictions regarding the distribution of circumgalactic dust and cool gas which can be compared to observational results like our stacked dust extinction profiles. I will keep you all posted!
 %Cluster duster! Copy and paste from my AAG, but this would be an extremely fun result. 
 
 \section{Bonus: updates from Aspen dust workshop}\label{sec:aspen}
 
-My talk at ``The Physics and Impact of Astrophysical Dust: from Star Formation through Cosmology'' Aspen Center for Physics Winter Conference in March 2024 went really well! I got some good questions and suggestions, including to update the dust extinction law in the $A_V$ calculations (see Section \ref{sec:analysis:extinction}). I learned about current hydrodynamical simulation efforts to understand the entrainment and survival of dust in the IGM -- specifically the work of Paul Torrey's group. Paul is actually an old friend from the UC Santa Cruz High Performance Astrophysical Computing Center (HiPACC) summer school that I attended in 2010 and is now a professor at UVa. His graduate student Helena Richie gave a presentation of hydrodynamical simulations of dust evolution in galactic outflows, which is described in \cite{2024ApJ...974...81R}. Specifically, they use the Cholla code to set up ``wind tunnel'' simulations of cool, dusty clouds driven into the hot halo by star formation activity. They find that that 60\% of 0.1-micron sized dust grains entrained in these galactic outflows could survive to populate both the hot and cool phases of the halo. Meanwhile, grains smaller than 0.01 microns cannot withstand hot-phase exposure and must be created in situ. Another good reference is here \url{https://academic.oup.com/mnras/article/503/1/336/6134059}. %He offered to give some theoretical comment on our findings when we are ready to publish, which is great! 
+It has been a while, but my talk at ``The Physics and Impact of Astrophysical Dust: from Star Formation through Cosmology'' Aspen Center for Physics Winter Conference in March 2024 went really well! I got some good questions and suggestions, including to update the dust extinction law in the $A_V$ calculations and update from SFD to CSFD (see Section \ref{sec:literature}). I learned about current hydrodynamical simulation efforts to understand the entrainment and survival of dust in the IGM -- specifically the work of Paul Torrey's group. Paul is actually an old friend from the UC Santa Cruz High Performance Astrophysical Computing Center (HiPACC) summer school that I attended in 2010 and is now a professor at UVa. His graduate student Helena Richie gave a presentation of hydrodynamical simulations of dust evolution in galactic outflows, which is described in \cite{2024ApJ...974...81R}. Specifically, they use the Cholla code to set up ``wind tunnel'' simulations of cool, dusty clouds driven into the hot halo by star formation activity. They find that that 60\% of 0.1-micron sized dust grains entrained in these galactic outflows could survive to populate both the hot and cool phases of the halo. Meanwhile, grains smaller than 0.01 microns cannot withstand hot-phase exposure and must be created in situ. Another good reference is R.~Kannan et al.~2021 \cite{2021MNRAS.503..336K}, which examines dust entrainment in galactic winds using hydrodynamic simulations.  %He offered to give some theoretical comment on our findings when we are ready to publish, which is great! 
 
-The conference also offered the opportunity to reconnect with Brandon Hensley. This was definitely one of the more scientifically productive and pleasant conferences I have attended. 
+%The conference also offered the opportunity to reconnect with Brandon Hensley. This was definitely one of the more scientifically productive and pleasant conferences I have attended. 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%

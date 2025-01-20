@@ -221,10 +221,11 @@ class CatalogJoiner:
         print("random matching: got to data stacking")
 
         # Stack the catalogs
-        joined_cat = hstack([c1.data[np.array(c1_index_holder).reshape(-1)],
-                            c2.data[np.array(c2_index_holder).reshape(-1)]],
-                            table_names=[c1.tabname, c2.tabname]
-                            )
+        joined_cat = hstack(
+            [c1.data[np.array(c1_index_holder).reshape(-1)],
+            c2.data[np.array(c2_index_holder).reshape(-1)]],
+            table_names=[c1.tabname, c2.tabname]
+        )
         print(f'{len(c1.data)} {c1.tabname} objects joined to',
               f'{c2.tabname} objects')
 

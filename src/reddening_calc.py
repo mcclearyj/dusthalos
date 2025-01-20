@@ -43,7 +43,7 @@ class ReddeningCalculator(ExtinctionModel):
         # Set sensible defaults
         base_config = {
             'nbins': 7, 'z_key': 'z', 'use_bin_numbers': False,
-            'dust_params': None, 'zbin_key': None 
+            'dust_params': None, 'zbin_key': None
         }
 
         # Overwrite defaults, append non-standard keys b/c who cares.
@@ -80,7 +80,7 @@ class ReddeningCalculator(ExtinctionModel):
                         (band_mag != np.nan) & \
                         (band_mag < 28)
             wg *= band_bool
-            
+
         # OK, this is an extra level of cleaning but here we go:
         '''
         if 'mof_cm_mag_corrected_i' in bands:
@@ -90,17 +90,17 @@ class ReddeningCalculator(ExtinctionModel):
         else:
             # SDSS photometry is already "good" but idk, we can add
             pass
- 
+
         if 'mof_cm_t' in self.data.colnames:
             print("Doing size cut...")
             size = np.ma.getdata(self.data['mof_cm_t'])
             size_bool = (size < 10)
             wg *= size_bool
-        
+
         else:
             raise KeyError("no size column found")
         '''
-        
+
         # percent of galaxies that failed to pass selections
         pfail = 100-(np.count_nonzero(wg) / catlen * 100)
 
@@ -146,17 +146,17 @@ class ReddeningCalculator(ExtinctionModel):
         weights = 1 / errors**2
         weighted_avg = np.average(data, weights=weights, axis=1)
 
-        # Compute the covariance matrix of the galaxy magnitudes
-        covar = np.cov(data)
+        # De-mean the galaxy magnitudes in each redshift bin
+        colors = (data.T - weighted_avg).T
+
+        # Compute the *unweighted* covariance matrix of the galaxy magnitudes
+        covar = np.cov(colors)
 
         # Compute the inverse covariance matrix
         Cinv = np.linalg.inv(covar)
 
         # Initialize delta based on the dust extinction model (self.dmdp)
         delta = (np.zeros_like(data).T + self.dmdp)
-
-        # De-mean the galaxy magnitudes in each redshift bin
-        colors = (data.T - weighted_avg).T
 
         # Compute the optimal estimator for excess reddening of galaxies
         # in this redshift bin using maximum likelihood
@@ -174,17 +174,22 @@ class ReddeningCalculator(ExtinctionModel):
         nbins: number of bins for color estimation
         """
 
+        # Simple catalog cleaning
         print("ReddeningCalc: removing catalog entries with NaN & sentinel values")
         self.preprocess_catalog()
 
+        # Accesses the get_dust_model method from extinction_model.py
         print("ReddeningCalc: making dust extinction model")
         self.get_dust_model()
 
+        # Start the actual calculation of extinction
         print("ReddeningCalc: beginning background galaxy reddening calculation...")
 
+        # Initialize arrays that will hold per-galaxy value & uncertainty of Av
         mle = np.zeros(len(self.data))
         mle_var = np.zeros(len(self.data))
 
+        # Sort galaxies into redshift bins for de-meaning purposes
         if self.redcalc_config['use_bin_numbers'] == True:
             print("ReddeningCalc: using bin numbers for redshifts")
             zbin_col = self.data[self.redcalc_config['zbin_key']]
@@ -198,8 +203,9 @@ class ReddeningCalculator(ExtinctionModel):
 
         bin_numbers = np.unique(zbin_col)
 
+        # Now start computing the value of the estimator
+        # Loop over all redshift bins specified in bin_numbers
         try:
-            # Loop over all redshift bins specified in bin_numbers
             for zb in bin_numbers:
                 # Create a boolean mask to select only galaxies in
                 # the current redshift bin
