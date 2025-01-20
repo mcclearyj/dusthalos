@@ -27,3 +27,7 @@ output/*/*/*treecorrcat.fits
 output/systematics_testing/gaia_fg_altcols/
 output/systematics_testing/large_angular_scales/
 output/*weighted*
+job_scripts/job*.sh
+output/sdss_gwslc_csfd/safe/
+output/*/*_fixed_est_*
+output/systematics_testing/*/*_fixed_est_*
