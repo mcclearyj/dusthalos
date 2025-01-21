@@ -9,7 +9,7 @@ from src.radec2healpixels import radec2healpixels
 catname = '/work/mccleary_group/dusty_halos/catalogs/sdss_bg_photoz2.fits'
 ra_col = 'ra'
 dec_col = 'dec'
-Nside = 1024
+Nside = 512
 
 ### Run!
 radec2healpixels(

@@ -121,22 +121,26 @@ class DustPlotter(RCParamsMixin):
         # Menard dust relationship
         theory_r_arcmin = np.logspace(-5,5,20)
         theory_r = theory_r_arcmin * theory_kpc.value * cosmo.h
-        coeff = 4.4e-3
-        av_scale = 100
-        av = coeff * (theory_r/av_scale)**(-0.86)
 
         # Converts us from arcminutes to h^-1 kpc
         # Menard relationship was in terms of h
         if kpc == True:
             scl = fg_gal_kpc.value * cosmo.h
             theory_r_plot = theory_r
+            coeff = 4.4e-3
+            av_scale = 100
             x_label = r'Impact parameter ($h^{-1}$ kpc)'
         else:
             scl = 1
+            coeff = 2.5e-3
+            av_scale = 1
             theory_r_plot = theory_r_arcmin
             x_label = f'Impact parameter (arcmin)'
 
         fig, ax = plt.subplots(figsize=(10,7), tight_layout=True)
+
+        # Av based on Menard+ 2010
+        av = coeff * (theory_r_plot/av_scale)**(-0.86)
 
         ax.plot(theory_r, av, color='tab:red',
                 label=f'Menard (2010) scaled to z={self.z_fg:.3f}')
@@ -163,7 +167,6 @@ class DustPlotter(RCParamsMixin):
         fig.savefig(outplotn)
 
         try:
-            pdb.set_trace()
             fig, ax = plt.subplots(figsize=(10,7), tight_layout=True)
 
             ax.plot(theory_r, av, color='tab:red',

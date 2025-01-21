@@ -41,6 +41,12 @@ source /work/mccleary_group/miniconda3/etc/profile.d/conda.sh
 conda activate dustyhalos
 
 ###
+### Record start time 
+###                                                                                                                             
+echo "Code start time: "
+date "+%Y-%m-%d %H:%M:%S"
+
+###
 ### Go!
 ###
 
@@ -74,3 +80,8 @@ echo ""
 python $CODEDIR/runner_scripts/dust_calc_runner.py -c $CONFIGDIR/dust_calc_config.yaml
 
 
+###
+### Record end time 
+###                                                                                                                             
+echo "Code end time: "
+date "+%Y-%m-%d %H:%M:%S"

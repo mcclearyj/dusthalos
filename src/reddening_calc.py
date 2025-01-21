@@ -148,8 +148,9 @@ class ReddeningCalculator(ExtinctionModel):
 
         # De-mean the galaxy magnitudes in each redshift bin
         colors = (data.T - weighted_avg).T
-
         # Compute the *unweighted* covariance matrix of the galaxy magnitudes
+        print("Computing covariance of de-meaned galaxy colors")
+        #covar = np.cov(colors, aweights=weights[1,:])
         covar = np.cov(colors)
 
         # Compute the inverse covariance matrix
@@ -161,10 +162,10 @@ class ReddeningCalculator(ExtinctionModel):
         # Compute the optimal estimator for excess reddening of galaxies
         # in this redshift bin using maximum likelihood
         est = np.sum(delta.T * np.dot(Cinv, colors), axis=0) / \
-                        np.sqrt(np.dot(self.dmdp, np.dot(Cinv, self.dmdp)))
+              np.dot(self.dmdp, np.dot(Cinv, self.dmdp))
 
         # Compute the Cramer-Rao bound for the optimal estimator
-        wt = 1./np.sqrt(np.dot(self.dmdp, np.dot(Cinv, self.dmdp)))
+        wt = 1./np.dot(self.dmdp, np.dot(Cinv, self.dmdp))
 
         return est, wt
 
