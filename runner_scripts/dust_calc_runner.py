@@ -65,7 +65,8 @@ def get_dust(fg, fgr, bg, bgr, names, correl_config):
     DK.write(rk=FR, file_name=names.ck_outfile)
 
     print('Calculating fg/fgr/bg/bgr covariance...\n')
-    jointcov = treecorr.estimate_multi_cov([DK, RK, RR], 'sample')
+    var_method = correl_config['treecorr_params']['var_method']
+    jointcov = treecorr.estimate_multi_cov([DK, RK, RR], var_method)
     np.savetxt(names.cov_output, jointcov)
 
 
