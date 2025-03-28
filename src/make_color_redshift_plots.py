@@ -39,7 +39,7 @@ def set_rc_params(fontsize=None):
     plt.rcParams.update({'ytick.direction':'out'})
     plt.rcParams.update({'axes.labelsize': fontsize})
     plt.rcParams.update({'axes.titlesize': fontsize})
-    plt.rcParams.update({'legend.fontsize': int(fontsize-2)})
+    plt.rcParams.update({'legend.fontsize': int(fontsize)})
 
     return
 
@@ -107,42 +107,48 @@ def bin_the_redshifts(rand_cat, bands, z2_colname, n_zbins=17):
     return tab
 
 def main():
-    catalog_path = '/work/mccleary_group/dusty_halos/catalogs/'
-    #catalog_path = '/Users/j.mccleary/Research/dusty_halos/catalogs/prep_cat_output'
+    # Make plots look pretty
+    set_rc_params(fontsize=16)
+
+    # Catalog path
+    catalog_path = '/work/mccleary_group/dusty_halos/catalogs/prep_cat_csfd'
+    #catalog_path = '/Users/j.mccleary/Research/dusty_halos/catalogs/prep_cat_csfd'
+
 
     # Read in galaxies
     gals_cat = Table.read(
         os.path.join(catalog_path,
-        'sdss_bg_photoz2.fits'), memmap=True
+        'redmagic_hidens_y3_GOLD_JOINED_catalog.fits'), memmap=True
     )
 
     # Read in random catalog
     rand_cat_f = fits.open(os.path.join(catalog_path,
-        'sdss_bg_photoz2.fits')
+        'redmagic_hidens_randoms_y3_GOLD_JOINED_catalog.fits'), memmap=True
     )
+    
 
     # In case catalogs are super-super long, pick subset for plotting
-    if len(gals_cat) > int(1e6):
+    if len(gals_cat) > int(8e5):
         rng = np.random.default_rng()
         rint = rng.integers(
             0, high=len(gals_cat),
-            size=int(1e6), dtype=np.int64
+            size=int(8e5), dtype=np.int64
         )
         gals_cat = gals_cat[rint]
     
-    if len(rand_cat_f[1].data) > int(1e6):
+    if len(rand_cat_f[1].data) > int(8e5):
         rng = np.random.default_rng()
         rint = rng.integers(0, high=len(rand_cat_f[1].data),
-                size=int(1e6), dtype=np.int64)
+                size=int(8e5), dtype=np.int64)
         rand_cat=rand_cat_f[1].data[rint]
 
     else:
         rand_cat=rand_cat_f[1].data
 
-    #bands = ['mof_cm_mag_corrected_g', 'mof_cm_mag_corrected_r', 'mof_cm_mag_corrected_i', 'mof_cm_mag_corrected_z']
-    bands = ['g_corr_csfd', 'r_corr_csfd', 'i_corr_csfd', 'z_corr_csfd']
-    z1_colname = 'redshift'
-    z2_colname = 'redshift'
+    bands = ['mof_cm_mag_corrected_g', 'mof_cm_mag_corrected_r', 'mof_cm_mag_corrected_i', 'mof_cm_mag_corrected_z']
+    #bands = ['g_corr_csfd', 'r_corr_csfd', 'i_corr_csfd', 'z_corr_csfd']
+    z1_colname = 'zredmagic'
+    z2_colname = 'z'
 
     wg_gals_cat = remove_outliers(gals_cat, bands)
     gals_cat = gals_cat[wg_gals_cat]
@@ -151,41 +157,44 @@ def main():
 
     binned_randoms = bin_the_redshifts(rand_cat, bands=bands, z2_colname=z2_colname)
 
-    fig, axs = plt.subplots(1, 2, figsize=(12,6), tight_layout=True)
+    fig, axs = plt.subplots(1, 2, figsize=(12,5.5), tight_layout=True)
 
     axs[0].plot(gals_cat[z1_colname],
                 (gals_cat[bands[0]] - gals_cat[bands[1]]),
-                '.', markersize=0.025, color='xkcd:deep red', label='galaxies')
+                '.', markersize=0.04, color='xkcd:deep red', label='Galaxies')
 
     axs[0].errorbar(
         binned_randoms['z_median'], binned_randoms['gmr_median'],
         yerr=binned_randoms['gmr_std'], fmt='o-', color='xkcd:tomato red',
-        label='randoms', capsize=5
+        label='Randoms', capsize=5
     )
 
-    axs[0].set_ylim(-0.75, 4)
-    axs[0].legend(loc='upper left')
+    axs[0].set_ylim(0.3, 2.9)
+    lgnd = axs[0].legend(loc='upper left', scatterpoints=1)
+    # Makes galaxy points the same size as errplot points! 
+    lgnd.legend_handles[0].set_markersize(10)  
     axs[0].set_xlabel('Redshift')
-    axs[0].set_ylabel(r'$g$ - $r$')
+    axs[0].set_ylabel(r'$g - r$')
 
     axs[1].plot(
         gals_cat[z1_colname], (gals_cat[bands[2]] - gals_cat[bands[3]]),
-        '.', markersize=0.05, color='xkcd:deep red', label='galaxies'
+        '.', markersize=0.04, color='xkcd:deep red', label='Galaxies'
     )
 
     axs[1].errorbar(
         binned_randoms['z_median'], binned_randoms['imz_median'],
         yerr=binned_randoms['imz_std'], fmt='o-', color='xkcd:tomato red',
-        label='hidens randoms', capsize=5
+        label='Randoms', capsize=5
     )
 
-    axs[1].set_ylim(-2.3, 2.6)
-    axs[1].legend(loc='upper left')
+    axs[1].set_ylim(0, 0.7)
+    lgnd = axs[1].legend(loc='upper left')
+    lgnd.legend_handles[0].set_markersize(10)
     axs[1].set_xlabel('Redshift')
-    axs[1].set_ylabel(r'$i$ - $z$')
+    axs[1].set_ylabel(r'$i - z$')
 
-    fig.suptitle('SDSS galaxies resampled')
-    fig.savefig('color_redshift_sdss_resamp1.png')
+    fig.suptitle('RedMaGiC high-density sample', fontsize=16)
+    fig.savefig('color_redshift_hidens_resamp.png')
 
     ## Try a Seaborn plot
     gals_pd = gals_cat.to_pandas()
@@ -195,30 +204,28 @@ def main():
     sns.kdeplot(
         x=gals_pd[z1_colname],
         y=(gals_pd[bands[0]] - gals_pd[bands[1]]),
-        fill=False, 
+        fill=True, 
         cmap="viridis",
-        levels=20,  
+        levels=10,  
         thresh=0.05, 
         ax=axs[0]
     )
-    axs[0].set_ylim(-1, 3)
     axs[0].set_xlabel(z1_colname)
     axs[0].set_ylabel(f"{bands[0]} - {bands[1]}")
     sns.kdeplot(
         x=gals_pd[z1_colname],
         y=(gals_pd[bands[2]] - gals_pd[bands[3]]),
-        fill=False, 
+        fill=True, 
         cmap="viridis",
-        levels=20, 
+        levels=10, 
         thresh=0.05, 
         ax=axs[1]
     )
-    axs[1].set_ylim(-2, 2)
     axs[1].set_xlabel(z1_colname)
     axs[1].set_ylabel(f"{bands[2]} - {bands[3]}")
 
-    fig.suptitle('SDSS galaxies resampled')
-    fig.savefig('color_redshift_sdss_contour.png')
+    fig.suptitle('RedMaGiC high-density sample')
+    fig.savefig('color_redshift_hidens_contour.png')
 
     return 0
 

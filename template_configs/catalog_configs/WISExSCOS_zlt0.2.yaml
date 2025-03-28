@@ -1,7 +1,8 @@
   # Where is it? Leave blank or commented out to use default
   #path: /Users/j.mccleary/Research/dusty_halos/catalogs/prep_cat_output
-  path: /work/mccleary_group/dusty_halos/catalogs/prep_cat_v2
-  filename: DoubleMasked_wiseScosPhotoz160708_z_lt_0.2.fits
+  path: /work/mccleary_group/dusty_halos/catalogs/prep_cat_csfd
+  #filename: DoubleMasked_wiseScosPhotoz160708_z_lt_0.2.fits
+  filename: DoubleMasked_wiseScosPhotoz160708_zlt0.2_bCal_gt_16.fits
   # nickname for table if we are matching to another catalog
   tabname: 'WISExSCOS_cat'
   ### WCS frame ###
