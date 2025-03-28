@@ -53,7 +53,7 @@ treecorr_params:
 # Parameters for dust model
 dust_params:
   # Must be one of 'calzetti00', 'ccm89', 'odonnell94', 'fitzpatrick99', or 'g23'
-  model: 'g23'
+  model: 'G03_SMCBar'
   # Ratio of selective to total extinction
   R: 3.1
   # Extinction in V band
@@ -65,4 +65,4 @@ dust_params:
   err_names: ['mof_cm_mag_err_g', 'mof_cm_mag_err_r',
               'mof_cm_mag_err_i', 'mof_cm_mag_err_z']
   # Central wavelengths (spectrum) to model; should match number of bands!
-  wavelengths: [4796.6, 6382.6, 7769.0, 9108.2] 
+  wavelengths: [4796.6, 6382.6, 7769.0, 9108.2]

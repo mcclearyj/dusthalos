@@ -15,48 +15,7 @@ class ExtinctionModel:
         # Adds a bunch of other stuff, not just models, but OK for now.
         self.allowed_deprecated_models = dir(extinction)
         self.averages_models = dir(averages)
-        self.parameter_averages_models = dir(parameter_averages_models)
-        
-
- def _dust_config_checker(self):
-        """
-	Make sure minimal configuration parameters are present and also ensure
-        that given model is allowed
-        """
-	required_keys = ['model', 'R', 'A_V', 'wavelengths']
-        allowed = self.allowed_deprecated_models
-        allowed.append(self.averages_models + self.parameter_averages_models)
-        config = self.dmconfig
-
-        cfg_keys = config.keys()
-
-        for key in required_keys:
-            if key not in cfg_keys:
-                msg = f'\nExtinction: config missing required key {key}\n'
-                raise ValueError(msg)
-
-        if config['model'] not in allowed:
-                msg = f'\nExtinction: {config["model"]} not in {allowed}'
-                raise NameError(msg)
-
-def _dust_config_checker(self):
-    """
-    Make sure minimal configuration parameters are present and also ensure
-    that given model is allowed
-    """
-    required_keys = ['model', 'R', 'A_V', 'wavelengths']
-    config = self.dmconfig
-    cfg_keys = config.keys()
-
-    for key in required_keys:
-        if key not in cfg_keys:
-            msg = f'\nExtinction: config missing required key {key}\n'
-            raise ValueError(msg)
-
-    model = config['model']
-    if not (hasattr(parameter_averages, model) or hasattr(extinction, model)):
-        msg = f'\nExtinction: {model} not found in parameter_averages or extinction\n'
-        raise NameError(msg)
+        self.parameter_averages_models = dir(parameter_averages)
 
 
     def _dust_config_checker(self):
@@ -64,6 +23,24 @@ def _dust_config_checker(self):
         Make sure minimal configuration parameters are present and also ensure
         that given model is allowed
         """
+        required_keys = ['model', 'R', 'A_V', 'wavelengths']
+        config = self.dmconfig
+        cfg_keys = config.keys()
+
+        for key in required_keys:
+            if key not in cfg_keys:
+                msg = f'\nExtinction: config missing required key {key}\n'
+                raise ValueError(msg)
+
+        model = config['model']
+        if not (hasattr(parameter_averages, model) or hasattr(extinction, model)):
+            msg = f'\nExtinction: {model} not found in parameter_averages or extinction\n'
+            raise NameError(msg)
+
+    """
+    def _dust_config_checker(self):
+        #Make sure minimal configuration parameters are present and also ensure
+        #that given model is allowed
         required_keys = ['model', 'R', 'A_V', 'wavelengths']
         allowed = self.allowed_deprecated_models
         allowed.append(self.averages_models + self.parameter_averages_models)
@@ -79,7 +56,7 @@ def _dust_config_checker(self):
         if config['model'] not in allowed:
                 msg = f'\nExtinction: {config["model"]} not in {allowed}'
                 raise NameError(msg)
-
+    """
     def _get_dust_model(self):
         """
         Get model
