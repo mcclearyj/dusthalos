@@ -50,11 +50,12 @@ treecorr_params:
 
 # Parameters for dust model
 dust_params:
-  # Must be one of 'calzetti00', 'ccm89', 'odonnell94', 'fitzpatrick99', or 'g23'
-  model: 'g23'
-  # Ratio of selective to total extinction
+  # Model must be one of the models specified in dust_extinction.averages or 
+  # dust_extinction.parameter_averages (Note: these are cASe SeNsItIvE)
+  model: 'G24_SMCAvg'
+  # Ratio of selective to total extinction (if required by dust model)
   R: 3.1
-  # Extinction in V band
+  # Extinction in V band (if required by dust model)
   A_V: 1
   # Bandpass column names in catalog
   band_names: ['u_corr_csfd', 'g_corr_csfd', 'r_corr_csfd', 'i_corr_csfd', 'z_corr_csfd']
