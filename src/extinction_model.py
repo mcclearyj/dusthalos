@@ -1,7 +1,6 @@
 import numpy as np
 import pdb
 import inspect
-import extinction
 from dust_extinction import averages, parameter_averages
 import astropy.units as u
 
