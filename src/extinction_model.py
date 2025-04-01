@@ -31,9 +31,9 @@ class ExtinctionModel:
             if key not in cfg_keys:
                 msg = f'\nExtinction: config missing required key {key}\n'
                 raise ValueError(msg)
-
+                
         model = config['model']
-        if not (hasattr(parameter_averages, model) or hasattr(extinction, model)):
+        if not (hasattr(parameter_averages, model) or hasattr(averages, model)):
             msg = f'\nExtinction: {model} not found in parameter_averages or extinction\n'
             raise NameError(msg)
 
@@ -52,6 +52,8 @@ class ExtinctionModel:
             if key not in cfg_keys:
                 msg = f'\nExtinction: config missing required key {key}\n'
                 raise ValueError(msg)
+
+	pdb.set_trace()
 
         if config['model'] not in allowed:
                 msg = f'\nExtinction: {config["model"]} not in {allowed}'
@@ -73,7 +75,7 @@ class ExtinctionModel:
                 dust_method = getattr(parameter_averages, model)()
             else:
                 dust_method = getattr(averages, model)()
-            if 'Rv' in inspect.getargspec(dust_method.evaluate).args:
+            if 'Rv' in inspect.signature(dust_method.evaluate).parameters.items():
                 self.dmdp = dust_method.evaluate(kwargs['wave'], Rv=r_v)
             else:
                 self.dmdp = dust_method.evaluate(kwargs['wave'])
