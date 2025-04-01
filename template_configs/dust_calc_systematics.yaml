@@ -11,21 +11,23 @@
 #  - "treecorr_npatch" sets the number of sky patches used in treecorr
 
 background_catalog:
-  cat_config: 'configs/catalog_configs/redmagic_hidens_y3gold_joined.yaml'
+  cat_config: 'configs/catalog_configs/redmagic_hiz_y3gold_joined.yaml'
   treecorr_npatch: 10   # Set number of treecorr patches
   redshifts: # How to deal with redshifts
-    nbins: 13
+    use_bin_numbers: True # Basically just for redmagic
+    #nbins: 5
 
 background_randoms:
-  cat_config: 'configs/catalog_configs/redmagic_hidens_randoms.yaml'
+  cat_config: 'configs/catalog_configs/redmagic_hiz_randoms.yaml'
   redshifts: # How to deal with redshifts
-    nbins: 13
+    use_bin_numbers: True # Basically just for redmagic
+    #nbins: 5
 
 foreground_catalog:
   cat_config: 'configs/catalog_configs/gaia_cat.yaml'
 
 foreground_randoms:
-  cat_config: 'configs/catalog_configs/WISExSCOS_randoms3.yaml'
+  cat_config: 'configs/catalog_configs/gaia_randoms.yaml'
 
 # ------------------
 # Output parameters
@@ -34,7 +36,7 @@ foreground_randoms:
 # Where output files and plots will get saved
 output_path: 'output/systematics_testing/gaia_fg'
 # basename or prefix for assorted files to save
-output_basename: 'dustcorrel_rmz_hidens_g23_13zbins'
+output_basename: 'dustcorrel_hiz_csfd_fixedest_weightsq'
 # Plot output dust profile in kiloparsecs (True) or arcminutes (False)
 use_kpc: False
 
@@ -44,7 +46,7 @@ use_kpc: False
 treecorr_params:
   min_sep: 0.1
   max_sep: 200.0
-  bin_size: 1
+  bin_size: 0.6
   sep_units: 'arcmin'
   var_method: 'sample'
 
@@ -58,10 +60,10 @@ dust_params:
   # Extinction in V band (if required by dust model)
   A_V: 1
   # Bandpass column names in catalog
-  band_names: ['mof_cm_mag_corrected_g', 'mof_cm_mag_corrected_r',
-              'mof_cm_mag_corrected_i', 'mof_cm_mag_corrected_z']
+  band_names: ['mof_cm_mag_g_corr_csfd', 'mof_cm_mag_r_corr_csfd',
+              'mof_cm_mag_i_corr_csfd', 'mof_cm_mag_z_corr_csfd']
   # Error/uncertainty column names in catalog (in order, please!)
   err_names: ['mof_cm_mag_err_g', 'mof_cm_mag_err_r',
               'mof_cm_mag_err_i', 'mof_cm_mag_err_z']
   # Central wavelengths (spectrum) to model; should match number of bands!
-  wavelengths: [4808.49, 6417.65, 7814.58, 9168.85]
+  wavelengths: [4796.6, 6382.6, 7769.0, 9108.2] 

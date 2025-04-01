@@ -36,7 +36,7 @@ foreground_randoms:
 # Where output files and plots will get saved
 output_path: 'output/redmagic_hiz_csfd'
 # basename or prefix for assorted files to save
-output_basename: 'dustcorrel_g23_usebins'
+output_basename: 'dustcorrel_demeancov_fixedest_weightsq'
 # Plot output dust profile in kiloparsecs (True) or arcminutes (False)
 use_kpc: True
 
@@ -62,8 +62,10 @@ dust_params:
   # Bandpass column names in catalog
   band_names: ['mof_cm_mag_g_corr_csfd', 'mof_cm_mag_r_corr_csfd',
               'mof_cm_mag_i_corr_csfd', 'mof_cm_mag_z_corr_csfd']
+  #band_names: ['mof_cm_mag_corrected_g', 'mof_cm_mag_corrected_r',
+  #             'mof_cm_mag_corrected_i', 'mof_cm_mag_corrected_z']
   # Error/uncertainty column names in catalog (in order, please!)
   err_names: ['mof_cm_mag_err_g', 'mof_cm_mag_err_r',
               'mof_cm_mag_err_i', 'mof_cm_mag_err_z']
   # Central wavelengths (spectrum) to model; should match number of bands!
-  wavelengths: [4796.6, 6382.6, 7769.0, 9108.2]
+  wavelengths: [4796.6, 6382.6, 7769.0, 9108.2] 
