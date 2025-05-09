@@ -50,6 +50,10 @@ def get_dust(fg, fgr, bg, bgr, names, correl_config):
     FR.process(fgr.treecorrCatalog, bg.treecorrCatalog)
     FR.write(names.fr_outfile)
 
+    print('Calculating compensated signal...\n')
+    corr_xi, corr_varxi = DK.calculateXi(rk=FR)
+    DK.write(rk=FR, file_name=names.ck_outfile)
+
     print('Correlating fg x bg_rand...\n')
     RK = treecorr.NKCorrelation(**correl_config['treecorr_params'])
     RK.process(fg.treecorrCatalog, bgr.treecorrCatalog)
@@ -59,10 +63,6 @@ def get_dust(fg, fgr, bg, bgr, names, correl_config):
     RR = treecorr.NKCorrelation(**correl_config['treecorr_params'])
     RR.process(fgr.treecorrCatalog, bgr.treecorrCatalog)
     RR.write(names.rr_outfile)
-
-    print('Calculating corrected signal...\n')
-    corr_xi, corr_varxi = DK.calculateXi(rk=FR)
-    DK.write(rk=FR, file_name=names.ck_outfile)
 
     print('Calculating fg/fgr/bg/bgr covariance...\n')
     var_method = correl_config['treecorr_params']['var_method']
