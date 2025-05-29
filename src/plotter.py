@@ -401,7 +401,7 @@ class AvMapPlotter(RCParamsMixin):
                 f"Input catalog is missing required columns {required_columns[missing_cols]}"
             )
 
-    def make_Av_map(self, nside=None, out_name=None, 
+    def make_Av_map(self, nside=None, out_name=None, central_longitude=0,
                     out_dir=None, plot_title=None, graticule=False):
         """
         The input should be a treecorrcat; allow user to override plot name and directory
@@ -443,7 +443,7 @@ class AvMapPlotter(RCParamsMixin):
             mean_av, title=plot_title, 
             unit='mag', min=np.nanpercentile(mean_av[mask], 1), 
             max=np.nanpercentile(mean_av[mask], 99), 
-            cmap='viridis', fig=1, rot=[180, 0, 0], xsize=1100,
+            cmap='viridis', fig=1, rot=[int(central_longitude), 0, 0], xsize=1100,
         )
         
         if graticule:

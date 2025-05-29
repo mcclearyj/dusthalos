@@ -1,4 +1,3 @@
-# Re-attempting a complete script definition here for user reference (executable locally)
 import numpy as np
 import healpy as hp
 import matplotlib.pyplot as plt
