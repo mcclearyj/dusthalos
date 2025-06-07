@@ -12,7 +12,7 @@ import astropy.coordinates as coord
 import astropy.units as u
 from astropy.coordinates import SkyCoord
 from astropy.table import Table
-
+import healpy as hp
 
 class RCParamsMixin:
     ##
@@ -358,50 +358,97 @@ class OverlapPlotter(RCParamsMixin):
         # Close figure to save memory!
         plt.close(fig)
 
-    def make_Av_map(self, outname=None, projection=None, label1=None):
+class AvMapPlotter(RCParamsMixin):
+    def __init__(self, cat_name=None, nside=256, 
+                 out_name='av_sky_map.pdf', out_dir='./'):
         """
-        The input should be a treecorrcat;
-        Note: default "projection" is rectilinear; other options include
-        "mollweide", "aitoff", and "hammer" (time).
+        Make nice catalog RA/Dec overlap plot in both Cartesian and
+        Aitoff projection
+
+        Inputs
+            cat_name: path to catalog, which should be a dust output TreeCorrCat object
+            outname: name to save figure to
+            outdir: where should file be saved
+            nside: resolution of healpix map, default=256
         """
 
-        self.set_rc_params(fontsize=16)
+        self.cat_name = cat_name
+        self.cat = []
+        self.out_name = out_name
+        self.out_dir = out_dir
+        self.nside = nside
 
-        # Sanity check
-        #if ['ra', 'dec', 'k'] not in self.cat1.__dict__.keys():
-        #    print("Supplied catalog is missing one of: 'ra', 'dec', 'k'")
+        # Read in files
+        self._load_catalog()
+        
+    def _load_catalog(self):
+        """ Load in the supplied catalog and check for required columns """
 
-        if outname is None:
-            outname = self.outname
-
-        if (os.path.dirname(outname)==''):
-            outname=os.path.join(self.outdir, outname)
-
-        # Labels
-        if label1 == None:
-            label1 = os.path.basename(self.cat1_name)
-
-        # Create SkyCoord object to hold RA, Dec of catalogs
-        sky1 = SkyCoord(self.cat1['ra'], self.cat1['dec'],
-                        frame='icrs', unit=u.deg)
-
-        # Create a plot instance (can also use axes class). Note that aitoff
-        # projection apparently avoids mollweide's extreme edge distortions
-        if projection in ['mollweide', 'aitoff']:
-            figsize=(11.5, 6)
+        # On the off chance a catalog is passed instead of a path
+        if type(self.cat_name)==str:
+            self.cat = Table.read(self.cat_name, memmap=True)
         else:
-            figsize=(10, 7)
+            self.cat = Table(cat)
 
-        fig, ax = plt.subplots(1,1, figsize=figsize, tight_layout=True, \
-                        subplot_kw=dict(projection=projection))
-        ax.grid(True)
-        ax.set_xlabel('RA'); ax.set_ylabel('Dec')
+        required_columns = np.array(['ra', 'dec', 'k'])
+        table_colnames = np.array(self.cat.colnames)
 
-        # Plot the points - it takes a long time for them all to show up!
-        ax.scatter(sky1.ra.wrap_at('180d').radian, sky1.dec.radian, ',',
-                    label=label1, c=self.cat1['k'].data)
-        ax.legend(markerscale=400, loc='upper right')
-        fig.tight_layout()
+        # Make sure required column names are supplied in input catalog
+        colcheck = np.isin(required_columns, table_colnames)
+        if False in colcheck:
+            missing_cols = ~colcheck
+            raise KeyError(
+                f"Input catalog is missing required columns {required_columns[missing_cols]}"
+            )
 
-        fig.savefig(outname)
-        fig.savefig(outname.replace('pdf', 'png'))
+    def make_Av_map(self, nside=None, out_name=None, central_longitude=0,
+                    out_dir=None, plot_title=None, graticule=False):
+        """
+        The input should be a treecorrcat; allow user to override plot name and directory
+        """
+
+        self.set_rc_params(fontsize=14)
+        if plot_title == None:
+            plot_title = r"Mean TreeCorr $A_V$ of Background Galaxies"
+
+        if out_name == None:
+            outname = self.out_name
+
+        if (os.path.dirname(out_name)==''):
+            out_name=os.path.join(self.out_dir, out_name)
+        
+        if nside == None:
+            nside = self.nside
+
+        # Convert to HEALPix pixel indices
+        nside = nside  # approx. 13.7 arcmin resolution
+        npix = hp.nside2npix(nside)
+        theta = np.radians(90.0 - self.cat['dec'])
+        phi = np.radians(self.cat['ra'])
+        pix = hp.ang2pix(nside, theta, phi)
+
+        # Bin A_V by HEALPIX pixel 
+        av = self.cat['k'].data
+        sum_av = np.bincount(pix, weights=av, minlength=npix)
+        count = np.bincount(pix, minlength=npix)
+        mean_av = np.full(npix, hp.UNSEEN)
+        mask = count > 0
+        mean_av[mask] = sum_av[mask] / count[mask]
+
+
+        # Create a plot instance (can also use axes class). 
+        fig = plt.figure(figsize=(9, 5.5))
+
+        hp.mollview(
+            mean_av, title=plot_title, 
+            unit='mag', min=np.nanpercentile(mean_av[mask], 1), 
+            max=np.nanpercentile(mean_av[mask], 99), 
+            cmap='viridis', fig=1, rot=[int(central_longitude), 0, 0], xsize=1100,
+        )
+        
+        if graticule:
+            hp.graticule()
+
+        fig.savefig(out_name)
+        fig.savefig(out_name.replace('pdf', 'png'))
+        plt.close(fig)
