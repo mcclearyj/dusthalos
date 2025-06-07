@@ -25,6 +25,6 @@ deredden_args = {
 }
 
 ### Run! ###
-deredden(deredden_args)
+deredden(**deredden_args)
 
-print(f"Finished working on {catalog}!")
+print(f"Finished working on {catname}!")

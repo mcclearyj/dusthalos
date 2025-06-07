@@ -8,12 +8,13 @@ from astropy.coordinates import SkyCoord
 import astropy.units as u
 from dust_extinction.parameter_averages import G23
 import numpy as np
+import sys
 
 def deredden(**params):
     """ Parse arguments, run deredden """
 
     try:
-        catname = params['catalog']
+        catname = params['catname']
         band_names = params['band_names']
         wavelengths = params['wavelengths']*u.AA
         ra_colname = params['ra_colname']
@@ -22,8 +23,8 @@ def deredden(**params):
         _deredden(catname, band_names, wavelengths, ra_colname, dec_colname)
 
     except KeyError as e:
-        print("deredden_magnitudes missing required keyword, double-check call")
-        print(e)
+        print("deredden_magnitudes missing required keyword: e")
+        sys.exit()
 
 def _deredden(catname, band_names, wavelengths, ra_colname, dec_colname):
     # Open catalog, grab stuff
