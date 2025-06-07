@@ -9,13 +9,27 @@ import astropy.units as u
 from dust_extinction.parameter_averages import G23
 import numpy as np
 
-def deredden(catname, wavelengths):
-    """ Cat should be a string object """
+def deredden(**params):
+    """ Parse arguments, run deredden """
 
+    try:
+        catname = params['catalog']
+        band_names = params['band_names']
+        wavelengths = params['wavelengths']*u.AA
+        ra_colname = params['ra_colname']
+        dec_colname = params['dec_colname']
+
+        _deredden(catname, band_names, wavelengths, ra_colname, dec_colname)
+
+    except KeyError as e:
+        print("deredden_magnitudes missing required keyword, double-check call")
+        print(e)
+
+def _deredden(catname, band_names, wavelengths, ra_colname, dec_colname):
     # Open catalog, grab stuff
     cat = fits.open(catname, mode='update', save_backup=True)
-    ra = cat[1].data['ra']
-    dec = cat[1].data['dec']
+    ra = cat[1].data[ra_colname]
+    dec = cat[1].data[dec_colname]
     coords = SkyCoord(ra, dec, frame='icrs', unit='deg')
     print("Got catalog, coordinates")
 
@@ -41,22 +55,6 @@ def deredden(catname, wavelengths):
     # For convenience
     data = cat[1].data
 
-    # First, define bandpass column names in catalog
-    band_names = [
-        'mof_cm_mag_g', 'mof_cm_mag_r',
-        'mof_cm_mag_i', 'mof_cm_mag_z'
-    ]
-
-    # DES also has some bonus ones
-    delta_mag_y4_names = [
-        'delta_mag_y4_g', 'delta_mag_y4_r',
-        'delta_mag_y4_i', 'delta_mag_y4_z'
-    ]
-    delta_mag_chrom_names = [
-        'delta_mag_chrom_g', 'delta_mag_chrom_r',
-        'delta_mag_chrom_i', 'delta_mag_chrom_z'
-    ]
-
     # Let's go through band by band and add these column names
     # Initialize a dict
     print("Beginning magnitude corrections...")
@@ -65,9 +63,8 @@ def deredden(catname, wavelengths):
     for i in range(len(band_names)):
 
         # Do actual correction
-        chromcorr = data[delta_mag_y4_names[i]] + data[delta_mag_chrom_names[i]]
         this_Ax = Ax[i,:]
-        corr_band = data[band_names[i]] + chromcorr - this_Ax
+        corr_band = data[band_names[i]] - this_Ax
 
         # Define a key name, extend dict with it
         key_name = f'{band_names[i]}_corr_csfd'
@@ -86,20 +83,3 @@ def deredden(catname, wavelengths):
     # Those changes all get saved, as far as I can tell!
     print(f"Saving output")
     cat.flush()
-
-def main():
-    # Central wavelengths (spectrum) to model; should match number of bands!
-    wavelengths = [4796.6, 6382.6, 7769.0, 9108.2] * u.AA
-
-    cat1 = "/work/mccleary_group/dusty_halos/catalogs/18176_desy3_gold_gals.fits"
-    deredden(cat1, wavelengths)
-    print(f"Finished working on {cat1}")
-
-    # Do one more
-    cat2 = "/work/mccleary_group/dusty_halos/catalogs/18175_des_stars.fits"
-    deredden(cat2, wavelengths)
-    print(f"Finished working on {cat2}")
-
-if __name__ == '__main__':
-    main()
-    print("All done!")

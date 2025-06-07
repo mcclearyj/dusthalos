@@ -42,7 +42,20 @@ def deredden(catname, wavelengths):
     data = cat[1].data
 
     # First, define bandpass column names in catalog
-    band_names = ['u', 'g', 'r', 'i', 'z']
+    band_names = [
+        'mof_cm_mag_g', 'mof_cm_mag_r',
+        'mof_cm_mag_i', 'mof_cm_mag_z'
+    ]
+
+    # DES also has some bonus ones
+    delta_mag_y4_names = [
+        'delta_mag_y4_g', 'delta_mag_y4_r',
+        'delta_mag_y4_i', 'delta_mag_y4_z'
+    ]
+    delta_mag_chrom_names = [
+        'delta_mag_chrom_g', 'delta_mag_chrom_r',
+        'delta_mag_chrom_i', 'delta_mag_chrom_z'
+    ]
 
     # Let's go through band by band and add these column names
     # Initialize a dict
@@ -52,8 +65,9 @@ def deredden(catname, wavelengths):
     for i in range(len(band_names)):
 
         # Do actual correction
+        chromcorr = data[delta_mag_y4_names[i]] + data[delta_mag_chrom_names[i]]
         this_Ax = Ax[i,:]
-        corr_band = data[band_names[i]] - this_Ax
+        corr_band = data[band_names[i]] + chromcorr - this_Ax
 
         # Define a key name, extend dict with it
         key_name = f'{band_names[i]}_corr_csfd'
@@ -75,11 +89,16 @@ def deredden(catname, wavelengths):
 
 def main():
     # Central wavelengths (spectrum) to model; should match number of bands!
-    wavelengths = [3586.8, 4716.7, 6165.1, 7475.9, 8922.9] * u.AA
+    wavelengths = [4796.6, 6382.6, 7769.0, 9108.2] * u.AA
 
-    cat1 = "/work/mccleary_group/dusty_halos/catalogs/sdss_bg_photoz2.fits"
+    cat1 = "/work/mccleary_group/dusty_halos/catalogs/18176_desy3_gold_gals.fits"
     deredden(cat1, wavelengths)
     print(f"Finished working on {cat1}")
+
+    # Do one more
+    cat2 = "/work/mccleary_group/dusty_halos/catalogs/18175_des_stars.fits"
+    deredden(cat2, wavelengths)
+    print(f"Finished working on {cat2}")
 
 if __name__ == '__main__':
     main()
