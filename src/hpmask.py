@@ -80,6 +80,37 @@ class HpMask:
         # Incredibly, mask doesn't contain anything like this.
         self.all_nside_hpix = np.arange(hp.nside2npix(self.NSIDE))
 
+    @staticmethod
+    def coords_to_healpixels(lon, lat, frame='icrs', nside=None):
+        '''
+        Build SkyCoord object from input latitude and longitude and return
+        healpixel to which each object belongs for given NSIDE. If no NSIDE
+        is given, assuming that we are inside a particular mask.
+
+        Inputs
+            lon:   longitudinal coordinate, like RA or l
+            lat:   latitudinal coordinate, like Dec or b
+            frame: coordinate frame [default: icrs]
+            nside: HEALPIX NSIDE value; if None, set to self.nside
+        '''
+        # First, check that an NSIDE is available someplace
+        if not nside:
+            try:
+                nside = self.nside
+            except:
+                raise ValueError('"nside" argument is missing; please fix')
+        
+        if frame == 'icrs':
+            coords = SkyCoord(ra=lon*u.deg, dec=lat*u.deg, frame='icrs')
+        elif frame == 'galactic':
+            coords_gal = SkyCoord(l=lon*u.deg, b=lat*u.deg, frame='galactic')
+            coords = coords_gal.icrs
+        # Assign galaxies to HEALPixels for given NSIDE
+        theta = np.radians(90.0 - coords.dec.deg)
+        phi = np.radians(coords.ra.deg)
+        pixels = hp.ang2pix(nside, theta, phi)
+        return pixels
+
     def apply_mask(self, coords, lonlat=True, vb=True):
         '''
         Apply mask to a set of coordinates. This could probably be made into
@@ -132,7 +163,7 @@ class HpMask:
         if len(gal_ind[overlap]) == 0:
             print('WARNING: No galaxies in input catalog matched to mask')
 
-        # Return indices of galaxies in mask 
+        # Return indices of galaxies in mask
         return gal_ind[overlap]
 
     @staticmethod
