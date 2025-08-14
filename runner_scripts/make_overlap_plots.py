@@ -4,6 +4,12 @@ import os
 cat_dir = '/work/mccleary_group/dusty_halos/catalogs/prep_cat_gwslc'
 out_dir = '/work/mccleary_group/dusty_halos/catalogs/prep_cat_gwslc/overlap_plots'
 
+if not os.path.exists(out_dir):
+    try:
+        os.makedirs(out_dir)
+    except:
+        raise FileNotFoundError(f"Could not create output directory: {out_dir}")
+
 cat1_basename = 'sf/DoubleMasked_sf_gswlc_galaxies.fits'
 cat2_basename = 'DoubleMasked_sdss_bg_photoz.fits'
 
