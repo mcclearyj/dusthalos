@@ -1,8 +1,13 @@
 from src.plotter import OverlapPlotter
 import os
 
-cat_dir = '/n23data1/mccleary/dustyhalos/dusthalos'
-out_dir = '/n23data1/mccleary/dustyhalos/dusthalos/overlap_plots'
+cat_dir = '/n23data1/mccleary/dustyhalos/catalogs'
+out_dir = '/n23data1/mccleary/dustyhalos/catalogs/overlap_plots'
+if not os.path.exists(out_dir):
+    try:
+        os.makedirs(out_dir)
+    except:
+        raise FileNotFoundError(f"Could not create output directory: {out_dir}")
 
 cat1_basename = 'GSWLC-X2_in_SDSS_z_lt_0.18.fits'
 
@@ -63,8 +68,14 @@ del(op)
 ###
 ### Now do cross-overlap for SDSS and GSWLC
 ###
-cat_dir = '/n23data1/mccleary/dustyhalos/dusthalos/prep_cat_gswlc'
-out_dir = '/n23data1/mccleary/dustyhalos/dusthalos/prep_cat_gswlc/overlap_plots'
+cat_dir = '/n23data1/mccleary/dustyhalos/catalogs/prep_cat_gswlc'
+out_dir = '/n23data1/mccleary/dustyhalos/catalogs/prep_cat_gswlc/overlap_plots'
+
+if not os.path.exists(out_dir):
+    try:
+        os.makedirs(out_dir)
+    except:
+        raise FileNotFoundError(f"Could not create output directory: {out_dir}")
 
 cat1_basename = 'DoubleMasked_GSWLC-X2_in_SDSS_z_lt_0.18.fits'
 cat2_basename = 'DoubleMasked_sdss_bg_photoz2.fits'
@@ -103,8 +114,8 @@ del(op)
 ###
 ### Finally do cross-overlap for SDSS and GSWLC randoms
 ###
-cat_dir = '/n23data1/mccleary/dustyhalos/dusthalos/prep_cat_gswlc'
-out_dir = '/n23data1/mccleary/dustyhalos/dusthalos/prep_cat_gswlc/overlap_plots'
+cat_dir = '/n23data1/mccleary/dustyhalos/catalogs/prep_cat_gswlc'
+out_dir = '/n23data1/mccleary/dustyhalos/catalogs/prep_cat_gswlc/overlap_plots'
 
 cat1_basename = 'DoubleMasked_GSWLC-X2_in_SDSS_randoms.fits'
 cat2_basename = 'rand_sdss_bg2_JOINED_catalog.fits'
