@@ -1,19 +1,51 @@
 import sys, os
-from astropy.table import Table, vstack, hstack
 import healpy as hp
 import numpy as np
 import pdb
-from astropy.io import fits
-import astropy.units as u
-import astropy.coordinates as coord
-from astropy.coordinates import SkyCoord
 from datetime import datetime
 import time
 import matplotlib.pyplot as plt
 
-# Local imports
+### Astropy imports
+from astropy.io import fits
+import astropy.units as u
+import astropy.coordinates as coord
+from astropy.coordinates import SkyCoord
+from astropy.table import Table, vstack, hstack
+
+### For multiprocessing 
+import multiprocessing as mp
+
+### Local imports
 from . import utils
 from .hpmask import HpMask
+# ----------------------------------------------------------------
+# ---------------- GLOBALS FOR MULTIPROCESSING -------------------
+_WORKER = {}  # process-local in each child
+
+def _init_worker(mask_bool, nside, nest, seed_base):
+    """Initialize worker process with necessary parameters."""
+    global _WORKER
+    _WORKER['mask']  = mask_bool
+    _WORKER['nside'] = int(nside)
+    _WORKER['nest']  = bool(nest)
+    seed = (int(seed_base) ^ (os.getpid() & 0xFFFFFFFF)) & 0xFFFFFFFF
+    _WORKER['rng']   = np.random.default_rng(seed)
+
+def _draw_and_filter(batch_size):
+    rng   = _WORKER['rng']           # <-- same dict the initializer filled
+    mask  = _WORKER['mask']
+    nside = _WORKER['nside']
+    nest  = _WORKER['nest']
+
+    # draw uniformly on sphere (degrees)
+    lon = rng.uniform(0.0, 360.0, size=batch_size)
+    s   = rng.uniform(-1.0, 1.0, size=batch_size)   # sin(lat)
+    lat = np.degrees(np.arcsin(s))
+
+    pix  = hp.ang2pix(nside, lon, lat, lonlat=True, nest=nest)
+    keep = mask[pix]
+    return lon[keep], lat[keep]
 
 class RandomCat(HpMask):
         """
@@ -47,6 +79,7 @@ class RandomCat(HpMask):
             self.nrand = nrand
             self.output_name = output_name
             self.rand_coords = {}
+            self._worker = {}
 
             # Config check should be run during runner.
             if mask_config != None:
@@ -80,6 +113,84 @@ class RandomCat(HpMask):
             self.rng = np.random.default_rng(seed)
             print(f" Set RNG with seed = {seed}\n")
 
+        # ---------------- uniform-on-sphere draws in degrees ----------------
+        def _draw_uniform_lonlat_deg(n, rng):
+            """
+            Uniform on the sphere.
+            Returns lon, lat in DEGREES:
+            lon ∈ [0, 360), lat ∈ [-90, 90]
+            """
+            lon = rng.uniform(0.0, 360.0, size=n)
+            s = rng.uniform(-1.0, 1.0, size=n)    # sin(lat)
+            lat = np.degrees(np.arcsin(s))
+            return lon, lat
+
+        def sample_in_mask_parallel(
+                self, 
+                nrand, 
+                *, 
+                seed=None, 
+                n_workers=None, 
+                batch_per_worker=500_000
+        ):
+            mask_bool = (self.mask > 0) if self.mask.dtype != bool else self.mask
+            nside     = hp.get_nside(mask_bool)
+            nest      = getattr(self, "mask_is_nest", False)
+            if seed is None:
+                seed = int(np.random.SeedSequence().generate_state(1)[0])
+
+            if n_workers is None:
+                n_workers = max(1, mp.cpu_count() - 1)
+
+            acc_lon, acc_lat = [], []
+            need = int(nrand)
+
+            ctx = mp.get_context("spawn")
+            with ctx.Pool(processes=n_workers,
+                        initializer=_init_worker,
+                        initargs=(mask_bool, nside, nest, seed)) as pool:
+                while need > 0:
+                    for lon_chunk, lat_chunk in pool.map(_draw_and_filter, [batch_per_worker]*n_workers):
+                        take = min(need, lon_chunk.size)
+                        if take:
+                            acc_lon.append(lon_chunk[:take])
+                            acc_lat.append(lat_chunk[:take])
+                            need -= take
+                        if need == 0:
+                            break
+
+            lon_deg = np.concatenate(acc_lon)
+            lat_deg = np.concatenate(acc_lat)
+            # build SkyCoord once (in the mask’s frame)
+            if str(self.coordframe).lower() == 'galactic':
+                sc = SkyCoord(l=lon_deg*u.deg, b=lat_deg*u.deg, frame='galactic')
+            else:
+                sc = SkyCoord(ra=lon_deg*u.deg, dec=lat_deg*u.deg, frame='icrs')
+            return sc
+
+        # ---------------- Class-friendly wrapper ----------------
+        def _draw_random_coords_parallel(self, nrand=None, seed=None, n_workers=None, batch_per_worker=500_000):
+            """
+            Draw directly in the mask's frame (self.coordframe), filter via HEALPix,
+            and store SkyCoord in that same frame.
+            """
+            if nrand is None:
+                nrand = int(self.nrand)
+
+            # Determine the mask frame string the same way your apply_mask does
+            # (you've been using self.coordframe == 'galactic' to branch)
+            mask_frame = 'galactic' if str(self.coordframe).lower() == 'galactic' else 'icrs'
+
+            # NESTED or RING? Your apply_mask used nest=False; keep the same unless you know otherwise.
+            nest = getattr(self, "mask_is_nest", False)
+
+            self.rand_coords = self.sample_in_mask_parallel(
+                nrand=nrand,
+                n_workers=n_workers,
+                batch_per_worker=batch_per_worker,
+                seed=seed,
+            )
+
         def _draw_random_coords(self, nrand):
             """
             Method to draw random points on the sphere by creating catalog of
@@ -98,23 +209,6 @@ class RandomCat(HpMask):
             fcover = np.sum(self.mask > 0)*1./self.mask.size
             ndraw = np.ceil((nrand/fcover)*1.2).astype(int)
 
-            """
-            # The algorithm below doesn't work!!! If NSIDE is too small, and
-            # the HEALPixels are correspondingly large, you end up with large
-            # gaps between random points on the sphere, as points will be placed
-            # at the center of the HEALPixel area, not randomly within it.
-
-            # Generate random pixel indices for the highest resolution
-            random_hmap_pixels = self.rng.integers(
-                0, hp.nside2npix(self.NSIDE), 2*ndraw
-            )
-
-            # Get the RA and Dec coordinates of the random pixels for NSIDE
-            rand_ra, rand_dec = hp.pix2ang(
-                self.NSIDE, random_hmap_pixels, lonlat=True, nest=False
-            )
-            """
-
             # Sample RA, Dec uniformly on the sphere
             rand_ras = self.rng.uniform(0, 2*np.pi, size=ndraw)
             rand_sindecs = self.rng.uniform(
@@ -131,13 +225,13 @@ class RandomCat(HpMask):
             # Populate rand_coords in specified celestial coordinate frame
             self.rand_coords = icrs_rand_coords.transform_to(self.coordframe)
 
-        def plot_radec(self, plot_config):
+        def plot_radec(self, plotname, catalog_for_comparison=None, comparison_ra_key=None, comparison_dec_key=None):
             """
             FOR DEBUGGING PURPOSES: plot RA/Dec distributions.
             """
 
             # We are comparing to another, outside catalog
-            if catalog_for_comparison != None:
+            if catalog_for_comparison is not None:
                 comparison_cat = Table.read(catalog_for_comparison, memmap=True)
                 rand_ras = comparison_cat[comparison_ra_key]
                 rand_decs = comparison_cat[comparison_dec_key]
@@ -225,10 +319,14 @@ class RandomCat(HpMask):
             """
 
             # First, generate the rng
-            self._generate_rng(seed=seed)
+            #self._generate_rng(seed=seed)
 
             # Generate random coodinates with ~appx. the right number of galaxies
-            self._draw_random_coords(nrand=nrand)
+            #self._draw_random_coords(nrand=nrand)
+            self._draw_random_coords_parallel(
+                nrand=nrand, seed=seed, 
+                n_workers=None, batch_per_worker=500_000
+            )
 
             # Apply own mask!
             seen = self.apply_mask(coords=self.rand_coords)
