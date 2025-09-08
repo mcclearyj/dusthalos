@@ -319,8 +319,9 @@ class RandomCat(HpMask):
             """
 
             # First, generate the rng
-            #self._generate_rng(seed=seed)
-
+            self._generate_rng(seed=seed)
+            seed = self.seed
+            
             # Generate random coodinates with ~appx. the right number of galaxies
             #self._draw_random_coords(nrand=nrand)
             self._draw_random_coords_parallel(

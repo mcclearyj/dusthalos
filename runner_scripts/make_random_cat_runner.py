@@ -18,7 +18,6 @@ def main(args):
 
     # This step populates default paths too -- may be a bit shady to do this
     run_config = all_config_checker(run_config)
-
     # Instantiate FgRandoms.
     fgr = RandomCat(
         mask_config=run_config['mask1'], nrand=run_config.get('nrand'),
@@ -27,6 +26,17 @@ def main(args):
 
     # Make randoms on the sphere
     fgr.make_random_cat()
+
+    try:
+        fgr.plot_radec(
+            catalog_for_comparison=run_config.get('comparison_cat', None),
+            comparison_ra_key='ra',
+            comparison_dec_key='dec',
+            plotname='cosmos_randoms_radec_plot.png'
+        )
+    except Exception as e:
+        print(f"Error occurred while plotting RA/Dec: {e}")
+        pass
 
     # Filter random points against mask2 if supplied in config
     if run_config.get('mask2') != None:
