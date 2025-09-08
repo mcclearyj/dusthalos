@@ -324,6 +324,7 @@ class RandomCat(HpMask):
             
             # Generate random coodinates with ~appx. the right number of galaxies
             #self._draw_random_coords(nrand=nrand)
+            print("\n Drawing random coordinates in parallel...\n")
             self._draw_random_coords_parallel(
                 nrand=nrand, seed=seed, 
                 n_workers=None, batch_per_worker=500_000
