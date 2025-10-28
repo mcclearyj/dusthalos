@@ -1,12 +1,12 @@
 import sys, os
-from astropy.table import Table, vstack, hstack
-import healpy as hp
+from astropy.table import Table, vstack, hstack 
+import healpy as hp 
 import numpy as np
 import pdb
-from astropy.io import fits
-import astropy.units as u
-import astropy.coordinates as coord
-from astropy.coordinates import SkyCoord
+from astropy.io import fits 
+import astropy.units as u 
+import astropy.coordinates as coord 
+from astropy.coordinates import SkyCoord 
 import time
 from .cat_utils import mask_config_checker
 ##
