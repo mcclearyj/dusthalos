@@ -403,7 +403,7 @@ class AvMapPlotter(RCParamsMixin):
             )
 
     def make_Av_map(self, nside=None, out_name=None, central_longitude=0,
-                    out_dir=None, plot_title=None, graticule=False):
+                    out_dir=None, plot_title=None, graticule=False, vector='k'):
         """
         The input should be a treecorrcat; allow user to override plot name and directory
         """
