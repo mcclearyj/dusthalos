@@ -4,6 +4,7 @@ import argparse
 import treecorr
 import pdb
 import numpy as np
+
 # Local imports
 import src.utils as utils
 from src.correlator import Correlator
@@ -130,12 +131,7 @@ def main(args):
     plot.plot_res(outplotn=names.fig_output, kpc=correl_config['use_kpc'])
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(
-        description="Runner script for Catalog operations."
-    )
-    parser.add_argument(
-        "-config","-c", type=str,
-        help="Path to the configuration file.", required=True
-    )
+    parser = argparse.ArgumentParser(description="Runner script for Catalog operations.")
+    parser.add_argument("-config","-c", type=str, help="Path to the configuration file.", required=True)
     args = parser.parse_args()
     main(args)

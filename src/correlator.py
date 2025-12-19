@@ -55,32 +55,6 @@ class Correlator:
         else:
             pass
 
-    def _load(self, treecorr_npatch, treecorr_patch_centers):
-        '''
-        Parameter
-            cat_config: a Catalog-format config file and create Catalog object
-        Returns:
-            treecorr_cat: treecorr.Catalog object
-        '''
-        this_cat = Catalog(config=self.cat_config)
-        coords = this_cat.grab_coords().icrs # Returns SkyCoord instance
-        self.coords = coords
-
-        kwargs = {
-            'patch_centers': treecorr_patch_centers,
-            'ra_units': 'deg',
-            'dec_units': 'deg'
-        }
-
-        if treecorr_npatch != None:
-            kwargs['npatch'] = int(treecorr_npatch)
-
-        tc_cat = treecorr.Catalog(
-            ra=coords.ra.deg, dec=coords.dec.deg, **kwargs
-        )
-
-        return this_cat, tc_cat
-
     def load(self, treecorr_npatch=None, treecorr_patch_centers=None):
         """
         Populate dusthalos-type Catalog attribute (self.catalog) based on
@@ -106,6 +80,32 @@ class Correlator:
         self.Catalog, self.treecorrCatalog = \
             self._load(treecorr_npatch, treecorr_patch_centers)
 
+    def _load(self, treecorr_npatch, treecorr_patch_centers):
+        '''
+        Parameter
+            cat_config: a Catalog-format config file and create Catalog object
+        Returns:
+            treecorr_cat: treecorr.Catalog object
+        '''
+        this_cat = Catalog(config=self.cat_config)
+        coords = this_cat.grab_coords().icrs # Returns SkyCoord instance
+        self.coords = coords
+
+        kwargs = {
+            'patch_centers': treecorr_patch_centers,
+            'ra_units': 'deg',
+            'dec_units': 'deg'
+        }
+
+        if treecorr_npatch != None:
+            kwargs['npatch'] = int(treecorr_npatch)
+
+        tc_cat = treecorr.Catalog(
+            ra=coords.ra.deg, dec=coords.dec.deg, **kwargs
+        )
+
+        return this_cat, tc_cat
+    
     def do_reddening(self):
         """ 
         Check dust_params config, call ReddeningCalculator, run it. The various 
