@@ -19,7 +19,8 @@ class RCParamsMixin:
     ## Make plot settings pretty
     ##
 
-    def set_rc_params(self, fontsize=None):
+    @staticmethod
+    def set_rc_params(fontsize=None):
 
         print("Setting Matplotlib RC parameters...")
 

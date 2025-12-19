@@ -20,9 +20,7 @@ class Catalog():
     and CatalogMasker classes.
     -----------------
     Inputs/Attributes
-            filename: (base) name of input catalog
-
-            path: path to input catalog [default='./']
+            filepath: complete path to input catalog including parent directory and (base) name
 
             tabname: nickname for table if matching to another catalog and
                      the two tables have identical column names [default='tab']
@@ -107,7 +105,7 @@ class Catalog():
 
     def grab_coords(self):
         '''
-        Utility function to return a SkyCoord instance fromt the coordinates
+        Utility function to return a SkyCoord instance from the coordinates
         of galaxies in self.data
         '''
         # What format are the catalog's coordinates in?
