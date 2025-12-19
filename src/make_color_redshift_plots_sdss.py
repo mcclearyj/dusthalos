@@ -121,34 +121,40 @@ def main():
     set_rc_params(fontsize=16)
 
     # Catalog path
-    catalog_path = '/work/mccleary_group/dusty_halos/catalogs/prep_cat_sdss/photoz3'
+    catalog_path = '/n23data1/mccleary/dustyhalos/catalogs/prep_cat_sdss'
 
 
     # Read in galaxies
     gals_cat = Table.read(
         os.path.join(catalog_path,
-        'DoubleMasked_sdss_bg_photoz3_r_lt_22.fits'), memmap=True
+        'DoubleMasked_sdss_bg_photoz2_r_lt_22.fits'), memmap=True
     )
 
     # Read in random catalog
     rand_cat_f = fits.open(os.path.join(catalog_path,
-        'rand_sdss_bg3_JOINED_catalog.fits'), memmap=True
+        'rand_sdss_bg2_JOINED_catalog_stacked_r_lt_22.fits'), memmap=True
     )
-    
 
+
+    # Status update; should be logger but w/e
+    print("Catalogs read in...")
+    
     # In case catalogs are super-super long, pick subset for plotting
-    if len(gals_cat) > int(7e5):
+    if len(gals_cat) > int(6e5):
+        # Status update; should be logger but w/e
+        print("Subsampling galaxy catalog...")
         rng = np.random.default_rng()
         rint = rng.integers(
             0, high=len(gals_cat),
-            size=int(7e5), dtype=np.int64
+            size=int(6e5), dtype=np.int64
         )
         gals_cat = gals_cat[rint]
     
-    if len(rand_cat_f[1].data) > int(7e5):
+    if len(rand_cat_f[1].data) > int(6e5):
+        print("Subsampling random catalog...")
         rng = np.random.default_rng()
         rint = rng.integers(0, high=len(rand_cat_f[1].data),
-                size=int(7e5), dtype=np.int64)
+                size=int(6e5), dtype=np.int64)
         rand_cat=rand_cat_f[1].data[rint]
 
     else:
@@ -158,6 +164,7 @@ def main():
         'u_corr_csfd', 'g_corr_csfd', 'r_corr_csfd', 
         'i_corr_csfd', 'z_corr_csfd'
     ]
+
     z1_colname = 'redshift'
     z2_colname = 'redshift_rand'
 
@@ -166,9 +173,11 @@ def main():
     wg_rand_cat = remove_outliers(rand_cat, bands)
     rand_cat = rand_cat[wg_rand_cat]
 
+    print("Binning random catalog...")
     binned_randoms = bin_the_redshifts(rand_cat, bands=bands, z2_colname=z2_colname)
-
-    fig, axs = plt.subplots(3, 1, figsize=(6, 18), tight_layout=True)
+    
+    print("Making color-redshift scatterplot...")
+    fig, axs = plt.subplots(3, 1, figsize=(6.5, 18), tight_layout=True)
 
     axs[0].plot(gals_cat[z1_colname],
                 (gals_cat[bands[0]] - gals_cat[bands[1]]),
@@ -181,7 +190,7 @@ def main():
     )
 
     axs[0].set_ylim(-3, 5)
-    lgnd = axs[0].legend(loc='upper left', scatterpoints=1)
+    lgnd = axs[0].legend(loc='upper right', scatterpoints=1)
     # Makes galaxy points the same size as errplot points! 
     lgnd.legend_handles[0].set_markersize(10)  
     axs[0].set_xlabel('Redshift')
@@ -198,8 +207,8 @@ def main():
         label='Randoms', capsize=5
     )
 
-    axs[1].set_ylim(-0.4, 3.5)
-    lgnd = axs[1].legend(loc='upper left', scatterpoints=1)
+    axs[1].set_ylim(-0.6, 3.5)
+    lgnd = axs[1].legend(loc='upper right', scatterpoints=1)
     # Makes galaxy points the same size as errplot points! 
     lgnd.legend_handles[0].set_markersize(10)  
     axs[1].set_xlabel('Redshift')
@@ -217,48 +226,52 @@ def main():
     )
 
     axs[2].set_ylim(-2.5, 2.5)
-    lgnd = axs[1].legend(loc='upper left')
+    lgnd = axs[2].legend(loc='upper right')
     lgnd.legend_handles[0].set_markersize(10)
     axs[2].set_xlabel('Redshift')
     axs[2].set_ylabel(r'$i - z$')
 
-    fig.suptitle('SDSS Photoz3 sample', fontsize=16)
-    fig.savefig('color_redshift_sdss_photoz3_resamp.png')
-
-    ## Try a Seaborn plot
-    gals_pd = gals_cat.to_pandas()
-    sns.set_theme() 
+    fig.suptitle(r'SDSS Photoz2 $r < 22$ sample', fontsize=14)
+    fig.savefig('color_redshift_sdss_photoz2_r_lt_22_resamp.png')
+    print("Scatterplot made!")
     
+    ## Try a Seaborn plot
+    
+    gals_pd = gals_cat.to_pandas()
+    sns.set_style("whitegrid")
+    print("Making contour plot...")
     fig, axs = plt.subplots(1, 2, figsize=(12,6), tight_layout=True)
     sns.kdeplot(
         x=gals_pd[z1_colname],
         y=(gals_pd[bands[0]] - gals_pd[bands[1]]),
         fill=True, 
-        cmap="viridis",
+        cmap="Blues",
         levels=10,  
         thresh=0.05, 
+        clip=[[0.5, 1], [-2.5, 4.5]],
         ax=axs[0]
     )
     axs[0].set_xlabel(z1_colname)
     axs[0].set_ylabel(f"{bands[0]} - {bands[1]}")
-    axs[0].set_ylim(-0.4, 3.5)
+    axs[0].set_ylim(-3, 5)
     
     sns.kdeplot(
         x=gals_pd[z1_colname],
         y=(gals_pd[bands[2]] - gals_pd[bands[3]]),
         fill=True, 
-        cmap="viridis",
+        cmap="Blues",
         levels=10, 
         thresh=0.05, 
-        ax=axs[1]
+        ax=axs[1], 
     )
     axs[1].set_xlabel(z1_colname)
     axs[1].set_ylabel(f"{bands[2]} - {bands[3]}")
-    axs[1].set_ylim(-2.5, 2.5)
+    axs[1].set_ylim(-1.5, 2.5)
 
-    fig.suptitle('SDSS Photoz3 sample')
-    fig.savefig('color_redshift_sdss_photoz3_contour.png')
-
+    fig.suptitle(r'SDSS Photoz2 $r < 22$ sample')
+    fig.savefig('color_redshift_sdss_photoz2_r_lt_22_contour.png')
+    print("Contour plot made!")
+    
     return 0
 
 if __name__ == '__main__':
