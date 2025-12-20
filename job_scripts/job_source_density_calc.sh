@@ -1,11 +1,11 @@
 #!/bin/sh
-#SBATCH -t 12:59:59
+#SBATCH -t 5:59:59
 #SBATCH -N 1
-#SBATCH --mem=150G
+#SBATCH --mem=50G
 #SBATCH --partition=short
-#SBATCH -J dust_calc
+#SBATCH -J source_density_calc
 #SBATCH -v
-#SBATCH -o slurm-dust_calc_%j.out
+#SBATCH -o slurm-source_density_calc_%j.out
 
 
 ###
@@ -55,10 +55,9 @@ then
 
  echo "Proceeding with code..."
  
-
 ### 
 ### Record start time 
-###      
+### 
 echo "Code start time: "
 date "+%Y-%m-%d %H:%M:%S"
 StartTime=$(date +%s)
@@ -67,13 +66,13 @@ StartTime=$(date +%s)
 ### Go!
 ###
 
-echo "Running dust calc systematics"
-python $CODEDIR/runner_scripts/dust_calc_runner.py -c $CONFIGDIR/dust_calc_systematics.yaml
+echo "Running source density calculation for redMaGiC hi-z"
+python $CODEDIR/runner_scripts/source_density_calc_runner.py -c $CONFIGDIR/source_density_calc_hiz.yaml
 echo "Task end time: "
 date "+%Y-%m-%d %H:%M:%S"
 
-echo "Running dust calc systematics"
-python $CODEDIR/runner_scripts/dust_calc_runner.py -c $CONFIGDIR/dust_calc_hidens.yaml
+echo "Running source density calculation for redMaGiC hi-dens"
+python $CODEDIR/runner_scripts/source_density_calc_runner.py -c $CONFIGDIR/source_density_calc_hidens.yaml
 echo "Task end time: "
 date "+%Y-%m-%d %H:%M:%S"
 
@@ -81,16 +80,13 @@ date "+%Y-%m-%d %H:%M:%S"
 ###
 ### Record end time and calculate approximate run time
 ###  
-#echo "Code end time: "
-#date "+%Y-%m-%d %H:%M:%S"
-
 EndTime=$(date +%s)
 Diff=$((EndTime - StartTime))
 echo "Total elapsed time:"
 displaytime $Diff 
 
 ### Move slurm outfile
-mv slurm-dust_calc_%j.out "$dirname"
+mv slurm-source_density_calc_%j.out "$dirname"
 
 
 

@@ -10,12 +10,6 @@
 
 
 ###
-### Activate Conda
-###
-source /work/mccleary_group/miniconda3/etc/profile.d/conda.sh
-conda activate dustyhalos2
-
-###
 ### A way to convert time in seconds to a neatly printed day/hour/minute/second format
 ###
 function displaytime {
@@ -32,11 +26,17 @@ function displaytime {
 }
 
 ###
+### Activate Conda
+###
+source /home/j.mccleary/miniconda3/etc/profile.d/conda.sh
+conda activate dustyhalos
+
+###
 ### Define some environmental variables
 ###
-export CODEDIR='/work/mccleary_group/dusty_halos/dusthalos_emh/'
-export CONFIGDIR='/work/mccleary_group/dusty_halos/dusthalos_emh/configs'
-export PATH='.':$PATH:'/work/mccleary_group/Software/texlive-bin/x86_64-linux'
+export CODEDIR='/projects/mccleary_group/dusty_halos/dusthalos/'
+export CONFIGDIR='/projects/mccleary_group/dusty_halos/dusthalos/configs'
+export PATH='.':$PATH:'/projects/mccleary_group/Software/texlive-bin/x86_64-linux'
 export PYTHONPATH='.':$PYTHONPATH
 
 echo "PATH is set to ${PATH}"
@@ -56,10 +56,9 @@ then
  echo "Proceeding with code..."
  
 
-###
+### 
 ### Record start time 
-###                                                                                                                             
-
+###      
 echo "Code start time: "
 date "+%Y-%m-%d %H:%M:%S"
 StartTime=$(date +%s)
@@ -73,35 +72,45 @@ echo ""
 echo "Running prep_cat_runner for regular galaxy catalogs"
 echo ""
 python $CODEDIR/runner_scripts/prep_cat_runner.py -c $CONFIGDIR/prep_hiz_catalog_config.yaml
+echo "Task end time: "
+date "+%Y-%m-%d %H:%M:%S"
 
 # Make the random catalogs
 echo ""
 echo "Running make_random_cat_runner.py for foreground"
 echo ""
 python $CODEDIR/runner_scripts/make_random_cat_runner.py -c $CONFIGDIR/make_fg_randoms_config.yaml
+echo "Task end time: "
+date "+%Y-%m-%d %H:%M:%S"
 
 # Prep the random catalogs and do a comfort plot
 echo ""
 echo "Running prep_cat_runner for random galaxy catalogs"
 echo ""
 python $CODEDIR/runner_scripts/prep_cat_runner.py -c $CONFIGDIR/prep_hiz_randoms_config.yaml
+echo "Task end time: "
+date "+%Y-%m-%d %H:%M:%S"
 
 echo ""
 echo "Make overlap plots"
 echo ""
 python $CODEDIR/runner_scripts/make_overlap_plots_local.py
+echo "Task end time: "
+date "+%Y-%m-%d %H:%M:%S"
 
 # Dust calculation(s)
 echo ""
 echo "Running dust calc runner: hidens"
 echo ""
 python $CODEDIR/runner_scripts/dust_calc_runner.py -c $CONFIGDIR/dust_calc_config.yaml
+echo "Task end time: "
+date "+%Y-%m-%d %H:%M:%S"
 
 
 ###
 ### Record end time and calculate approximate run time
-###                                                                                                                             
-echo "Code end time: "
+###  
+echo "Task end time: "
 date "+%Y-%m-%d %H:%M:%S"
 
 EndTime=$(date +%s)

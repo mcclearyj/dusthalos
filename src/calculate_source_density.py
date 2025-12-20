@@ -16,12 +16,12 @@ import src.plotter as plotter
 import src.utils as utils
 from src.correlator import Correlator
 
-def make_nn(var_method='shot'):      
+def make_nn(theta_edges, var_method='shot'):      
     return treecorr.NNCorrelation(min_sep=theta_edges[0], max_sep=theta_edges[-1],
                                   nbins=len(theta_edges)-1, sep_units='arcmin', 
                                   bin_slop=0, var_method=var_method)
 
-def calculate_xi(fg, fgr, bg, bgr, var_method=None):
+def calculate_xi(fg, fgr, bg, bgr, theta_edges, var_method=None):
     """
     Run the correlation calculation with the specified variance method. 
     Input: fg, bg, fgr, bgr are instances of dusthalos.Catalog(), which include 
@@ -36,17 +36,19 @@ def calculate_xi(fg, fgr, bg, bgr, var_method=None):
         print("No covariance method specified, defaulting to shot noise only")
         var_method = 'shot'
 
-    dd = _calculate_xi(fg, bg, fgr, bgr, var_method=var_method)
+    dd = _calculate_xi(fg, bg, fgr, bgr, theta_edges, var_method=var_method)
     return dd
 
-def _calculate_xi(fg, bg, fgr, bgr, var_method='shot'):
+def _calculate_xi(fg, bg, fgr, bgr, theta_edges, var_method='shot'):
     """
     This is essentially a Landy-Szalay estimator clustering calculation.
     Note that input catalogs are assumed to be TreeCorr Catalog objects.
     """
     # Intitialize TreeCorr NNCorrelation objects for each of the four catalogs
-    dd = make_nn(var_method=var_method); dr = make_nn(var_method=var_method) 
-    rd = make_nn(var_method=var_method); rr = make_nn(var_method=var_method)
+    dd = make_nn(theta_edges, var_method=var_method) 
+    dr = make_nn(theta_edges, var_method=var_method) 
+    rd = make_nn(theta_edges, var_method=var_method)
+    rr = make_nn(theta_edges, var_method=var_method)
 
     print("Processing TreeCorr correlations...")
     dd.process(fg,  bg)    # D_l D_s
@@ -127,13 +129,14 @@ def run_all(correl_config, theta_edges=None):
     dd = calculate_xi(
         fg.treecorrCatalog, bg.treecorrCatalog, 
         fgr.treecorrCatalog, bgr.treecorrCatalog, 
+        theta_edges,
         var_method=correl_config['treecorr_params']['var_method']
     )
 
     # Write output to file
     print("Writing correlation result to file...")
     dd.write(os.path.join(
-        correl_config['output_dir'], correl_config['output_basename']+'clustering.txt'
+        correl_config['output_path'], correl_config['output_basename']+'clustering.txt'
     ))
 
     print("Clustering calculation complete.")
