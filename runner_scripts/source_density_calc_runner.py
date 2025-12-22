@@ -11,6 +11,10 @@ def main(args):
     config_file = args.config
     correl_config = utils.read_yaml(config_file)
 
+    # Make sure that configuration file has the autocorrel key
+    if 'autocorrel' not in correl_config['treecorr_params']:
+        raise ValueError("Configuration file must specify 'autocorrel' in treecorr_params")
+
     # Create output directory if it doesn't exist
     if not os.path.isdir(correl_config['output_path']):
         os.makedirs(correl_config['output_path'])
