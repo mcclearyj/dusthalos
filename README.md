@@ -65,16 +65,3 @@ The pipeline above creates new corrected catalogs to the `output/` directory. Th
 If you use this code in your research, please cite:
 
 McCleary et al. 2025, "A Detection of Circumgalactic Dust at Megaparsec Scales with Maximum Likelihood Estimation" arXiv:2503.04098
-
-```bibtex
-@article{mccleary2025dusthalos,
-  author = {McCleary, Jacqueline E. and Huff, Eric M. and Bartlett, James W. and Hensley, Brandon S.},
-  title = {A Detection of Circumgalactic Dust at Megaparsec Scales with Maximum Likelihood Estimation},
-  journal = {draft version March 7, 2025, AASTeX7},
-  year = {2025},
-  eprint = {2503.04098},
-  archivePrefix = {arXiv},
-  primaryClass = {astro-ph.GA},
-  url = {https://arxiv.org/pdf/2503.04098}
-}
-```
