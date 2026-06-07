@@ -147,7 +147,7 @@ class HpMask:
         hpInd = hp.ang2pix(self.NSIDE, lon, lat, lonlat=lonlat, nest=False)
 
         # Identify coordinates that fall into good (unmasked) HEALPixels
-        overlap = np.in1d(hpInd, good_map_hpix)
+        overlap = np.isin(hpInd, good_map_hpix)
 
         # Create object index array and return good indices, good coords
         gal_ind = np.arange(len(coords))
@@ -221,8 +221,8 @@ class HpMask:
 
         # Identify whether or not a coordinate lies within the respective
         # masks' seen HEALPixels. seen1/2 are boolean arrays.
-        seen1 = np.in1d(ipix1, good_map_hpix1)
-        seen2 = np.in1d(ipix2, good_map_hpix2)
+        seen1 = np.isin(ipix1, good_map_hpix1)
+        seen2 = np.isin(ipix2, good_map_hpix2)
 
         '''
         This returns a boolean array with True if a coordinate is seen in both
