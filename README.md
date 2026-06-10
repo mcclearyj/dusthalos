@@ -17,6 +17,7 @@ Dependencies:
 - dustmaps 
 - matplotlib
 - scipy
+- fitsio
 
 ## Process Catalogs
 
@@ -41,7 +42,7 @@ The parameters of the extinction model to use is also specified in `dust_calc_co
 The flow is as follows:
 1. Prepare catalog: process, reads, and filters galaxy catalogs  through `catalog.py` and `cat_prep_runner.py`
 ```bash
-python runner_scripts/cat_prep_runner.py --config configs/prep_catalog_config.yaml
+python runner_scripts/cat_prep_runner.py -config configs/prep_catalog_config.yaml
 ```
 2. HEALPix coordinates: converts the galaxy catalog RA/Dec sky coordinates into HEALPix indices for dust mapping, converts from RA/Dec to galactic (l,b) coords, and works to exclude bad regions of the catalogs
 
@@ -50,10 +51,12 @@ python runner_scripts/cat_prep_runner.py --config configs/prep_catalog_config.ya
 4. Apply extinction model: converts the E(B-V) value using the extinction model to corrections
 
 ```bash
-python runner_scripts/dust_calc_runner.py --config configs/dust_calc_config.yaml
+python runner_scripts/dust_calc_runner.py -config configs/dust_calc_config.yaml
 ```
 
 5. Output corrected catalog: creates the deredenned values and outputs them into a new catalog
+
+Note: Steps 2 and 3 happen internally within ``prep_cat_runner.py `` script and only applies to galaxy cross correlation analyses.
 
 ## Output
 The pipeline above creates new corrected catalogs to the `output/` directory. This directory has the original values as well as:
