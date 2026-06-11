@@ -11,10 +11,10 @@
 paths:
   # general path for catalogs
   #catalog_path: '/Users/j.mccleary/Research/dusty_halos/catalogs'
-  catalog_path: '/work/mccleary_group/dusty_halos/catalogs'
+  catalog_path: '/projects/mccleary_group/dusty_halos/catalogs'
   # Where to save outputs
   #output_path: '/Users/j.mccleary/Research/dusty_halos/catalogs/prep_cat_output'
-  output_path: '/work/mccleary_group/dusty_halos/catalogs/prep_cat_csfd'
+  output_path: '/projects/mccleary_group/dusty_halos/catalogs/prep_cat_csfd'
 
 #
 # Input catalogs and masks:
@@ -40,7 +40,7 @@ background_catalog:
   match:
     # Set the path to catalog to be matched
     #path: '/Users/j.mccleary/Research/dusty_halos/catalogs/'
-    path: '/work/mccleary_group/dusty_halos/catalogs'
+    path: '/projects/mccleary_group/dusty_halos/catalogs'
     # Name of catalog file
     filename: '18176_desy3_gold_gals.fits'
     # Should be 'kw', 'coordinates', or 'random'
