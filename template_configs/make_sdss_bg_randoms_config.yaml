@@ -18,9 +18,9 @@
 # Set some defaults
 paths:
   # general path for catalogs
-  catalog_path: '/work/mccleary_group/dusty_halos/catalogs/'
+  catalog_path: '/projects/mccleary_group/dusty_halos/catalogs/'
   # Where to save outputs
-  output_path: '/work/mccleary_group/dusty_halos/catalogs/prep_cat_gwslc'
+  output_path: '/projects/mccleary_group/dusty_halos/catalogs/prep_cat_gwslc'
 
 # How many random points are we making?
 # Suggestion: use 1e6 for making overlap plots, > 3e7 for science
@@ -30,7 +30,7 @@ nrand: 5e8
 output_name: 'sdss_bg_photoz_randoms.fits'
 
 # Populate if comparison to another catalog's RA, Dec distribution is desired
-#comparison_cat: '/work/mccleary_group/dusty_halos/catalogs/prep_cat_sdss/DoubleMasked_sdss_bg_photoz.fits'
+#comparison_cat: '/projects/mccleary_group/dusty_halos/catalogs/prep_cat_sdss/DoubleMasked_sdss_bg_photoz.fits'
 
 # HpMask for which random points are desired
 mask1:

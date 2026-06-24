@@ -11,9 +11,9 @@
 paths:
   # general path for catalogs
   #catalog_path: '/Users/j.mccleary/Research/dusty_halos/catalogs'
-  catalog_path: '/work/mccleary_group/dusty_halos/catalogs'
+  catalog_path: '/projects/mccleary_group/dusty_halos/catalogs'
   # Where to save outputs
-  output_path: '/work/mccleary_group/dusty_halos/catalogs/prep_cat_sdss'
+  output_path: '/projects/mccleary_group/dusty_halos/catalogs/prep_cat_sdss'
 
 #
 # Input catalogs and masks:
@@ -37,7 +37,7 @@ background_catalog:
   # Are we matching? Uncomment fields below if true!
   match:
     # Set the path to catalog to be matched
-    path: '/work/mccleary_group/dusty_halos/catalogs/prep_cat_sdss'
+    path: '/projects/mccleary_group/dusty_halos/catalogs/prep_cat_sdss'
     # Name of catalog file
     filename: 'DoubleMasked_sdss_bg_photoz.fits'
     # Should be 'kw', 'coordinates', or 'random'
@@ -63,9 +63,9 @@ foreground_catalog:
   # What is it called ?
   filename: 'WISExSCOS_randoms_sdss.fits'
   # RA, Dec names + units + coordframe
-  coordframe: 'icrs'
-  ra_key: 'ra'
-  dec_key: 'dec'
+  coordframe: 'galactic'
+  ra_key: 'l'
+  dec_key: 'b'
   coord_units: 'deg'
 
 # probably foreground mask
