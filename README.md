@@ -1,5 +1,5 @@
 # dusthalos
-Dusty, dusty halos!
+Dusty, dusty halos! README still under construction. 
 
 This repository takes galaxy catalogs from sources like COSMOS-Web or SuperBIT (mainly redMaGiC) and uses their data to calculate dust reddening corrections for the Milky Way, cross-correlations between dust extinction and galaxy source density, and dereddening for weak lensing. 
 
@@ -18,6 +18,10 @@ Dependencies:
 - matplotlib
 - scipy
 - fitsio
+
+Plots look best with TeX fonts; you can follow Unix installation instructions for TeX live here: https://www.tug.org/texlive/quickinstall.html
+Once installed, add something like this to your path:
+`export PATH='.':$PATH:'/path/to/your/texlive-bin/x86_64-linux'`
 
 ## Process Catalogs
 
@@ -44,27 +48,21 @@ The flow is as follows:
 ```bash
 python runner_scripts/cat_prep_runner.py -config configs/prep_catalog_config.yaml
 ```
-2. HEALPix coordinates: converts the galaxy catalog RA/Dec sky coordinates into HEALPix indices for dust mapping, converts from RA/Dec to galactic (l,b) coords, and works to exclude bad regions of the catalogs
-
-3. Query dust map: looks up each E(B-V) reddening value at specific points in the sky to create a full dust map
-
-4. Apply extinction model: converts the E(B-V) value using the extinction model to corrections
+2. HEALPix coordinates: converts the galaxy catalog RA/Dec sky coordinates into HEALPix indices for dust mapping. Matches catalog areas based on HEALPix map. 
+3. Optional: MW dust extinction correction, if not already de-reddened.
+4. Outputs dereddened, masked catalog. 
+5. Actual reddening calculation and correlation: 
 
 ```bash
 python runner_scripts/dust_calc_runner.py -config configs/dust_calc_config.yaml
 ```
 
-5. Output corrected catalog: creates the deredenned values and outputs them into a new catalog
-
-Note: Steps 2 and 3 happen internally within ``prep_cat_runner.py `` script and only applies to galaxy cross correlation analyses.
+Note: Steps 3 and 4 happen internally within ``prep_cat_runner.py `` script. 
 
 ## Output
-The pipeline above creates new corrected catalogs to the `output/` directory. This directory has the original values as well as:
-- Extinction Value: `A_V` 
-- Reddening Value: `E(B-V)`
-- Corrected values
+TBD
 
 ## Citation 
 If you use this code in your research, please cite:
 
-McCleary et al. 2025, "A Detection of Circumgalactic Dust at Megaparsec Scales with Maximum Likelihood Estimation" arXiv:2503.04098
+McCleary, J. E., Huff, E. M., Bartlett, J. G., & Hensley, B. S. (2026). A Detection of Circumgalactic Dust at Megaparsec Scales with Maximum Likelihood Estimation. The Astrophysical Journal, 1000(2), 313, IOP. https://doi.org/10.3847/1538-4357/ae4c3d
