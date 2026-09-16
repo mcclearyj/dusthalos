@@ -3,6 +3,11 @@ import os
 
 cat_dir = '/work/mccleary_group/dusty_halos/catalogs/prep_cat_csfd'
 out_dir = '/work/mccleary_group/dusty_halos/catalogs/prep_cat_csfd/overlap_plots'
+if not os.path.exists(out_dir):
+    try:
+        os.makedirs(out_dir)
+    except:
+        raise FileNotFoundError(f"Could not create output directory: {out_dir}")
 
 cat1_basename = 'DoubleMasked_gaia_stars_southern_subsample1.fits'
 cat2_basename = 'redmagic_hiz_y3_GOLD_JOINED_catalog.fits'

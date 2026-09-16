@@ -1,0 +1,71 @@
+################################################################################
+#             CONFIGURATION FILE: dust_calc_runner.py                          #
+################################################################################
+# -----------------
+# Input catalogs
+# -----------------
+
+# cat_config: path to configuration file specifying catalog properties
+# NOTES:
+#  - allowed keys for "redshifts" are: use_bin_numbers, nbins, and min_z
+#  - "treecorr_npatch" sets the number of sky patches used in treecorr
+foreground_catalog:
+  treecorr_npatch: 50   # Set number of treecorr patches
+  cat_config: 'configs/catalog_configs/WISExSCOS_zlt0.2.yaml'
+
+foreground_randoms:
+  cat_config: 'configs/catalog_configs/WISExSCOS_randoms.yaml'
+
+background_catalog:
+  cat_config: 'configs/catalog_configs/redmagic_hiz_y3gold_joined.yaml'
+  redshifts: # How to deal with redshifts
+    use_bin_numbers: True # Basically just for redmagic
+    #nbins: 5
+
+background_randoms:
+  cat_config: 'configs/catalog_configs/redmagic_hiz_randoms.yaml'
+  redshifts: # How to deal with redshifts
+    use_bin_numbers: True # Basically just for redmagic
+    #nbins: 5
+
+# ------------------
+# Output parameters
+# ------------------
+
+# Where output files and plots will get saved
+output_path: 'output/source_density_profiles/'
+# basename or prefix for assorted files to save
+output_basename: 'number_density_vs_separation_hiz'
+# Plot output dust profile in kiloparsecs (True) or arcminutes (False)
+use_kpc: True
+
+# -----------------
+# Correlation function parameters:
+# -----------------
+treecorr_params:
+  min_sep: 0.1
+  max_sep: 200.0
+  bin_size: 0.6
+  sep_units: 'arcmin'
+  var_method: 'jackknife'
+  autocorrel: False
+
+# Parameters for dust model
+dust_params:
+  # Model must be one of the models specified in dust_extinction.averages or 
+  # dust_extinction.parameter_averages (Note: these are cASe SeNsItIvE)
+  model: 'G24_SMCAvg'
+  # Ratio of selective to total extinction (if required by dust model)
+  R: 3.1
+  # Extinction in V band (if required by dust model)
+  A_V: 1
+  # Bandpass column names in catalog
+  band_names: ['mof_cm_mag_g_corr_csfd', 'mof_cm_mag_r_corr_csfd',
+              'mof_cm_mag_i_corr_csfd', 'mof_cm_mag_z_corr_csfd']
+  #band_names: ['mof_cm_mag_corrected_g', 'mof_cm_mag_corrected_r',
+  #             'mof_cm_mag_corrected_i', 'mof_cm_mag_corrected_z']
+  # Error/uncertainty column names in catalog (in order, please!)
+  err_names: ['mof_cm_mag_err_g', 'mof_cm_mag_err_r',
+              'mof_cm_mag_err_i', 'mof_cm_mag_err_z']
+  # Central wavelengths (spectrum) to model; should match number of bands!
+  wavelengths: [4796.6, 6382.6, 7769.0, 9108.2] 

@@ -16,39 +16,58 @@ import src.plotter as plotter
 import src.utils as utils
 from src.correlator import Correlator
 
-def make_nn(theta_edges, var_method='shot'):      
+def make_nn(theta_edges, kwargs):      
     return treecorr.NNCorrelation(min_sep=theta_edges[0], max_sep=theta_edges[-1],
                                   nbins=len(theta_edges)-1, sep_units='arcmin', 
-                                  bin_slop=0, var_method=var_method)
+                                  bin_slop=0, **kwargs)
 
-def calculate_xi(fg, fgr, bg, bgr, theta_edges, var_method=None):
+def calculate_correlation(theta_edges, fg, fgr, bg=None, bgr=None, 
+                 var_method=None, autocorrel=False):
     """
     Run the correlation calculation with the specified variance method. 
     Input: fg, bg, fgr, bgr are instances of dusthalos.Catalog(), which include 
     TreeCorr Catalog instances as attributes.
     Returns the xi and varxi arrays.
     """
-    if type(fg) is not treecorr.Catalog or type(bg) is not treecorr.Catalog or \
-        type(fgr) is not treecorr.Catalog or type(bgr) is not treecorr.Catalog:
+    # Check that catalogs are TreeCorr Catalog objects
+    if not isinstance(fg, treecorr.Catalog) or not isinstance(fgr, treecorr.Catalog):
         raise TypeError("Input catalogs must be TreeCorr Catalog objects")
-
+    if not autocorrel:
+        if not isinstance(bg, treecorr.Catalog) or not isinstance(bgr, treecorr.Catalog):
+            raise TypeError("Input catalogs must be TreeCorr Catalog objects")
+        
+    # Set default variance method if not specified
     if var_method is None: 
         print("No covariance method specified, defaulting to shot noise only")
         var_method = 'shot'
 
-    dd = _calculate_xi(fg, bg, fgr, bgr, theta_edges, var_method=var_method)
+    # Run the correlation calculations
+    if autocorrel:
+        print("Running autocorrelation calculation...")
+        dd = _calculate_autocorrel(theta_edges, fg, fgr, var_method)
+    else:
+        print("Running cross-correlation calculation...")  
+        dd = _calculate_crosscorrel(theta_edges, fg, fgr, bg, bgr, var_method)
+
     return dd
 
-def _calculate_xi(fg, bg, fgr, bgr, theta_edges, var_method='shot'):
+def _calculate_crosscorrel(theta_edges, fg, fgr, bg, bgr, var_method):
     """
     This is essentially a Landy-Szalay estimator clustering calculation.
     Note that input catalogs are assumed to be TreeCorr Catalog objects.
+    In an ideal world, we would use the same function for both autocorrelation 
+    and cross-correlation, but that would lead to a lot of if/else statements. 
+    So, for the sake of clarity, I'm keeping these separate.
     """
     # Intitialize TreeCorr NNCorrelation objects for each of the four catalogs
-    dd = make_nn(theta_edges, var_method=var_method) 
-    dr = make_nn(theta_edges, var_method=var_method) 
-    rd = make_nn(theta_edges, var_method=var_method)
-    rr = make_nn(theta_edges, var_method=var_method)
+    kwargs = {'var_method': var_method}
+    if var_method == 'jackknife':
+        kwargs['cross_patch_weight'] = 'match'
+
+    dd = make_nn(theta_edges, kwargs) 
+    dr = make_nn(theta_edges, kwargs) 
+    rd = make_nn(theta_edges, kwargs)
+    rr = make_nn(theta_edges, kwargs)
 
     print("Processing TreeCorr correlations...")
     dd.process(fg,  bg)    # D_l D_s
@@ -76,24 +95,45 @@ def _calculate_xi(fg, bg, fgr, bgr, theta_edges, var_method='shot'):
     print("varxi: ", varxi)
     return dd
 
+def _calculate_autocorrel(theta_edges, fg, fgr, var_method):
+    """
+    This is essentially a Landy-Szalay estimator clustering calculation.
+    Note that input catalogs are assumed to be TreeCorr Catalog objects.
+    In an ideal world, we would use the same function for both autocorrelation 
+    and cross-correlation, but that would lead to a lot of if/else statements. 
+    So, for the sake of clarity, I'm keeping these separate.
+    """
+    # Intitialize TreeCorr NNCorrelation objects for each of the two catalogs
+    kwargs = {'var_method': var_method}
+    if var_method == 'jackknife':
+        kwargs['cross_patch_weight'] = 'match'
+    dd = make_nn(theta_edges, kwargs) 
+    dr = make_nn(theta_edges, kwargs) 
+    rr = make_nn(theta_edges, kwargs)
+
+    print("Processing TreeCorr correlations...")
+    dd.process(fg)       # D_l x D_l
+    dr.process(fg, fgr)  # D_l x R_l
+    rr.process(fgr)      # R_l x R_l
+
+    print("Proceeding with full clustering/xi calculation...")
+    xi, varxi = dd.calculateXi(dr=dr, rr=rr)
+    
+    # Printing out results here since TreeCorr has some funny behavior 
+    # when things get written to file. 
+    print("xi: ", xi)
+    print("varxi: ", varxi)
+    return dd
+
 def load_catalogs(correl_config):
     """
     Use Correlator class to load the necessary catalogs, including 
     conversion of coordinates to ICRS format, and create instances of 
     TreeCorr catalogs for each. 
     """
-    # Load background catalog and set patch centers defined in correl_config
-    bg = Correlator(correl_config, ctype='background_catalog')
-    bg.load()
-
-    # Load background random catalog
-    # Include background patch_centers for covariance calculations
-    bgr = Correlator(correl_config, ctype='background_randoms')
-    bgr.load(treecorr_patch_centers=bg.treecorrCatalog.patch_centers)
-
     # Load foreground catalog
     fg = Correlator(correl_config, ctype='foreground_catalog')
-    fg.load(treecorr_patch_centers=bg.treecorrCatalog.patch_centers)
+    fg.load()
     try:
         mean_fg_z = np.median(fg.Catalog.data[fg.cat_config['z_key']])
     except KeyError:
@@ -103,9 +143,24 @@ def load_catalogs(correl_config):
 
     # Load foreground random catalog
     fgr = Correlator(correl_config, ctype='foreground_randoms')
-    fgr.load(treecorr_patch_centers=bg.treecorrCatalog.patch_centers)
+    fgr.load(treecorr_patch_centers=fg.treecorrCatalog.patch_centers)
 
-    return fg, bg, fgr, bgr
+    if correl_config['treecorr_params']['autocorrel']:
+        # If we're doing an autocorrelation, we don't need the background catalogs
+        return fg.treecorrCatalog, fgr.treecorrCatalog, None, None
+    
+    else: # If we're doing a cross-correlation, load the background catalogs
+        # Load background catalog 
+        # Include foreground patch_centers for covariance calculations
+        bg = Correlator(correl_config, ctype='background_catalog')
+        bg.load(treecorr_patch_centers=fg.treecorrCatalog.patch_centers)
+
+        # Load background random catalog
+        # Include foreground patch_centers for covariance calculations
+        bgr = Correlator(correl_config, ctype='background_randoms')
+        bgr.load(treecorr_patch_centers=fg.treecorrCatalog.patch_centers)
+
+        return fg.treecorrCatalog, fgr.treecorrCatalog, bg.treecorrCatalog, bgr.treecorrCatalog
 
 def run_all(correl_config, theta_edges=None):
     """
@@ -113,30 +168,28 @@ def run_all(correl_config, theta_edges=None):
     NOTE: this function overrides the correl_config angular separation
     bin values, since this source density calculation is special-purpose.
     """
-
     # Define theta_edges (angular separations in arcminutes) for TreeCorr
     if theta_edges is None:
         theta_edges = np.array([0.5, 1, 2, 5, 10, 20, 50, 100, 200])
     print("Using default theta edges:", theta_edges)
 
-    # Load catalogs and return dusthalos.Catalog() instances, 
-    # which include TreeCorr Catalog instances as attributes
+    # Load catalogs and return TreeCorr.Catalogs (or None if autocorrelation)
     print("Loading catalogs...")
-    fg, bg, fgr, bgr = load_catalogs(correl_config)
+    fg, fgr, bg, bgr = load_catalogs(correl_config)
 
     # Calculate xi and varxi aka clustering
     print("Calculating xi and varxi...")
-    dd = calculate_xi(
-        fg.treecorrCatalog, bg.treecorrCatalog, 
-        fgr.treecorrCatalog, bgr.treecorrCatalog, 
+    dd = calculate_correlation(
         theta_edges,
+        fg, fgr, bg, bgr,
+        autocorrel=correl_config['treecorr_params']['autocorrel'],
         var_method=correl_config['treecorr_params']['var_method']
     )
 
     # Write output to file
     print("Writing correlation result to file...")
     dd.write(os.path.join(
-        correl_config['output_path'], correl_config['output_basename']+'clustering.txt'
+        correl_config['output_path'], correl_config['output_basename']+'_clustering.txt'
     ))
 
     print("Clustering calculation complete.")
