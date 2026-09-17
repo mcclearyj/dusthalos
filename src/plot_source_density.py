@@ -35,7 +35,7 @@ density_map = hist / area_per_bin / 3600.0  # because there are 3600 square arcm
 fig, ax = plt.subplots(1, 1, figsize=(8, 8))
 
 im = ax.imshow(
-    density_map.T, origin='lower', aspect='auto'
+    density_map.T, origin='lower', aspect='auto',
     extent=[ra_edges[0], ra_edges[-1], dec_edges[0], dec_edges[-1]]
 )
 cax = divider.append_axes("right", size="5%", pad=0.07)

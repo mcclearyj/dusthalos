@@ -28,14 +28,15 @@ outname = os.path.join(out_dir, 'scos_rmz_hiz_overlap_rectilin.png')
 op.make_plot(
     outname=outname, coordframe1='galactic', ra_key1='l', dec_key1='b', 
     coordframe2='icrs', ra_key2='ra_redmagic_hiz', dec_key2='dec_redmagic_hiz',
-    label1=cat1_label, label2=cat2_label
+    label1=cat1_label, label2=cat2_label, markerscale=100, markersize=0.025
 )
+
 
 outname = os.path.join(out_dir, 'scos_rmz_hiz_overlap_aitoff.png')
 op.make_plot(
     outname=outname, coordframe1='galactic', ra_key1='l', dec_key1='b', 
     coordframe2='icrs', ra_key2='ra_redmagic_hiz', dec_key2='dec_redmagic_hiz',
-    label1=cat1_label, label2=cat2_label, projection='aitoff'
+    label1=cat1_label, label2=cat2_label, projection='aitoff',markerscale=100, markersize=0.025,
 )
 
 # Save memory!
@@ -65,14 +66,14 @@ outname = os.path.join(out_dir, 'rand_scos_rmz_hiz_overlap_rectilin.png')
 op.make_plot(
     outname=outname, coordframe1='galactic', ra_key1='l', dec_key1='b',
     coordframe2='icrs', ra_key2='ra', dec_key2='dec', 
-    label1=cat1_label, label2=cat2_label
+    label1=cat1_label, label2=cat2_label,markerscale=100, markersize=0.025,
 )
 
 outname = os.path.join(out_dir, 'rand_scos_rmz_hiz_overlap_aitoff.png')
 op.make_plot(
     outname=outname, coordframe1='galactic', ra_key1='l', dec_key1='b',
     coordframe2='icrs', ra_key2='ra', dec_key2='dec', 
-    label1=cat1_label, label2=cat2_label, projection='aitoff'
+    label1=cat1_label, label2=cat2_label, projection='aitoff',markerscale=100, markersize=0.025,
 )
 
 del(op)
