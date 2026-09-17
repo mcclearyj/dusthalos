@@ -271,7 +271,8 @@ class OverlapPlotter(RCParamsMixin):
 
     def make_plot(self, outname=None, projection=None, central_longitude=180,
                   ra_key1=None, dec_key1=None, coordframe1=None, label1=None,
-                  ra_key2=None, dec_key2=None, coordframe2=None, label2=None):
+                  ra_key2=None, dec_key2=None, coordframe2=None, label2=None,
+                  figure_size=None, markersize=1, markerscale=1):
         """
         TO DO: need to fix catalog labels, also find a smarter way
         to deal with coordinate systems of the two.
@@ -328,13 +329,14 @@ class OverlapPlotter(RCParamsMixin):
 
         # Create a plot instance (can also use axes class)
         # Note: aitoff projection apparently avoids mollweide's extreme edge distortions
-        if projection in ['mollweide', 'aitoff']:
-            figsize=(11.5, 6)
+        if figure_size == None:
+            if projection in ['mollweide', 'aitoff']:
+                figure_size = (11.5, 6)
+            else:
+                figure_size = (7, 7)
         else:
-            #figsize=(10, 7)
-            figsize=(11.5, 6)
-
-        fig, ax = plt.subplots(1,1, figsize=figsize, tight_layout=True, \
+            figure_size = tuple(figure_size)
+        fig, ax = plt.subplots(1,1, figsize=figure_size, tight_layout=True, \
                         subplot_kw=dict(projection=projection))
         ax.grid(True)
         ax.set_xlabel('RA'); ax.set_ylabel('Dec')
@@ -342,15 +344,15 @@ class OverlapPlotter(RCParamsMixin):
         # Plot the points - it takes a long time for them all to show up!
         ax.plot(
             sky1.ra.wrap_at(f'{central_longitude}d').radian, sky1.dec.radian, 
-            '.', label=label1, color='xkcd:light navy', markersize=0.025
+            '.', label=label1, color='xkcd:light navy', markersize=markersize,
         )
         if (sky2 is not None):
             ax.plot(
                 sky2.ra.wrap_at(f'{central_longitude}d').radian, sky2.dec.radian, 
-                '.', label=label2, color='xkcd:neon red', markersize=0.025
+                '.', label=label2, color='xkcd:neon red', markersize=markersize,
             )
 
-        lg = ax.legend(markerscale=400, loc='upper right')
+        lg = ax.legend(markerscale=markerscale, loc='upper right')
         fig.tight_layout()
 
         fig.savefig(outname)
