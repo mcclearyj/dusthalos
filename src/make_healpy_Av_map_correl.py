@@ -33,7 +33,7 @@ def build_mean_map(lon, lat, values, frame='icrs'):
     return result
 
 def build_density_map(lon, lat, frame='icrs'):
-    pix = coords_to_healpixels(lon, lat, values)
+    pix = coords_to_healpixels(lon, lat, frame)
     # Tally up counts
     counts = np.bincount(pix, minlength=npix)
     result = np.full(npix, hp.UNSEEN)
@@ -41,8 +41,8 @@ def build_density_map(lon, lat, frame='icrs'):
     return result
 
 # === LOAD DATA ===
-cat_dir = "/Users/j.mccleary/Research/dusty_halos/catalogs"
-outputs_dir = "/Users/j.mccleary/Research/dusty_halos/dusthalos_emh/output"
+cat_dir = "/projects/mccleary_group/dusty_halos/catalogs"
+outputs_dir = "/projects/mccleary_group/dusty_halos/dusthalos/output"
 
 wise = Table.read(
     os.path.join(cat_dir,
@@ -61,18 +61,18 @@ wise_rm = Table.read(
 )
 redmagic = Table.read(
     os.path.join(outputs_dir,
-    "redmagic_hidens_csfd/dustcorrel_demeancov_fixed_est_treecorrcat.fits"
+    "redmagic_hiz_csfd/dustcorrel_demeancov_fixed_est_treecorrcat.fits"
     )
 )
 sdss = Table.read(
     os.path.join(outputs_dir,
-    "sdss_csfd/dustcorrel_sdss_bg_photoz2_treecorrcat.fits"
+    "sdss_csfd/dustcorrel_sdss_bg_photoz2_csfd_treecorrcat.fits"
     ), memmap=True, format="fits"
 )
 
 sdss_fg = Table.read(
     os.path.join(cat_dir,
-    "prep_cat_sdss/DoubleMasked_sdss_fg_photoz.fit"
+    "prep_cat_sdss/DoubleMasked_wiseScosPhotoz160708_zlt0.15_rCal_gt_17.fits"
     ), memmap=True, format="fits"
 )
 
@@ -118,6 +118,15 @@ map_redmagic_av_masked[~mask_redmagic] = 0
 map_wise_rm_density_masked = np.copy(map_wise_rm_density)
 map_wise_rm_density_masked[~mask_redmagic] = 0
 
+# === SAVE MASK(S) TO FILE ===
+hp.fitsfunc.write_map(
+    os.path.join(outputs_dir,"double_masked_sdss_mean_av_map.fits"), 
+    map_sdss_av_masked, coord='C', 
+    column_names=['treecorr_av'], 
+    column_units='mag', 
+    overwrite=True
+)
+
 # === SPHERICAL HARMONICS ===
 alm_sdss = hp.map2alm(map_sdss_av_masked, lmax=200)
 alm_redmagic = hp.map2alm(map_redmagic_av_masked, lmax=200)
@@ -162,6 +171,7 @@ hp.mollview(
     max=np.nanpercentile(map_fg_sdss_density[map_wise_sdss_density!=hp.UNSEEN], 98),
     cmap='viridis', xsize=1100, rot=[central_longitude, 0, 0],
 )
+hp.graticule()
 
 fig = plt.figure(figsize=(9, 5.5))
 central_longitude = 0
