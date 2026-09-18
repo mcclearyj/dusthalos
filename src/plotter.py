@@ -280,7 +280,7 @@ class OverlapPlotter(RCParamsMixin):
     def make_plot(self, outname=None, projection=None, central_longitude=180,
                   ra_key1=None, dec_key1=None, coordframe1=None, label1=None,
                   ra_key2=None, dec_key2=None, coordframe2=None, label2=None,
-                  figure_size=None, markersize=1, markerscale=1):
+                  figure_size=None, markersize=0.025, markerscale=100):
         """
         TO DO: need to fix catalog labels, also find a smarter way
         to deal with coordinate systems of the two.
@@ -351,13 +351,13 @@ class OverlapPlotter(RCParamsMixin):
 
         # Plot the points - it takes a long time for them all to show up!
         ax.plot(
-            sky1.ra.wrap_at(f'{central_longitude}d').radian, sky1.dec.radian, 
-            '.', label=label1, color='xkcd:light navy', markersize=markersize,
+            sky1.ra.wrap_at(central_longitude*u.deg).radian, sky1.dec.radian, 
+            '.', label=label1, color='xkcd:light navy', markersize=markersize
         )
         if (sky2 is not None):
             ax.plot(
-                sky2.ra.wrap_at(f'{central_longitude}d').radian, sky2.dec.radian, 
-                '.', label=label2, color='xkcd:neon red', markersize=markersize,
+                sky2.ra.wrap_at(central_longitude*u.deg).radian, sky2.dec.radian, 
+                '.', label=label2, color='xkcd:neon red', markersize=markersize
             )
 
         lg = ax.legend(markerscale=markerscale, loc='upper right')

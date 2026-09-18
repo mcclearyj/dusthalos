@@ -6,8 +6,8 @@ import os
 from src.radec2healpixels import radec2healpixels
 
 ### Define parameters...
-catdir = '/n23data1/mccleary/dustyhalos/catalogs/'
-catname = 'GSWLC-X2_in_SDSS_z_lt_0.18.fits'
+catdir = '/projects/mccleary_group/dusty_halos/catalogs'
+catname = 'gswlc_quiescent_galaxies.fits'
 filename = os.path.join(catdir,catname)
 hdu=1
 ra_col = 'RA'
@@ -16,6 +16,6 @@ Nside = 1024
 
 ### Run!
 radec2healpixels(
-    filename=filename, hdu=1,
+    filename=filename, hdu=hdu,
     ra_col=ra_col, dec_col=dec_col, Nside=Nside
 )

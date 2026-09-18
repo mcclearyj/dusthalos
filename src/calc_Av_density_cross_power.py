@@ -14,7 +14,7 @@ npix = hp.nside2npix(nside)
 # Replace these with actual data loading
 cat_dir = "/Users/j.mccleary/Research/dusty_halos/catalogs"
 outputs_dir = "/Users/j.mccleary/Research/dusty_halos/dusthalos_emh/output"
-
+output_mask_name = ""
 wise_sdss = Table.read(
     os.path.join(cat_dir, 
     "prep_cat_sdss/DoubleMasked_wiseScosPhotoz160708_zlt0.15_rCal_gt_17.fits"
@@ -97,6 +97,15 @@ mask_redmagic = (map_redmagic_av != hp.UNSEEN) & (map_wise_rm_density != hp.UNSE
 map_redmagic_av[~mask_redmagic] = 0
 map_wise_rm_density_masked = np.copy(map_wise_rm_density)
 map_wise_rm_density_masked[~mask_redmagic] = 0
+
+# === SAVE MASK TO FILE ===
+hp.fitsfunc.write_map(
+    os.path.join(outputs_dir,"updated_sdss_mean_av_map.fits"), 
+    map_sdss_av_masked, coord='C', 
+    column_names=['treecorr_av'], 
+    column_units='mag', 
+    overwrite=True
+)
 
 # === SPHERICAL HARMONICS ===
 alm_sdss = hp.map2alm(map_sdss_av, lmax=200)
