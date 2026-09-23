@@ -1,0 +1,68 @@
+################################################################################
+#             CONFIGURATION FILE: dust_calc_runner.py                          #
+#        SDSS background, de-meaned A_V from saved treecorr catalogs           #
+################################################################################
+# -----------------
+# Input catalogs
+# -----------------
+
+# The background catalogs are read from treecorr catalogs that were already
+# written out and de-meaned by demean_treecorr_cat_runner.py, using the
+# 'demeaned_k' column in place of 'k'. No reddening calculation is run for
+# them; their patches come from the files' patch column. The foregrounds are
+# built from their science catalogs as usual.
+
+background_catalog:
+  treecorr_cat:
+    filename: 'output/sdss_csfd/demeaned_sdss_bg_photoz2_csfd_treecorrcat.fits'
+    k_col: 'demeaned_k'
+
+background_randoms:
+  treecorr_cat:
+    filename: 'output/sdss_csfd/demeaned_bgr_photoz2_treecorrcat.fits'
+    k_col: 'demeaned_k'
+
+foreground_catalog:
+  cat_config: 'configs/catalog_configs/WISExSCOS_sdss.yaml'
+
+foreground_randoms:
+  cat_config: 'configs/catalog_configs/WISExSCOS_sdss_randoms.yaml'
+
+# ------------------
+# Output parameters
+# ------------------
+
+# Where output files and plots will get saved
+output_path: 'output/sdss_csfd'
+# basename or prefix for assorted files to save
+output_basename: 'dustcorrel_demeaned_k'
+# Plot output dust profile in kiloparsecs (True) or arcminutes (False)
+use_kpc: True
+
+# -----------------
+# Correlation function parameters:
+# -----------------
+treecorr_params:
+  min_sep: 0.1
+  max_sep: 220.0
+  bin_size: 0.6
+  sep_units: 'arcmin'
+  var_method: 'sample'
+
+# Parameters for dust model
+# Not used by the background catalogs here (their k values come from file), but
+# kept so the config stays usable if you switch back to a 'cat_config' input
+dust_params:
+  # Model must be one of the models specified in dust_extinction.averages or
+  # dust_extinction.parameter_averages (Note: these are cASe SeNsItIvE)
+  model: 'G24_SMCAvg'
+  # Ratio of selective to total extinction (if required by dust model)
+  R: 3.1
+  # Extinction in V band (if required by dust model)
+  A_V: 1
+  # Bandpass column names in catalog
+  band_names: ['u_corr_csfd', 'g_corr_csfd', 'r_corr_csfd', 'i_corr_csfd', 'z_corr_csfd']
+  #  Error/uncertainty column names in catalog (in order, please!)
+  err_names: ['err_u', 'err_g', 'err_r', 'err_i', 'err_z']
+  # Central wavelengths (spectrum) to model; should match number of bands!
+  wavelengths: [3586.8, 4716.7, 6165.1, 7475.9, 8922.9]
