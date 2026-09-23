@@ -166,7 +166,7 @@ def main(args):
     # Make names
     names = make_names(correl_config)
 
-    if args.save_only != True: 
+    if args.saveonly != True: 
         # Do calculation
         get_dust(
             fg=fg, fgr=fgr, bg=bg, bgr=bgr,
@@ -199,7 +199,7 @@ if __name__ == '__main__':
         help="Path to the configuration file."
         )
     parser.add_argument(
-        "--save_only", action='store_true',
+        "--saveonly", action='store_true',
         help="Save TreeCorr catalog outputs only, then exit [default: False]"
         )
     args = parser.parse_args()
