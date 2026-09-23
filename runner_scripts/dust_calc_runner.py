@@ -135,8 +135,11 @@ def main(args):
     # This sets patch centers
     bg = Correlator(correl_config, ctype='background_catalog')
     bg.load()
+    # If we have read in a TreeCorr catalog from file, these do nothing
     bg.do_reddening()
-    bg.write_to_file()
+    bg.write_to_file(
+        outname=correl_config['output_basename'] + "bg_treecorrcat.fits"
+    )
 
     # Grab patch centers once; for a bg read from file they are derived from
     # its patch column, which means reading the whole catalog
@@ -146,7 +149,11 @@ def main(args):
     # Include background patch_centers for covariance calculations
     bgr = Correlator(correl_config, ctype='background_randoms')
     bgr.load(treecorr_patch_centers=patch_centers)
+    # Again, if we have read in a TreeCorr catalog from file, these do nothing
     bgr.do_reddening()
+    bgr.write_to_file(
+        outname=correl_config['output_basename'] + "bgr_treecorrcat.fits"
+    )
 
     # Load foreground catalog
     fg = Correlator(correl_config, ctype='foreground_catalog')
