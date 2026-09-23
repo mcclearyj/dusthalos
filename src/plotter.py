@@ -138,7 +138,7 @@ class DustPlotter(RCParamsMixin):
             theory_r_plot = theory_r
             coeff = 4.4e-3
             av_scale = 100
-            x_label = 'Impact parameter (h^-1 kpc)'
+            x_label = r'Impact parameter ($h^{-1}$ kpc)'
         else:
             scl = 1
             coeff = 2.5e-3
@@ -169,7 +169,7 @@ class DustPlotter(RCParamsMixin):
         ax.set_xlim(0.05*scl, 200*scl)
         ax.set_ylim(1E-5, 1)
         ax.set_xlabel(x_label, fontsize=16)
-        ax.set_ylabel('A_V (mag)', fontsize=16)
+        ax.set_ylabel(r'$A_V$ (mag)', fontsize=16)
         #ax.set_title('SCOS x redMaGiC', fontsize=16)
         ax.legend(fontsize=14)
 
@@ -193,7 +193,7 @@ class DustPlotter(RCParamsMixin):
             ax.set_xlim(0.05*scl, 200*scl)
             ax.set_ylim(1E-5, 1)
             ax.set_xlabel(x_label, fontsize=16)
-            ax.set_ylabel('A_V (mag)', fontsize=16)
+            ax.set_ylabel(r'$A_V$ (mag)', fontsize=16)
             #ax.set_title('SCOS x redMaGiC', fontsize=16)
             ax.legend(fontsize=14)
 

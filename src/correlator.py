@@ -54,6 +54,13 @@ class Correlator:
         'dec_units': 'deg'
     }
 
+    abbrevs = { 
+        'background_catalog': 'bg',
+        'background_randoms': 'bgr',
+        'foreground_catalog': 'fg',
+        'foreground_randoms': 'fgr'
+    }
+
     def __init__(self, correl_config=None, ctype=None):
         self.correl_config = correl_config
         self.cat_config = None
@@ -289,18 +296,25 @@ class Correlator:
 
         self.treecorrCatalog = updated_treecorr_catalog
 
-    def write_to_file(self, outname=None):
+    def write_treecorr_cat_to_file(self, outname=None):
         '''
         Save Treecorr catalog to file
         '''
+        # make a little dict 
         # Don't overwrite the file this catalog was just read from
         if self.from_file == True:
             print(f"{self.ctype} was loaded from a saved treecorr catalog, " + \
                     "not writing it back out")
             return
-
+        
         if outname == None:
-            outname = os.path.join(self.correl_config['output_path'],
-                    self.correl_config['output_basename']+'_treecorrcat.fits')
+            outname = os.path.join(
+                self.correl_config['output_path'],
+                (
+                    f"{self.correl_config['output_basename']}_"
+                    f"{self.abbrevs[self.ctype]}_" 
+                    f"_treecorrcat.fits"
+                )
+            )
         self.treecorrCatalog.write(outname)
 

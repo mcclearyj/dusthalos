@@ -60,7 +60,7 @@ if __name__ == '__main__':
         description='Runner script for Catalog operations.'
     )
     parser.add_argument(
-        '-config', '-c', type=str, help='Configuration file', required=True
+        '--config', '-c', type=str, help='Configuration file', required=True
     )
     args = parser.parse_args()
 

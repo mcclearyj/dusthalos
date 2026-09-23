@@ -104,7 +104,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(
         description='Runner script for Catalog operations.'
     )
-    parser.add_argument('-config', '-c', type=str,
+    parser.add_argument('--config', '-c', type=str,
         help='Path to the configuration file.', required=True
     )
     args = parser.parse_args()
