@@ -36,12 +36,13 @@ def _deredden(catname, band_names, wavelengths, ra_colname, dec_colname):
 
     # Get our E(B-V) values
     csfd = CSFDQuery()
-    ebv = csfd(coords)
-    print("Queried coordinates")
+    ebv_sfdscale = csfd(coords)
+    ebv_rescl = 0.86 * ebv_sfdscale
+    print("Queried dust map at coordinates and rescaled by 0.86")
 
     # Convert to Av values; second line makes it a column vector for broadcasting!
     Rv = 3.1
-    Av_values = ebv * Rv
+    Av_values = ebv_rescl * Rv
 
     # Do dust modeling
     gordon23 = G23(Rv=Rv)
@@ -68,7 +69,7 @@ def _deredden(catname, band_names, wavelengths, ra_colname, dec_colname):
         corr_band = data[band_names[i]] - this_Ax
 
         # Define a key name, extend dict with it
-        key_name = f'{band_names[i]}_corr_csfd'
+        key_name = f'{band_names[i]}_corr_csfd_rescl'
         corr_band_dict[key_name] = corr_band
 
     # Now make this an HDU, write to file
