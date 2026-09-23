@@ -106,11 +106,11 @@ map_redmagic_av = build_mean_map(ra_redmagic, dec_redmagic, av_redmagic)
 map_wise_rm_density = build_density_map(l_wise_rm, b_wise_rm, frame='galactic')
 
 # === MASKING ===
-mask_sdss = (map_sdss_av != hp.UNSEEN) & (map_fg_sdss_density != hp.UNSEEN)
+mask_sdss = (map_sdss_av != hp.UNSEEN) & (map_wise_sdss_density != hp.UNSEEN)
 map_sdss_av_masked = np.copy(map_sdss_av)
 map_sdss_av_masked[~mask_sdss] = 0
-map_fg_sdss_density_masked = np.copy(map_fg_sdss_density)
-map_fg_sdss_density_masked[~mask_sdss] = 0
+map_wise_sdss_density_masked = np.copy(map_wise_sdss_density)
+map_wise_sdss_density_masked[~mask_sdss] = 0
 
 mask_redmagic = (map_redmagic_av != hp.UNSEEN) & (map_wise_rm_density != hp.UNSEEN)
 map_redmagic_av_masked = np.copy(map_redmagic_av)
@@ -149,17 +149,20 @@ plt.legend()
 plt.grid(True)
 plt.tight_layout()
 plt.savefig("cross_power_spectra_wise_sdss_rm.pdf")
+plt.close()
 
 # === AV AND DENSITY MAP PLOTS ===
 fig = plt.figure(figsize=(9, 5.5))
 central_longitude = 0
 plot_title = r'SDSS A_V'
 hp.mollview(
-    map_sdss_av, title=plot_title,
+    map_sdss_av_masked, title=plot_title,
     unit='mag', min=np.nanpercentile(map_sdss_av[mask_sdss], 1),
     max=np.nanpercentile(map_sdss_av[mask_sdss], 99),
     cmap='viridis', fig=1, xsize=1100,rot=[central_longitude, 0, 0],
 )
+plt.savefig('sdss_masked_av_map.png')
+plt.close()
 
 fig = plt.figure(figsize=(9, 5.5))
 central_longitude = 0

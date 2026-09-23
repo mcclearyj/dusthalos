@@ -27,7 +27,7 @@ def hpRaDecToHEALPixel(ra, dec, nside=4096, nest=False, convert2gal=False):
     theta = (90.0 - dec) * np.pi / 180.0
 
     if convert2gal==True:
-        # Transforms ecliptic to galactic coordinates)
+        # Transforms celestial to galactic coordinates)
         print('Converting ecliptic to galactic')
         r = hp.rotator.Rotator(coord=['E','G'])
         theta_ecl, phi_ecl = r(theta, phi)
