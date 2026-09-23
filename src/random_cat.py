@@ -59,8 +59,10 @@ class RandomCat(HpMask):
             NSIDE:  HEALPix NSIDE parameter
             mask:  HpMask map instance
             mask_header:  Mask header info
-            seen:  Is HEALPixel filled? (1 or 0; default=0 for False)
-            all_nside_hpix:  HEALPix mask, stored as 1 x (12 * NSIDE**2) array
+            seen:  Boolean array of length npix; is HEALPixel filled? Indexed
+                   by HEALPixel id, so seen[p] answers "is pixel p in the
+                   footprint?"
+            all_nside_hpix:  Every HEALPixel id for this NSIDE, built on demand
             coordframe: Celestial reference frame (should be recognized
                         astropy.coord.SkyCoord kw like icrs, galactic, ...)
 
@@ -140,7 +142,10 @@ class RandomCat(HpMask):
                 seed = int(np.random.SeedSequence().generate_state(1)[0])
 
             if n_workers is None:
-                n_workers = max(1, mp.cpu_count() - 1)
+                # NB: the job's allocation, not the whole node -- see
+                # utils.get_n_cpus()
+                n_workers = max(1, utils.get_n_cpus() - 1)
+            print(f" Drawing randoms with {n_workers} worker processes")
 
             acc_lon, acc_lat = [], []
             need = int(nrand)

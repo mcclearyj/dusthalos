@@ -22,6 +22,30 @@ class AttrDict(dict):
         self.__dict__ = self
 
 
+def get_n_cpus():
+    '''
+    Number of CPUs this process is actually allowed to use.
+
+    multiprocessing.cpu_count() reports every core on the machine, which under
+    SLURM is the whole compute node rather than the job's allocation. Asking
+    for 64 threads inside a 16-core cgroup just oversubscribes the cores and
+    slows everything down, so prefer SLURM's own accounting, then the CPU
+    affinity mask, and only fall back to the machine-wide count.
+    '''
+
+    n_slurm = os.environ.get('SLURM_CPUS_PER_TASK')
+    if n_slurm is not None:
+        return int(n_slurm)
+
+    # Not under SLURM (or ntasks-only allocation): use the affinity mask,
+    # which containers and cpusets do respect. Not available on macOS.
+    try:
+        return len(os.sched_getaffinity(0))
+    except AttributeError:
+        import multiprocessing as mp
+        return mp.cpu_count()
+
+
 def hpRaDecToHEALPixel(ra, dec, nside=4096, nest=False, convert2gal=False):
     phi = ra * np.pi / 180.0
     theta = (90.0 - dec) * np.pi / 180.0

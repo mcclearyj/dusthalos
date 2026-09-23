@@ -29,8 +29,9 @@ class HpMask:
         NSIDE:  HEALPix NSIDE parameter
         mask:  HpMask map instance
         mask_header:  Mask header info
-        seen:  Is HEALPixel filled? (1 or 0; default=0 for False)
-        all_nside_hpix:  HEALPix mask, stored as 1 x (12 * NSIDE**2) array
+        seen:  Boolean array of length npix; is HEALPixel filled? Indexed by
+               HEALPixel id, so seen[p] answers "is pixel p in the footprint?"
+        all_nside_hpix:  Every HEALPixel id for this NSIDE, built on demand
         coordframe: Celestial reference frame of mask (should be recognized
                     astropy.coord.SkyCoord kw like icrs, galactic, ...)
     '''
@@ -51,11 +52,21 @@ class HpMask:
         self.mask = None
         self.mask_header = {}
         self.seen = []
-        self.all_nside_hpix = []
         self.coordframe = coordframe
 
         # Load mask
         self._load_mask(filepath = self.filepath)
+
+    @property
+    def all_nside_hpix(self):
+        '''
+        Every HEALPixel id for this mask's NSIDE. Built on demand rather than
+        stored: at NSIDE=4096 it's a 1.6 GB int64 array, and several HpMask
+        instances are typically alive at once. The masking routines below don't
+        need it -- they index self.seen directly -- but callers that want the
+        explicit list of good pixel ids can still do all_nside_hpix[seen].
+        '''
+        return np.arange(hp.nside2npix(self.NSIDE))
 
     def _load_mask(self, filepath):
         '''
@@ -77,8 +88,6 @@ class HpMask:
         self.mask_header = dict(h)
         self.NSIDE = self.mask_header['NSIDE']
         self.seen = (mask > 0) & (mask != hp.UNSEEN)
-        # Incredibly, mask doesn't contain anything like this.
-        self.all_nside_hpix = np.arange(hp.nside2npix(self.NSIDE))
 
     @staticmethod
     def coords_to_healpixels(lon, lat, frame='icrs', nside=None):
@@ -133,10 +142,6 @@ class HpMask:
             raise TypeError('Supplied "coords" must be an instance of ' + \
                             'astropy.coordinates.SkyCoord')
 
-        # Identify good mask pixels
-        good_map_hpix = self.all_nside_hpix[self.seen]
-
-
         # Grab coordinates
         if self.coordframe == 'galactic':
             lon = coords.galactic.l.deg; lat = coords.galactic.b.deg
@@ -146,8 +151,12 @@ class HpMask:
         # Get HEALPixel for each RA, Dec
         hpInd = hp.ang2pix(self.NSIDE, lon, lat, lonlat=lonlat, nest=False)
 
-        # Identify coordinates that fall into good (unmasked) HEALPixels
-        overlap = np.isin(hpInd, good_map_hpix)
+        # Identify coordinates that fall into good (unmasked) HEALPixels.
+        # self.seen is already a per-pixel lookup table indexed by HEALPixel
+        # id, so gather from it directly -- materializing the list of good
+        # pixel ids and searching it with np.isin asks numpy to rebuild the
+        # same table on every call, and can fall back to an O(N log N) sort.
+        overlap = self.seen[hpInd]
 
         # Create object index array and return good indices, good coords
         gal_ind = np.arange(len(coords))
@@ -192,10 +201,6 @@ class HpMask:
 
         nside1 = mask1.NSIDE; nside2 = mask2.NSIDE
 
-        # Get good (non-empty, seen) HEAPixels in masks
-        good_map_hpix1 = mask1.all_nside_hpix[mask1.seen]
-        good_map_hpix2 = mask2.all_nside_hpix[mask2.seen]
-
         ra_icrs = coords.icrs.ra.deg
         dec_icrs = coords.icrs.dec.deg
 
@@ -220,9 +225,11 @@ class HpMask:
                         lonlat=True, nest=False)
 
         # Identify whether or not a coordinate lies within the respective
-        # masks' seen HEALPixels. seen1/2 are boolean arrays.
-        seen1 = np.isin(ipix1, good_map_hpix1)
-        seen2 = np.isin(ipix2, good_map_hpix2)
+        # masks' seen HEALPixels. seen1/2 are boolean arrays. Each mask's
+        # .seen is a lookup table indexed by its own HEALPixel id, so this
+        # stays correct even when the two masks have different NSIDE.
+        seen1 = mask1.seen[ipix1]
+        seen2 = mask2.seen[ipix2]
 
         '''
         This returns a boolean array with True if a coordinate is seen in both

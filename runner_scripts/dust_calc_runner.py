@@ -21,6 +21,21 @@ General algorithm:
     - Do correlation
 '''
 
+def set_treecorr_threads(correl_config):
+    '''
+    TreeCorr's pair counting is OpenMP-parallel, but with num_threads unset it
+    sizes the thread pool from the machine's core count. Under SLURM that's the
+    whole node, so a job holding a fraction of a node ends up oversubscribing
+    its cores. Take the allocation instead, unless the config says otherwise.
+    '''
+    params = correl_config['treecorr_params']
+
+    if params.get('num_threads') is None:
+        params['num_threads'] = utils.get_n_cpus()
+
+    print(f"TreeCorr will use num_threads = {params['num_threads']}\n")
+
+
 def make_names(correl_config):
     outdir = correl_config['output_path']
     base = correl_config['output_basename']
@@ -126,6 +141,9 @@ def main(args):
     # Read in configuration file
     config_file = args.config
     correl_config = utils.read_yaml(config_file)
+
+    # Match TreeCorr's OpenMP pool to the cores we actually hold
+    set_treecorr_threads(correl_config)
 
     # Create output directory if it doesn't exist
     if not os.path.isdir(correl_config['output_path']):
