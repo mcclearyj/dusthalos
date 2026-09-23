@@ -9,6 +9,26 @@
 # NOTES:
 #  - allowed keys for "redshifts" are: use_bin_numbers, nbins, and min_z
 #  - "treecorr_npatch" sets the number of sky patches used in treecorr
+#  - any catalog below can instead be read from an already-saved treecorr
+#    catalog by supplying a "treecorr_cat" block in place of "cat_config".
+#    Only "filename" is required; the other keys default to the column names
+#    written by treecorr, so "k_col" is usually the only other one you need
+#    (e.g. to pick "demeaned_k" over "k"). No reddening calculation is run for
+#    such a catalog -- its k values come straight from the file -- and it takes
+#    its patches from the file's patch column. Catalogs with and without a
+#    "treecorr_cat" block can be mixed in one run, e.g. saved background
+#    catalogs alongside foregrounds built from their science catalogs.
+#
+#    background_catalog:
+#      treecorr_cat:
+#        filename: 'output/sdss_csfd/demeaned_sdss_bg_photoz2_csfd_treecorrcat.fits'
+#        k_col: 'demeaned_k'
+#        # ra_col: 'ra'
+#        # dec_col: 'dec'
+#        # w_col: 'w'
+#        # patch_col: 'patch'
+#        # ra_units: 'deg'
+#        # dec_units: 'deg'
 
 background_catalog:
   cat_config: 'configs/catalog_configs/redmagic_hiz_y3gold_joined.yaml'

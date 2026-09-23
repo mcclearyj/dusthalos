@@ -33,10 +33,26 @@ class Correlator:
                'background_catalog', 'background_randoms',
                'foreground_catalog', 'foreground_randoms'.
         Catalog: instance of dust_halos Catalog class that holds mask,
-                 catalog data, etc.
+                 catalog data, etc. Left as None for catalogs loaded straight
+                 from a saved treecorr catalog.
         treecorrCatalog: instance of treecorr Catalog class, which is returned
                          by reddening_calc(). Contains Av mle, wt_mle
+        from_file: True if treecorrCatalog was read from a saved treecorr
+                   catalog rather than built from a science catalog. In that
+                   case the k values are already in the file, so do_reddening()
+                   and write_to_file() are no-ops.
     '''
+
+    # Defaults match the column names written by treecorr.Catalog.write()
+    treecorr_cat_defaults = {
+        'ra_col': 'ra',
+        'dec_col': 'dec',
+        'w_col': 'w',
+        'k_col': 'k',
+        'patch_col': 'patch',
+        'ra_units': 'deg',
+        'dec_units': 'deg'
+    }
 
     def __init__(self, correl_config=None, ctype=None):
         self.correl_config = correl_config
@@ -44,6 +60,8 @@ class Correlator:
         self.Catalog = None
         self.treecorrCatalog = None
         self.ctype = ctype
+        self.coords = None
+        self.from_file = False
 
     def _read_cat_file(self, path=None):
         '''
@@ -61,10 +79,25 @@ class Correlator:
         config values after checking it is one of background, background_random,
         foreground, foreground_random. Also populates the treecorr-type Catalog
         attribute (self.treecorrCatalog).
+
+        If the run config supplies a 'treecorr_cat' block for this ctype, the
+        treecorr catalog is read directly from that file instead (see
+        _load_from_file), and no dusthalos Catalog is created. Catalog types
+        with and without a 'treecorr_cat' block can be mixed freely in one run.
         """
         # Can't load a dusthalo-catalog type not specified in correl_config
         ctype = self.ctype
         assert self.ctype in self.correl_config.keys()
+
+        # Saved treecorr catalog? Then there's no science catalog to read
+        file_config = self.correl_config[ctype].get('treecorr_cat')
+
+        if file_config is not None:
+            self.from_file = True
+            self.treecorrCatalog = self._load_from_file(
+                file_config, treecorr_npatch, treecorr_patch_centers
+            )
+            return
 
         # Check configuration values for errors
         cat_config_path = self.correl_config[ctype]['cat_config']
@@ -105,7 +138,82 @@ class Correlator:
         )
 
         return this_cat, tc_cat
-    
+
+    def _load_from_file(self, file_config, treecorr_npatch=None,
+                            treecorr_patch_centers=None):
+        '''
+        Build a treecorr.Catalog from an already-saved treecorr catalog, e.g.
+        one written by Correlator.write_to_file() and de-meaned by
+        DemeanTreecorrCat. The k values are taken from the column named by
+        'k_col', which is how one selects e.g. 'demeaned_k' over 'k'.
+
+        Parameters
+            file_config: 'treecorr_cat' block of the run config for this ctype.
+                         Only 'filename' is required; column names and coord
+                         units default to Correlator.treecorr_cat_defaults.
+            treecorr_npatch: only used if the file has no patch column
+            treecorr_patch_centers: only used if the file has no patch column
+        Returns:
+            treecorr_cat: treecorr.Catalog object
+        '''
+        if 'filename' not in file_config.keys():
+            raise KeyError(
+                f"treecorr_cat config for '{self.ctype}' is missing " + \
+                "required key 'filename'"
+            )
+
+        fname = file_config['filename']
+
+        if not os.path.isfile(fname):
+            raise FileNotFoundError(
+                f"treecorr_cat file for '{self.ctype}' not found: {fname}"
+            )
+
+        # Fill in any column names & units the config didn't supply
+        params = dict(self.treecorr_cat_defaults)
+        params.update(
+            {k: v for k, v in file_config.items() if k != 'filename'}
+        )
+
+        # Which columns does the file actually have? Header only, no data read:
+        # these catalogs run to several GB, so let treecorr do the row loading
+        with fits.open(fname, memmap=True) as hdul:
+            colnames = hdul[1].columns.names
+
+        if params['k_col'] not in colnames:
+            raise KeyError(
+                f"treecorr_cat file {fname} has no column " + \
+                f"'{params['k_col']}'; available columns are {colnames}"
+            )
+
+        # Weights and patches are optional; drop them if they aren't in there
+        for optional_col in ['w_col', 'patch_col']:
+            if params[optional_col] not in colnames:
+                print(f"  no '{params[optional_col]}' column in {fname}, " + \
+                        f"ignoring {optional_col}")
+                params[optional_col] = None
+
+        # A patch column fixes the patch assignment, and treecorr won't accept
+        # it alongside npatch/patch_centers. Without one, fall back to the
+        # patch arguments so the catalog still shares the run's patch geometry
+        if params['patch_col'] is not None:
+            if (treecorr_npatch is not None) \
+                    or (treecorr_patch_centers is not None):
+                print(f"  {self.ctype}: using patch column " + \
+                        f"'{params['patch_col']}' from file; ignoring " + \
+                        "supplied npatch/patch_centers")
+        else:
+            params['patch_centers'] = treecorr_patch_centers
+            if treecorr_npatch is not None:
+                params['npatch'] = int(treecorr_npatch)
+
+        print(f"Loading treecorr catalog for {self.ctype} from {fname}")
+        print(f"  using k_col='{params['k_col']}', " + \
+                f"patch_col={params['patch_col']}")
+
+        return treecorr.Catalog(file_name=fname, **params)
+
+
     def do_reddening(self):
         """ 
         Check dust_params config, call ReddeningCalculator, run it. The various 
@@ -118,6 +226,12 @@ class Correlator:
         """
 
         ctype = self.ctype
+
+        # A catalog read from file already has its k (and w) values
+        if self.from_file == True:
+            print(f"{ctype} was loaded from a saved treecorr catalog, " + \
+                    "skipping reddening calculation")
+            return
 
         # Additional checker: make sure we have redshift
         if 'redshifts' not in self.correl_config[ctype].keys():
@@ -179,16 +293,14 @@ class Correlator:
         '''
         Save Treecorr catalog to file
         '''
+        # Don't overwrite the file this catalog was just read from
+        if self.from_file == True:
+            print(f"{self.ctype} was loaded from a saved treecorr catalog, " + \
+                    "not writing it back out")
+            return
+
         if outname == None:
             outname = os.path.join(self.correl_config['output_path'],
                     self.correl_config['output_basename']+'_treecorrcat.fits')
         self.treecorrCatalog.write(outname)
 
-
-    def load_all_cats(self):
-        '''
-        Something of a utility function to step through and populate all the
-        treecorr catalogs with something
-        '''
-
-        pass

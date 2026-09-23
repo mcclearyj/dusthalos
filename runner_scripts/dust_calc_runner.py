@@ -36,6 +36,53 @@ def make_names(correl_config):
 
     return utils.AttrDict(names)
 
+def get_mean_fg_redshift(fg, correl_config):
+    '''
+    Median redshift of the foreground sample, used to convert angular
+    separations to physical ones. Saved treecorr catalogs don't carry a
+    redshift column, so fall back to arcminute scaling in that case.
+    '''
+    if fg.from_file == True:
+        print("Foreground loaded from saved treecorr catalog, no redshifts")
+        print("Forcing arcminute plot scaling")
+        correl_config['use_kpc'] = False
+        return 0
+
+    try:
+        return np.median(fg.Catalog.data[fg.cat_config['z_key']])
+    except KeyError:
+        print("No redshift column found, setting mean fg redshift to 0")
+        print("Forcing arcminute plot scaling")
+        correl_config['use_kpc'] = False
+        return 0
+
+
+def check_patch_consistency(correl_config, **catalogs):
+    '''
+    Jackknife and sample covariances require every catalog to share the same
+    patches. That's automatic when the patches are assigned from a common set
+    of patch centers, but catalogs read from file bring their own patch column,
+    so two files written by different runs would silently disagree.
+    '''
+    var_method = correl_config['treecorr_params'].get('var_method')
+
+    if var_method not in ['jackknife', 'sample']:
+        return
+
+    npatches = {name: cat.treecorrCatalog.npatch
+                    for name, cat in catalogs.items()}
+
+    if len(set(npatches.values())) > 1:
+        raise ValueError(
+            f"var_method '{var_method}' requires consistent patches across " + \
+            f"catalogs, but got npatch = {npatches}. If these catalogs were " + \
+            "loaded from saved treecorr catalogs, check that they were " + \
+            "written by the same run."
+        )
+
+    print(f"All catalogs share {list(npatches.values())[0]} patches\n")
+
+
 def get_dust(fg, fgr, bg, bgr, names, correl_config):
     '''
     Run correlations, save to file
@@ -91,25 +138,27 @@ def main(args):
     bg.do_reddening()
     bg.write_to_file()
 
+    # Grab patch centers once; for a bg read from file they are derived from
+    # its patch column, which means reading the whole catalog
+    patch_centers = bg.treecorrCatalog.patch_centers
+
     # Load background random catalog & calculate dust reddening
     # Include background patch_centers for covariance calculations
     bgr = Correlator(correl_config, ctype='background_randoms')
-    bgr.load(treecorr_patch_centers=bg.treecorrCatalog.patch_centers)
+    bgr.load(treecorr_patch_centers=patch_centers)
     bgr.do_reddening()
 
     # Load foreground catalog
     fg = Correlator(correl_config, ctype='foreground_catalog')
-    fg.load(treecorr_patch_centers=bg.treecorrCatalog.patch_centers)
-    try:
-        mean_fg_z = np.median(fg.Catalog.data[fg.cat_config['z_key']])
-    except KeyError:
-        print("No redshift column found, setting mean fg redshift to 0")
-        print("Forcing arcminute plot scaling")
-        mean_fg_z = 0; correl_config['use_kpc'] = False
+    fg.load(treecorr_patch_centers=patch_centers)
+    mean_fg_z = get_mean_fg_redshift(fg, correl_config)
 
     # Load foreground random catalog
     fgr = Correlator(correl_config, ctype='foreground_randoms')
-    fgr.load(treecorr_patch_centers=bg.treecorrCatalog.patch_centers)
+    fgr.load(treecorr_patch_centers=patch_centers)
+
+    # Guard against catalogs disagreeing about patches
+    check_patch_consistency(correl_config, fg=fg, fgr=fgr, bg=bg, bgr=bgr)
 
     # Make names
     names = make_names(correl_config)
