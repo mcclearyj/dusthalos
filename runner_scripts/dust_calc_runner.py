@@ -137,9 +137,7 @@ def main(args):
     bg.load()
     # If we have read in a TreeCorr catalog from file, these do nothing
     bg.do_reddening()
-    bg.write_to_file(
-        outname=correl_config['output_basename'] + "bg_treecorrcat.fits"
-    )
+    bg.write_treecorr_cat_to_file()
 
     # Grab patch centers once; for a bg read from file they are derived from
     # its patch column, which means reading the whole catalog
@@ -151,9 +149,7 @@ def main(args):
     bgr.load(treecorr_patch_centers=patch_centers)
     # Again, if we have read in a TreeCorr catalog from file, these do nothing
     bgr.do_reddening()
-    bgr.write_to_file(
-        outname=correl_config['output_basename'] + "bgr_treecorrcat.fits"
-    )
+    bgr.write_treecorr_cat_to_file()
 
     # Load foreground catalog
     fg = Correlator(correl_config, ctype='foreground_catalog')
@@ -170,24 +166,41 @@ def main(args):
     # Make names
     names = make_names(correl_config)
 
-    # Do calculation
-    get_dust(fg=fg, fgr=fgr, bg=bg, bgr=bgr,
-                names=names, correl_config=correl_config)
+    if args.save_only != True: 
+        # Do calculation
+        get_dust(
+            fg=fg, fgr=fgr, bg=bg, bgr=bgr,
+            names=names, correl_config=correl_config
+        )
 
-    print('Plotting output figure...\n')
-    plot = DustPlotter(
-        dk_file = names.dk_outfile,
-        dr_file = names.dr_outfile,
-        fr_file = names.fr_outfile,
-        rr_file = names.rr_outfile,
-        ck_file = names.ck_outfile,
-        z_fg = mean_fg_z,
-        z_theory = z_theory
-    )
-    plot.plot_res(outplotn=names.fig_output, kpc=correl_config['use_kpc'])
+        # Make pretty output plots
+        print('Plotting output figure...\n')
+        plot = DustPlotter(
+            dk_file = names.dk_outfile,
+            dr_file = names.dr_outfile,
+            fr_file = names.fr_outfile,
+            rr_file = names.rr_outfile,
+            ck_file = names.ck_outfile,
+            z_fg = mean_fg_z,
+            z_theory = z_theory
+        )
+        plot.plot_res(outplotn=names.fig_output, kpc=correl_config['use_kpc'])
+
+    else:
+        print("TreeCorr catalogs saved to file")
+        print("Program complete, exiting.")
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description="Runner script for Catalog operations.")
-    parser.add_argument("-config","-c", type=str, help="Path to the configuration file.", required=True)
+    parser = argparse.ArgumentParser(
+        description="Runner script for dust calculation operations."
+        )
+    parser.add_argument(
+        "--config","-c", type=str, required=True,
+        help="Path to the configuration file."
+        )
+    parser.add_argument(
+        "--save_only", action='store_true',
+        help="Save TreeCorr catalog outputs only, then exit [default: False]"
+        )
     args = parser.parse_args()
     main(args)
